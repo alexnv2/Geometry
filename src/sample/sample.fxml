@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+  <MenuBar VBox.vgrow="NEVER">
+    <menus>
+      <Menu mnemonicParsing="false" text="Обекты">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Точка" />
+          <MenuItem mnemonicParsing="false" text="Прямая" />
+          <Menu mnemonicParsing="false" text="Отрезок" />
+          <SeparatorMenuItem mnemonicParsing="false" />
+          <MenuItem mnemonicParsing="false" text="Луч" />
+          <MenuItem mnemonicParsing="false" text="Треугольник" />
+          <MenuItem mnemonicParsing="false" text="Окружность" />
+        </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Теоремы">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Undo" />
+          <MenuItem mnemonicParsing="false" text="Redo" />
+          <SeparatorMenuItem mnemonicParsing="false" />
+          <MenuItem mnemonicParsing="false" text="Cut" />
+          <MenuItem mnemonicParsing="false" text="Copy" />
+          <MenuItem mnemonicParsing="false" text="Paste" />
+          <MenuItem mnemonicParsing="false" text="Delete" />
+          <SeparatorMenuItem mnemonicParsing="false" />
+          <MenuItem mnemonicParsing="false" text="Select All" />
+          <MenuItem mnemonicParsing="false" text="Unselect All" />
+        </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Аксиомы">
+        <items>
+          <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+        </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Следствия">
+        <MenuItem mnemonicParsing="false" text="Action 1" />
+      </Menu>
+      <Menu mnemonicParsing="false" text="Помощь">
+        <MenuItem mnemonicParsing="false" text="Action 1" />
+      </Menu>
+    </menus>
+  </MenuBar>
+  <HBox prefHeight="25.0" prefWidth="900.0" >
+    <Button fx:id="btnPoind" mnemonicParsing="false" text="Точка" onAction="#btnPoindClick"/>
+    <Button fx:id="btnLine" mnemonicParsing="false" text="Отрезок" onAction="#btnLineClick" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+    <Button mnemonicParsing="false" text="Button" />
+  </HBox>
+  <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+    <items>
+      <AnchorPane>
+        <children>
+          <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
+            <font>
+              <Font size="18.0" fx:id="x1" />
+            </font>
+            <textFill>
+              <Color blue="0.624" green="0.624" red="0.624" fx:id="x2" />
+            </textFill>
+          </Label>
+        </children>
+      </AnchorPane>
+      <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
+        <AnchorPane fx:id="apView" id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0"
+                    onMouseMoved="#onMouseMoved" onMouseClicked="#onMouseClick"  onMouseEntered="#onMouseEntered" onMouseDragged="#onMouseDragged">
+          <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="View"
+                 textAlignment="CENTER" textFill="$x2" wrapText="false"/>
+        </AnchorPane>
+      </ScrollPane>
+      <AnchorPane>
+        <children>
+          <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+        </children>
+      </AnchorPane>
+    </items>
+  </SplitPane>
+  <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+    <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+    </padding>
+    <Label fx:id="leftStatus" maxHeight="1.7976931348623157E308" maxWidth="-1.0" HBox.hgrow="ALWAYS">
+      <font>
+        <Font size="11.0" fx:id="x3"/>
+      </font>
+
+    </Label>
+    <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+    <Label font="$x3" maxWidth="-1.0" text="Right status"  HBox.hgrow="NEVER"/>
+  </HBox>
+</VBox>

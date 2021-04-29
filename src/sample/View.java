@@ -1,0 +1,52 @@
+package sample;
+
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+
+//Первый класс для вывода на экран
+class View implements Observer{
+    Model model=new Model();
+    View() {
+        //Регистрация слушателя в классе Model
+        model.registerObserver(this);
+        //Регистрация еще одного слушателя в классе Model
+       // View1 v = new View1();
+       // model.registerObserver(v);
+    }
+    @Override
+    //Какую информацию надо вывести, переопределяем класс интефейса
+    public  void  notification(String message){
+        switch (message) {
+            case "GreatPoind"->this.greatPoind();
+            case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
+            case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон
+          /*
+            case "TextGo" -> this.TextGo(model.getTextGo());//буквы
+            case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
+            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги
+            case "ArcColorGo"->this.ArcColor(model.getArcGo());
+            case "TableGo"->this.tableGo(model.getMTableView());//таблица
+            case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
+            case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
+
+           */
+        }
+    }
+    //Добавление точки
+    private void greatPoind(){
+
+    }
+    //Перемещение точек
+    private void vertexGo(Circle ver){
+        ver.setCenterX(model.getVerX());
+        ver.setCenterY(model.getVerY());
+
+    }
+    //Перемещение сторон
+    private void sideGo(Line side){
+        side.setStartX(model.getVerX());
+        side.setStartY(model.getVerY());
+        side.setEndX(model.getVerX1());
+        side.setEndY(model.getVerY1());
+    }
+}
