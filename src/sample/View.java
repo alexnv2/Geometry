@@ -1,10 +1,14 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 //Первый класс для вывода на экран
 class View implements Observer{
+
+    //Объявляем класс Model
     Model model=new Model();
     View() {
         //Регистрация слушателя в классе Model

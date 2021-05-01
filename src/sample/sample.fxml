@@ -71,7 +71,8 @@
     <Button mnemonicParsing="false" text="Button" />
     <Button mnemonicParsing="false" text="Button" />
   </HBox>
-  <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+  <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512" focusTraversable="true"
+             prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
     <items>
       <AnchorPane>
         <children>
@@ -87,7 +88,8 @@
       </AnchorPane>
       <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
         <AnchorPane fx:id="apView" id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0"
-                    onMouseMoved="#onMouseMoved" onMouseClicked="#onMouseClick"  onMouseEntered="#onMouseEntered" onMouseDragged="#onMouseDragged">
+                     onMouseClicked="#onMouseClick"  onMouseEntered="#onMouseEntered" onMouseDragged="#onMouseDragged"
+                    onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed">
           <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="View"
                  textAlignment="CENTER" textFill="$x2" wrapText="false"/>
         </AnchorPane>
@@ -110,6 +112,6 @@
 
     </Label>
     <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-    <Label font="$x3" maxWidth="-1.0" text="Right status"  HBox.hgrow="NEVER"/>
+    <Label fx:id="rightStatus" font="$x3" maxWidth="-1.0"   HBox.hgrow="NEVER"/>
   </HBox>
 </VBox>
