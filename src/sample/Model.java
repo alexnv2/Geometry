@@ -11,6 +11,9 @@ import javafx.scene.shape.Line;
 import lombok.Data;
 import java.util.LinkedList;
 
+import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.sqrt;
+
 @Data
 //Класс модель для расчета и выдачи информации для представления
 class Model implements  Observable {
@@ -28,7 +31,7 @@ class Model implements  Observable {
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
     private char indexArc='A';//Индекс для уголов
-   // public  boolean lineAdd;
+    private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
 
 
 
@@ -70,21 +73,25 @@ class Model implements  Observable {
          //Нажатие клавиши
         a.setOnMousePressed(e->{
             a.setFill(Color.RED);
+
         });
         //Наведение на точку
         a.setOnMouseEntered(e->{
             a.setCursor(Cursor.HAND);
             leftStatus.setText("Точка "+a.getId());
+            poindOldAdd=true;//взять эту точку для отрезка
         });
         //Отпускание кнопки
         a.setOnMouseReleased(e->{
             a.setFill(Color.DARKSLATEBLUE);
             leftStatus.setText("");
+            poindOldAdd=false;//не брать точку для отрезка, создать новую
         });
         //Уход с точкм
         a.setOnMouseExited(e->{
             a.setCursor(Cursor.DEFAULT);
             leftStatus.setText("");
+           poindOldAdd=false;//взять эту точку для отрезка
         });
 
         //Добавить точку на рабочий стол
@@ -114,7 +121,10 @@ class Model implements  Observable {
 return l;
 
      }
-
+    //Растояние между точками (координаты x1,y1,x2,y2)
+    public double distance(double x1, double y1, double x2, double y2) {
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+    }
     //Перемещение вершин треугольника
     void VertexGo(Circle o){
         vertex=o;
