@@ -10,6 +10,9 @@ class View implements Observer{
 
     //Объявляем класс Model
     Model model=new Model();
+    //Объявляем класс сетки с методами перемещения координатной сетки и масштабирования
+    //Как расширение класса пересчетв мировых координат в в окна просмотра
+    GridView gridViews=new GridView();
     View() {
         //Регистрация слушателя в классе Model
         model.registerObserver(this);

@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -60,7 +61,7 @@ class Model implements  Observable {
           }
     }
     //Создание  точек и прявязка свойств
-    Circle createPoind(AnchorPane s){
+    Circle createPoind(Pane s){
         Circle a=new Circle();
         a.setRadius(5);
         a.setFill(Color.DARKSLATEBLUE);
@@ -128,7 +129,7 @@ class Model implements  Observable {
         return a;
     }
     //Добавление точек на доску
-    char createPoindAdd(AnchorPane a){
+    char createPoindAdd(Pane a){
         Circle cl;
         char c=indexPoind;
         cl = createPoind(a);//Создать
@@ -140,7 +141,7 @@ class Model implements  Observable {
         return c;
     }
 //Создание  отрезка
-     Line createLine(AnchorPane s){
+     Line createLine(Pane s){
         Line l=new Line();
         verX1=verX;
         verY1=verY;
@@ -161,7 +162,7 @@ class Model implements  Observable {
          return l;
      }
      //Добавление линии на доску
-     Line createLineAdd(AnchorPane a){
+     Line createLineAdd(Pane a){
          Line nl;
          nl = createLine(a);//добавить линию
          a.getChildren().add(nl);//добавить на доску

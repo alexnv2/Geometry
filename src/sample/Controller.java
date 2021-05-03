@@ -2,9 +2,11 @@ package sample;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Circle;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
 
 
@@ -13,7 +15,10 @@ import javafx.scene.shape.Line;
 public class  Controller extends View {
 
     @FXML
-    public AnchorPane apView;//Доска для геометрический фигур
+    public Pane paneShape;
+    public StackPane Cartesian;
+    @FXML
+    private Pane paneGrid;
     public Label leftStatus;//Левый статус
     public Label rightStatus;//Правый статус
     private Line nl;//отрезок
@@ -23,10 +28,35 @@ public class  Controller extends View {
     private  boolean poindAdd1=false;//true - создание первой точки для отрезка
     String sr;
 
+
     //Инициализация контролера
     @FXML
     private void initialize() {
+
         model.setLeftStatus(leftStatus);//Передать ссылку на статус
+
+        gridViews.setPaneGrid(paneGrid);
+        gridViews.setCartesian(Cartesian);
+        //Изменение ширины окна
+        Cartesian.widthProperty().addListener((obs, oldVal, newVal) -> {
+            gridViews.setVr(Cartesian.getWidth());
+            gridViews.setWl(-Cartesian.getWidth() / 2);
+            gridViews.setWr(Cartesian.getWidth() / 2);
+            gridViews.rate();//Перерасчет коэффициентов
+            paneGrid.getChildren().clear();//Очистить экран и память
+            gridViews.gridCartesian();//Вывод сетки
+
+        });
+        //Изменение высоты окна
+        Cartesian.heightProperty().addListener((obs, oldVal, newVal) -> {
+            gridViews.setVb(Cartesian.getHeight());
+            gridViews.setWt(Cartesian.getHeight() / 2);
+            gridViews.setWb(-Cartesian.getHeight() / 2);
+            gridViews.rate();//Перерасчет коэффициентов
+            paneGrid.getChildren().clear();//Очистить экран и память
+            gridViews.gridCartesian();//Вывод сетки
+
+        });
     }
 
 
@@ -58,14 +88,9 @@ public class  Controller extends View {
     }
 
 
-    public void onMouseClick(MouseEvent mouseEvent) {
 
-    }
-
-    public void onMouseEntered(MouseEvent mouseEvent) {
-    }
     //Перемещение мыши с нажатой кнопкой
-    public void onMouseDragged(MouseEvent mouseEvent) {
+    public void onMouseDraggen(MouseEvent mouseEvent) {
         //координаты, нужны для перемещения объектов на доске
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
@@ -76,26 +101,26 @@ public class  Controller extends View {
 
         //Добавление точки
         if (poindAdd) {
-            char d = model.createPoindAdd(apView);
+            char d = model.createPoindAdd(paneShape);
             model.setCol(String.valueOf(d));
             poindAdd = false;
         }
         //Добавление отрезка
         if (lineAdd==true && poindAdd1==false) {
             if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-                char d1 = model.createPoindAdd(apView);
+                char d1 = model.createPoindAdd(paneShape);
                 sr = String.valueOf(d1);//добавить вершину в список
             } else {
                 sr=sr+model.getTimeVer();//Вершина из временной переменной
             }
-            nl = model.createLineAdd(apView);//создать линию
+            nl = model.createLineAdd(paneShape);//создать линию
             sr = sr + nl.getId();//Добавить динию в список
             poindAdd2 = true;//режим добавления второй точки
         }
             //Вторая точка для отрезка
             if (poindAdd1 == true && lineAdd == true) {
                if (model.isPoindOldAdd() == false) {
-                    char d2 = model.createPoindAdd(apView);
+                    char d2 = model.createPoindAdd(paneShape);
                     sr = sr + String.valueOf(d2);//добавить вторую вершину(получтся типа AaB)
                }else {
                     sr=sr+model.getTimeVer();
@@ -109,5 +134,9 @@ public class  Controller extends View {
             }
         }//End onMousePressed()
 
+
+
+    public void onScroll(ScrollEvent scrollEvent) {
+    }
 }
 
