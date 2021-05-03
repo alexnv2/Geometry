@@ -27,12 +27,15 @@ class Model implements  Observable {
     private double verY;
     private double verX1;
     private double verY1;
-   // public boolean poindAdd;//true - режим добавления, false - обычный режим
+   private String timeVer;//для временного хранения выбранных вершин
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
     private char indexArc='A';//Индекс для уголов
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
 
+    private LinkedList<Circle> circles=new LinkedList<>();//коллекция для точек
+    private LinkedList<Line> lines=new LinkedList<>();//коллекция для линий
+    private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
 
 
     //Определяем связанный список для регистрации классов слушателей
@@ -56,7 +59,7 @@ class Model implements  Observable {
             observer.notification(message);
           }
     }
-    //Добавление точек
+    //Создание  точек и прявязка свойств
     Circle createPoind(AnchorPane s){
         Circle a=new Circle();
         a.setRadius(5);
@@ -69,35 +72,74 @@ class Model implements  Observable {
         a.setOnMouseDragged(e-> {
              a.setFill(Color.RED);
              VertexGo(a);
-         });
+
+            for (String s1: col) {//в цикл коллекцию фигур
+                if (s1.length() == 3) {//только отрезки типа АаВ
+                    char c1[] = s1.toCharArray();//строку в массив
+                    //выбираем точку начала отрезка
+                    if(a.getId().equals(String.valueOf(c1[0]))) {
+                        //найти точку
+                        Circle c3 = findCircle(c1[2]);
+                        if (c3 != null) {
+                            verX1 = c3.getCenterX();
+                            verY1 = c3.getCenterY();
+                            Line l1 = findLine(c1[1]);//найти линию
+                            SideGo(l1);//перемещение линии
+                        }
+                        //выбираем точку конца отрезка
+                    }else if(a.getId().equals(String.valueOf(c1[2]))) {
+                         Circle c3 = findCircle(c1[0]);
+                         if (c3 != null) {
+                            verX1 = c3.getCenterX();
+                            verY1 = c3.getCenterY();
+                            Line l2 = findLine(c1[1]);
+                            SideGo(l2);
+                        }
+                    }
+                }
+            }
+        });
          //Нажатие клавиши
         a.setOnMousePressed(e->{
             a.setFill(Color.RED);
+            poindOldAdd=true;//взять эту точку для отрезка
+            timeVer=a.getId();
 
         });
         //Наведение на точку
         a.setOnMouseEntered(e->{
             a.setCursor(Cursor.HAND);
             leftStatus.setText("Точка "+a.getId());
-            poindOldAdd=true;//взять эту точку для отрезка
+
         });
         //Отпускание кнопки
         a.setOnMouseReleased(e->{
             a.setFill(Color.DARKSLATEBLUE);
             leftStatus.setText("");
-            poindOldAdd=false;//не брать точку для отрезка, создать новую
+           // poindOldAdd=false;//не брать точку для отрезка, создать новую
         });
         //Уход с точкм
         a.setOnMouseExited(e->{
             a.setCursor(Cursor.DEFAULT);
             leftStatus.setText("");
-           poindOldAdd=false;//взять эту точку для отрезка
+          //  poindOldAdd=false;//взять эту точку для отрезка
         });
-
         //Добавить точку на рабочий стол
         return a;
     }
-//Добавление отрезка
+    //Добавление точек на доску
+    char createPoindAdd(AnchorPane a){
+        Circle cl;
+        char c=indexPoind;
+        cl = createPoind(a);//Создать
+        a.getChildren().add(cl);//добавить
+        circles.add(cl);
+        VertexGo(cl);//куда добавить
+        //Увеличить индекс
+        indexPoind += 1;
+        return c;
+    }
+//Создание  отрезка
      Line createLine(AnchorPane s){
         Line l=new Line();
         verX1=verX;
@@ -108,9 +150,7 @@ class Model implements  Observable {
         l.setEndY(verY);
         l.setId(String.valueOf(indexLine));//Индефикатор узла
         l.setUserData(String.valueOf(indexLine));//Имя узла
-
-
-         //Наведение на точку
+         //Наведение на отрезок
          l.setOnMouseEntered(e->{
              l.setCursor(Cursor.HAND);
              leftStatus.setText("Отрезок "+l.getId());
@@ -118,9 +158,36 @@ class Model implements  Observable {
          l.setOnMouseExited(e->{
              leftStatus.setText("");
          });
-return l;
-
+         return l;
      }
+     //Добавление линии на доску
+     Line createLineAdd(AnchorPane a){
+         Line nl;
+         nl = createLine(a);//добавить линию
+         a.getChildren().add(nl);//добавить на доску
+         lines.add(nl);//добавить в коллекцию
+         col.add(String.valueOf(indexLine));
+         indexLine+=1;//увеличить индекс
+         return nl;
+      }
+     //Присоеденить вторую точку к линии
+    public void lineAddPoind(Line nl, boolean poindAdd2){
+        for(Circle c: circles){
+           if(c!=null && nl!=null && poindAdd2) {
+              double d=distance(c.getCenterX(),c.getCenterY(),verX,verY);
+                 if (d<15){
+                        poindOldAdd=true;
+                        verX=c.getCenterX();
+                        verY=c.getCenterY();
+                       SideGo(nl);
+                 }else {
+                     setPoindOldAdd(false);
+                }
+           }
+        }
+    }
+
+
     //Растояние между точками (координаты x1,y1,x2,y2)
     public double distance(double x1, double y1, double x2, double y2) {
         return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
@@ -136,6 +203,28 @@ return l;
         notifyObservers("SideGo");
     }
 
-
+    //Добавление в коллекцию из контролера
+    public void setCol(String valueOf) {
+        col.add(valueOf);
     }
+
+    //Поиск по коллеуции circles (передается имя точки, типа А)
+    Circle findCircle(char c){
+        for (Circle c0: circles){
+            if (c0.getId().equals(String.valueOf(c))){;
+                return c0;
+            }
+        }
+       return null;//ничего не найдено
+    }
+    //Поиск по коллекции Lines (передается имя отрезка, типа а)
+    Line findLine(char c){
+        for(Line lo: lines){
+            if(lo.getId().equals(String.valueOf(c))) {
+                return lo;
+            }
+        }
+        return null;//если ничего не найдено
+    }
+}
 
