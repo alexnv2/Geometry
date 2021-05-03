@@ -2,14 +2,12 @@ package sample;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
-
-
+import lombok.val;
 
 
 public class  Controller extends View {
@@ -57,6 +55,7 @@ public class  Controller extends View {
             gridViews.gridCartesian();//Вывод сетки
 
         });
+        gridViews.gridCartesian();
     }
 
 
@@ -94,6 +93,26 @@ public class  Controller extends View {
         //координаты, нужны для перемещения объектов на доске
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
+
+
+
+        //Перемещение сетки
+        if(mouseEvent.getTarget()==paneShape){
+            val dx = gridViews.getVPx() - mouseEvent.getX();//Вычисляем смещение мышки по Х
+            val dy = gridViews.getVPy() - mouseEvent.getY();// по Y
+            gridViews.setVPx(mouseEvent.getX()); //Сохраняем текущие координаты мышки
+            gridViews.setVPy(mouseEvent.getY());
+            //Вычисляем смещение окна
+            gridViews.setWl(gridViews.getWl() + dx);
+            gridViews.setWr(gridViews.getWr() + dx);
+            gridViews.setWt(gridViews.getWt() - dy);
+            gridViews.setWb(gridViews.getWb() - dy);
+            gridViews.rate();//Перерасчет коэффициентов
+            paneGrid.getChildren().clear();//Очистить экран и память
+            gridViews.gridCartesian();//Вывод сетки
+
+        }
+        mouseEvent.consume();
     }
 
     //Нажата кнопка мыши на доске
@@ -105,6 +124,8 @@ public class  Controller extends View {
             model.setCol(String.valueOf(d));
             poindAdd = false;
         }
+
+
         //Добавление отрезка
         if (lineAdd==true && poindAdd1==false) {
             if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
@@ -132,11 +153,19 @@ public class  Controller extends View {
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
             }
+        // Фиксируем точку нажатия кнопки мыши
+        if(mouseEvent.getTarget()==paneShape) {
+            gridViews.setVPx(mouseEvent.getX());
+            gridViews.setVPy(mouseEvent.getY());
+        }
+        mouseEvent.consume();
         }//End onMousePressed()
 
 
 
     public void onScroll(ScrollEvent scrollEvent) {
+        double sc=scrollEvent.getDeltaY();
+        gridViews.onScrollView(sc);
     }
 }
 
