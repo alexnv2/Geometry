@@ -44,7 +44,7 @@ class View implements Observer{
     private void vertexGo(Circle ver){
         ver.setCenterX(model.getVerX());
         ver.setCenterY(model.getVerY());
-        System.out.println(ver.getCenterX());
+
     }
     //Перемещение сторон
     private void sideGo(Line side){

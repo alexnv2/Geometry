@@ -6,6 +6,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import lombok.val;
 
@@ -43,7 +44,7 @@ public class  Controller extends View {
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
-
+            updateShape();
         });
         //Изменение высоты окна
         Cartesian.heightProperty().addListener((obs, oldVal, newVal) -> {
@@ -53,7 +54,7 @@ public class  Controller extends View {
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
-
+            updateShape();
         });
         gridViews.gridCartesian();
     }
@@ -74,6 +75,8 @@ public class  Controller extends View {
     public void onMouseMoved(MouseEvent mouseEvent) {
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
+        model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
+        model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
         //координаты для создания отрезка
         if (lineAdd==true && nl!=null && poindAdd2==true){
@@ -93,6 +96,8 @@ public class  Controller extends View {
         //координаты, нужны для перемещения объектов на доске
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
+        model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
+        model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
 
 
 
@@ -110,7 +115,7 @@ public class  Controller extends View {
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
-
+            updateShape();
         }
         mouseEvent.consume();
     }
@@ -135,7 +140,10 @@ public class  Controller extends View {
                 sr=sr+model.getTimeVer();//Вершина из временной переменной
             }
             nl = model.createLineAdd(paneShape);//создать линию
-            sr = sr + nl.getId();//Добавить динию в список
+            //Пересчитать координаты старта линии для PoindLine
+            model.setVerX01(gridViews.revAccessX(nl.getStartX()));
+            model.setVerY01(gridViews.revAccessY(nl.getStartY()));
+            sr = sr + nl.getId();//Добавить линию в список
             poindAdd2 = true;//режим добавления второй точки
         }
             //Вторая точка для отрезка
@@ -148,6 +156,7 @@ public class  Controller extends View {
                 }
                 //закрыть режим добавления отрезка
                 model.setCol(sr);
+                model.findPoindLines(nl.getId());
                 lineAdd = false;//окончание режима добавления
                 poindAdd1 = false;//закрыть 1 точку
                 poindAdd2 = false;//закрыть 2 точку
@@ -162,10 +171,11 @@ public class  Controller extends View {
         }//End onMousePressed()
 
 
-
+    // Изменение масштаба координатной сетки
     public void onScroll(ScrollEvent scrollEvent) {
         double sc=scrollEvent.getDeltaY();
         gridViews.onScrollView(sc);
+        updateShape();
     }
 
     ////Обновление всех параметров
@@ -173,5 +183,29 @@ public class  Controller extends View {
         // A.setCenterX(gridViews.accessX(Ax));
         // A.setCenterY(gridViews.accessY(Ay));
     }
+
+    //Обновление всех геометрических фигур
+    public void updateShape() {
+        //обновление точек
+        for (PoindCircle p : model.getPoindCircles())
+            if (p != null) {
+                Circle c = p.getCircle();
+                c.setCenterX(gridViews.accessX(p.getX()));
+                c.setCenterY(gridViews.accessY(p.getY()));
+            }
+
+        //обновление линий
+        for (PoindLine pl : model.getPoindLines()){
+            if(pl!=null){
+                Line l= pl.getLine();
+                l.setStartX(gridViews.accessX(pl.getStX()));
+                l.setStartY(gridViews.accessY(pl.getStY()));
+                l.setEndX(gridViews.accessX(pl.getEnX()));
+                l.setEndY(gridViews.accessY(pl.getEnY()));
+            }
+        }
+
+    }
+
 }
 

@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import lombok.Data;
+import lombok.val;
+
 import java.util.LinkedList;
 
 import static java.lang.StrictMath.pow;
@@ -27,6 +29,11 @@ class Model implements  Observable {
     private double verY;
     private double verX1;
     private double verY1;
+    private double verX0;//координаты в мировые
+    private double verY0;
+    private double verX01;//мировые для Line StartX and StartY
+    private double verY01;
+
     private String timeVer;//для временного хранения выбранных вершин
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
@@ -36,9 +43,15 @@ class Model implements  Observable {
     private LinkedList<Circle> circles=new LinkedList<>();//коллекция для точек
     private LinkedList<Line> lines=new LinkedList<>();//коллекция для линий
     private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
-    GridView gridViews=new GridView();
+
+    private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек
+    private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий
+
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
+    private val x;
+    private val y;
+
 
     //Конструктор без переменных
     Model(){
@@ -69,6 +82,7 @@ class Model implements  Observable {
         a.setOnMouseDragged(e-> {
              a.setFill(Color.RED);
              VertexGo(a);
+             findPoindCircles(a.getId());//меняем координаты в коллекции
 
             for (String s1: col) {//в цикл коллекцию фигур
                 if (s1.length() == 3) {//только отрезки типа АаВ
@@ -80,8 +94,11 @@ class Model implements  Observable {
                         if (c3 != null) {
                             verX1 = c3.getCenterX();
                             verY1 = c3.getCenterY();
-                            System.out.println(verX1+" "+verX);
+                            //обновить мировые координаты
+                            findPoindCircles1(c3.getId());
+
                             Line l1 = findLine(c1[1]);//найти линию
+                            findPoindLines(l1.getId());
                             SideGo(l1);//перемещение линии
                         }
                         //выбираем точку конца отрезка
@@ -90,7 +107,10 @@ class Model implements  Observable {
                          if (c3 != null) {
                             verX1 = c3.getCenterX();
                             verY1 = c3.getCenterY();
+                            //обновить мировые координаты
+                            findPoindCircles1(c3.getId());
                             Line l2 = findLine(c1[1]);
+                            findPoindLines(l2.getId());
                             SideGo(l2);
                         }
                     }
@@ -114,13 +134,13 @@ class Model implements  Observable {
         a.setOnMouseReleased(e->{
             a.setFill(Color.DARKSLATEBLUE);
             leftStatus.setText("");
-           // poindOldAdd=false;//не брать точку для отрезка, создать новую
+
         });
         //Уход с точкм
         a.setOnMouseExited(e->{
             a.setCursor(Cursor.DEFAULT);
             leftStatus.setText("");
-          //  poindOldAdd=false;//взять эту точку для отрезка
+
         });
         //Добавить точку на рабочий стол
         return a;
@@ -131,7 +151,8 @@ class Model implements  Observable {
         char c=indexPoind;
         cl = createPoind(a);//Создать
         a.getChildren().add(cl);//добавить
-        circles.add(cl);
+        circles.add(cl);//добавить в коллекцию
+        poindCircles.add(new PoindCircle(cl,cl.getId(),verX0,verY0));
         VertexGo(cl);//куда добавить
         //Увеличить индекс
         indexPoind += 1;
@@ -164,6 +185,7 @@ class Model implements  Observable {
          nl = createLine(a);//добавить линию
          a.getChildren().add(nl);//добавить на доску
          lines.add(nl);//добавить в коллекцию
+         poindLines.add(new PoindLine(nl,nl.getId(),verX0,verY0,verX0,verY0));
          col.add(String.valueOf(indexLine));
          indexLine+=1;//увеличить индекс
          return nl;
@@ -184,6 +206,12 @@ class Model implements  Observable {
            }
         }
     }
+ public void data(){
+
+
+
+ }
+
 
 
     //Растояние между точками (координаты x1,y1,x2,y2)
@@ -223,6 +251,42 @@ class Model implements  Observable {
             }
         }
         return null;//если ничего не найдено
+    }
+   //Поиск по коллекции PoindCircles, вход ID
+    private void findPoindCircles(String i){
+      for(PoindCircle p: poindCircles) {
+          if (p != null) {
+              if (p.getId().equals(i)) {
+                  p.setX(verX0);//меняем координаты X
+                  p.setY(verY0);//меняем координаты Y
+              }
+          }
+      }
+    }
+    //Поиск по коллекции PoindCircles для замены координат при перемещении линий
+    private void findPoindCircles1(String i){
+        for (PoindCircle p: poindCircles){
+            if(p!=null){
+                if(p.getId().equals(i)){
+                    verX01=p.getX();
+                    verY01=p.getY();
+                }
+            }
+        }
+    }
+
+    //Поиск по коллекции PoindLine, вход ID
+    public void findPoindLines(String i){
+        for (PoindLine pl: poindLines){
+        if(pl!=null){
+            if(pl.getId().equals(i)){
+                pl.setEnX(verX0);
+                pl.setEnY(verY0);
+                pl.setStX(verX01);
+                pl.setStY(verY01);
+            }
+        }
+        }
     }
 
 
