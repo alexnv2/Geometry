@@ -23,9 +23,9 @@
     <menus>
       <Menu mnemonicParsing="false" text="Обекты">
         <items>
-          <MenuItem mnemonicParsing="false" text="Точка" />
+          <MenuItem mnemonicParsing="false" text="Точка" onAction="#menuPoindClick"/>
           <MenuItem mnemonicParsing="false" text="Прямая" />
-          <Menu mnemonicParsing="false" text="Отрезок" />
+          <MenuItem mnemonicParsing="false" text="Отрезок" onAction="#menuLineClick"/>
           <SeparatorMenuItem mnemonicParsing="false" />
           <MenuItem mnemonicParsing="false" text="Луч" />
           <MenuItem mnemonicParsing="false" text="Треугольник" />
@@ -60,8 +60,8 @@
     </menus>
   </MenuBar>
   <HBox prefHeight="25.0" prefWidth="900.0" >
-    <Button fx:id="btnPoind" mnemonicParsing="false" text="Точка" onAction="#btnPoindClick"/>
-    <Button fx:id="btnLine" mnemonicParsing="false" text="Отрезок" onAction="#btnLineClick" />
+    <Button fx:id="btnPoind" mnemonicParsing="false" text="Точка" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind"  />
+    <Button fx:id="btnLine" mnemonicParsing="false" text="Отрезок" onAction="#btnLineClick" onMouseEntered="#onMoseEnteredLine" />
     <Button mnemonicParsing="false" text="Button" />
     <Button mnemonicParsing="false" text="Button" />
     <Button mnemonicParsing="false" text="Button" />

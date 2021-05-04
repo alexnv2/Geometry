@@ -23,16 +23,16 @@ class Model implements  Observable {
     //Переменные класса
     private Circle vertex;
     private Line sideAll;
-    private Label leftStatus;
-    private Label rightStatus;
-    private double verX;
-    private double verY;
-    private double verX1;
-    private double verY1;
-    private double verX0;//координаты в мировые
-    private double verY0;
-    private double verX01;//мировые для Line StartX and StartY
-    private double verY01;
+    private Label leftStatus;//левый статус, вывод действий
+    private Label rightStatus;//правый статус, вывод координат
+    private double verX;//координата Х на доске от мышки
+    private double verY;//координата Y на доске от мышки
+    private double verX1;//координата StartX для Line
+    private double verY1;//Координата StartY для Line
+    private double verX0;//координата X мировая на доске, зависят от мышки
+    private double verY0;//координата Y мировая на доске, зависят от мышки
+    private double verX01;//координата X мировая для Line StartX and StartY
+    private double verY01;//координата Y мировая для Line StartX and StartY
 
     private String timeVer;//для временного хранения выбранных вершин
     private char indexPoind='A';//Индекс для точек
@@ -44,25 +44,25 @@ class Model implements  Observable {
     private LinkedList<Line> lines=new LinkedList<>();//коллекция для линий
     private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
 
-    private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек
-    private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий
+    private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
+    private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
-    private val x;
-    private val y;
+    //private val x;
+    //private val y;
 
 
     //Конструктор без переменных
     Model(){
      }
 
-    //регистрация слушателя
+    //регистрация слушателя, переопределяем функцию интерфейса
     @Override
     public void registerObserver(Observer o) {
         observers.add(o);
     }
-    //уведомление слушателя
+    //уведомление слушателя, переопределяем функцию интерфейса
     @Override
     public void notifyObservers(String message) {
         for (Observer observer : observers) {
@@ -73,10 +73,10 @@ class Model implements  Observable {
     Circle createPoind(Pane s){
         Circle a=new Circle();
         a.setRadius(5);
+        a.setFill(Color.LIGHTBLUE);
         a.setFill(Color.DARKSLATEBLUE);
         a.setId(String.valueOf(indexPoind));//Индефикатор узла
         a.setUserData(String.valueOf(indexPoind));//Имя узла
-
         //Обработка событий
         //Перемещение с нажатой клавишей
         a.setOnMouseDragged(e-> {
@@ -127,6 +127,7 @@ class Model implements  Observable {
         //Наведение на точку
         a.setOnMouseEntered(e->{
             a.setCursor(Cursor.HAND);
+            a.setRadius(10);
             leftStatus.setText("Точка "+a.getId());
 
         });
@@ -139,6 +140,7 @@ class Model implements  Observable {
         //Уход с точкм
         a.setOnMouseExited(e->{
             a.setCursor(Cursor.DEFAULT);
+            a.setRadius(5);
             leftStatus.setText("");
 
         });
@@ -169,13 +171,17 @@ class Model implements  Observable {
         l.setEndY(verY);
         l.setId(String.valueOf(indexLine));//Индефикатор узла
         l.setUserData(String.valueOf(indexLine));//Имя узла
+        l.setStroke(Color.DARKSLATEBLUE);//Color
+        l.setStrokeWidth(2);//Толщина
          //Наведение на отрезок
          l.setOnMouseEntered(e->{
              l.setCursor(Cursor.HAND);
              leftStatus.setText("Отрезок "+l.getId());
+             l.setStrokeWidth(3);
          });
          l.setOnMouseExited(e->{
              leftStatus.setText("");
+             l.setStrokeWidth(2);
          });
          return l;
      }
@@ -206,11 +212,7 @@ class Model implements  Observable {
            }
         }
     }
- public void data(){
 
-
-
- }
 
 
 
@@ -278,17 +280,15 @@ class Model implements  Observable {
     //Поиск по коллекции PoindLine, вход ID
     public void findPoindLines(String i){
         for (PoindLine pl: poindLines){
-        if(pl!=null){
-            if(pl.getId().equals(i)){
-                pl.setEnX(verX0);
-                pl.setEnY(verY0);
-                pl.setStX(verX01);
-                pl.setStY(verY01);
+            if(pl!=null){
+                if(pl.getId().equals(i)){
+                    pl.setEnX(verX0);
+                    pl.setEnY(verY0);
+                    pl.setStX(verX01);
+                    pl.setStY(verY01);
+                }
             }
         }
-        }
     }
-
-
 }
 

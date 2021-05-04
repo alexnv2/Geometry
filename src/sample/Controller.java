@@ -1,23 +1,31 @@
 package sample;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 import lombok.val;
 
 
 public class  Controller extends View {
 
     @FXML
-    public Pane paneShape;
-    public StackPane Cartesian;
+    public Pane paneShape;//контейнер для геометрических фигур
+    public StackPane Cartesian;//контейнер для декартовых координат
     @FXML
-    private Pane paneGrid;
+    private Button btnPoind;//кнопка добавить точку
+    @FXML
+    private Button btnLine;
+    @FXML
+    private Pane paneGrid;//контейнер для сетки
     public Label leftStatus;//Левый статус
     public Label rightStatus;//Правый статус
     private Line nl;//отрезок
@@ -25,7 +33,10 @@ public class  Controller extends View {
     private boolean lineAdd=false;//true - создать отрезок
     private  boolean poindAdd=false;//true - создать точку
     private  boolean poindAdd1=false;//true - создание первой точки для отрезка
-    String sr;
+    private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
+
+    private  Tooltip tooltip=new Tooltip()  ;
+
 
 
     //Инициализация контролера
@@ -33,7 +44,7 @@ public class  Controller extends View {
     private void initialize() {
 
         model.setLeftStatus(leftStatus);//Передать ссылку на статус
-
+        //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);
         //Изменение ширины окна
@@ -44,7 +55,7 @@ public class  Controller extends View {
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
-            updateShape();
+            updateShape();//обновить координаты геометрических фигур
         });
         //Изменение высоты окна
         Cartesian.heightProperty().addListener((obs, oldVal, newVal) -> {
@@ -54,22 +65,27 @@ public class  Controller extends View {
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
-            updateShape();
+            updateShape();//обновить координаты геометрических фигур
         });
-        gridViews.gridCartesian();
+        gridViews.gridCartesian();//вывод на доску
+        //Настройки всплывающих подсказок
+        tooltip.setShowDelay(Duration.millis(10.0));
+        tooltip.setFont(Font.font(12));
+        tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
+                         "-fx-text-fill: black");
     }
 
 
-    //Создание новой точки
+    //Нажата кнопкп "Добавить точку"
     public void btnPoindClick() {
         leftStatus.setText("Укажите на доске место для точки");//Установить статус
         poindAdd=true;//Установить режим добавления
     }
-    //Создаем отрезок
+    //Нажата кнока "Добавить отрезок"
     public void btnLineClick() {
         leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
         lineAdd=true;
-        sr="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
+        infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
     //Перемещение мыши без нажатия кнопки по доске
     public void onMouseMoved(MouseEvent mouseEvent) {
@@ -135,27 +151,27 @@ public class  Controller extends View {
         if (lineAdd==true && poindAdd1==false) {
             if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
                 char d1 = model.createPoindAdd(paneShape);
-                sr = String.valueOf(d1);//добавить вершину в список
+                infoStatus = String.valueOf(d1);//добавить вершину в список
             } else {
-                sr=sr+model.getTimeVer();//Вершина из временной переменной
+                infoStatus = infoStatus +model.getTimeVer();//Вершина из временной переменной
             }
             nl = model.createLineAdd(paneShape);//создать линию
             //Пересчитать координаты старта линии для PoindLine
             model.setVerX01(gridViews.revAccessX(nl.getStartX()));
             model.setVerY01(gridViews.revAccessY(nl.getStartY()));
-            sr = sr + nl.getId();//Добавить линию в список
+            infoStatus = infoStatus + nl.getId();//Добавить линию в список
             poindAdd2 = true;//режим добавления второй точки
         }
             //Вторая точка для отрезка
             if (poindAdd1 == true && lineAdd == true) {
                if (model.isPoindOldAdd() == false) {
                     char d2 = model.createPoindAdd(paneShape);
-                    sr = sr + String.valueOf(d2);//добавить вторую вершину(получтся типа AaB)
+                    infoStatus = infoStatus + String.valueOf(d2);//добавить вторую вершину(получтся типа AaB)
                }else {
-                    sr=sr+model.getTimeVer();
+                    infoStatus = infoStatus +model.getTimeVer();
                 }
                 //закрыть режим добавления отрезка
-                model.setCol(sr);
+                model.setCol(infoStatus);
                 model.findPoindLines(nl.getId());
                 lineAdd = false;//окончание режима добавления
                 poindAdd1 = false;//закрыть 1 точку
@@ -178,13 +194,9 @@ public class  Controller extends View {
         updateShape();
     }
 
-    ////Обновление всех параметров
-    void planeCircle(double Ax,double Ay) {
-        // A.setCenterX(gridViews.accessX(Ax));
-        // A.setCenterY(gridViews.accessY(Ay));
-    }
 
-    //Обновление всех геометрических фигур
+
+    //Обновление всех точек
     public void updateShape() {
         //обновление точек
         for (PoindCircle p : model.getPoindCircles())
@@ -194,7 +206,7 @@ public class  Controller extends View {
                 c.setCenterY(gridViews.accessY(p.getY()));
             }
 
-        //обновление линий
+        //Обновление всех линий
         for (PoindLine pl : model.getPoindLines()){
             if(pl!=null){
                 Line l= pl.getLine();
@@ -206,6 +218,33 @@ public class  Controller extends View {
         }
 
     }
+    //Нажата кнопка меню "Точка"
+    public void menuPoindClick() {
+        //Вывод информации о геометрических фигурах
 
+        //Установка режима добавления точек
+        leftStatus.setText("Укажите на доске место для точки");//Установить статус
+        poindAdd=true;//Установить режим добавления
+    }
+    //Нажата кнопка меню "Отрезок"
+    public void menuLineClick() {
+        //Вывод информации об отрезах
+
+        //Установка режима добавления отрезков
+        leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
+        lineAdd=true;
+        infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
+    }
+    //Всплывающие подсказки
+    public void onMouseEnteredPoind() {
+
+        tooltip.setText("Добавить точку");
+
+        btnPoind.setTooltip(tooltip);
+    }
+    public void onMoseEnteredLine(MouseEvent mouseEvent) {
+        tooltip.setText("Добавить отрезок");
+        btnLine.setTooltip(tooltip);
+    }
 }
 
