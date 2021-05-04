@@ -16,6 +16,7 @@ public class WView {
     private int k2=0;//Степень для масштаба
     private double k3=1;//Коэффициент масштабирования
     private double VPx, VPy;//Координаты мыши при нажатии кнопки
+    private  double Ko=100;//Коэффициент округления координат
 
     //Конструктор c параметрами
     WView(double Wt, double Wb, double Wl, double Wr, double Vt, double Vb, double Vl, double Vr) {
@@ -49,14 +50,23 @@ public class WView {
     //Сетка Y
     double gridShowY(double ty) {return Math.round((B*ty*M)+D);}
 
-    // Перерасчет координаты X
+    // Перерасчет декартовой координаты X в координаты экрана
     double accessX(double tx) {return Math.round((A*tx*M)/(k0*k3)+C);} //С масштабом
-    //Перерасчет координаты y
+    //Перерасчет декартовой координаты y в координаты экрана
     double accessY(double ty) {return Math.round((B*ty*M)/(k0*k3)+D);}
-    //Обратный перерасчет sx
-    double revAccessX(double wx) {return Math.round((wx-C)/A)/M*k0*k3;}
-    //Обратный перерасчет sy
-    double revAccessY(double wy) {return Math.round((wy-D)/B)/M*k0*k3;}//С масштабом
+    //Перерасчет координаты экрана wx  в декартовые с округлением в
+    double revAccessX(double wx) {
+        double x=Math.round((wx-C)/A)/M*k0*k3;
+        x=Math.round(x*Ko);
+        return x/Ko;
+    }
+    //Перерасчет координат экрана wy в декартовые
+    double revAccessY(double wy) {
+        double y=Math.round((wy-D)/B)/M*k0*k3;
+        y=Math.round(y*Ko);
+        return y/Ko;
+    }
+    //С масштабом
     //Коэффициенты пересчета координат
     void rate(){
         A=(Vr-Vl)/(Wr-Wl);

@@ -74,7 +74,7 @@ public class  Controller extends View {
     public void onMouseMoved(MouseEvent mouseEvent) {
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
-        rightStatus.setText("Координаты доски x: " + mouseEvent.getX() + " y: " + mouseEvent.getY());
+        rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
         //координаты для создания отрезка
         if (lineAdd==true && nl!=null && poindAdd2==true){
             model.SideGo(nl);//проводим отрезок
@@ -166,6 +166,12 @@ public class  Controller extends View {
     public void onScroll(ScrollEvent scrollEvent) {
         double sc=scrollEvent.getDeltaY();
         gridViews.onScrollView(sc);
+    }
+
+    ////Обновление всех параметров
+    void planeCircle(double Ax,double Ay) {
+        // A.setCenterX(gridViews.accessX(Ax));
+        // A.setCenterY(gridViews.accessY(Ay));
     }
 }
 

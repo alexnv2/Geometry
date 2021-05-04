@@ -24,7 +24,7 @@ class View implements Observer{
     //Какую информацию надо вывести, переопределяем класс интефейса
     public  void  notification(String message){
         switch (message) {
-            case "GreatPoind"->this.greatPoind();
+
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
             case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон
           /*
@@ -39,15 +39,12 @@ class View implements Observer{
            */
         }
     }
-    //Добавление точки
-    private void greatPoind(){
 
-    }
     //Перемещение точек
     private void vertexGo(Circle ver){
         ver.setCenterX(model.getVerX());
         ver.setCenterY(model.getVerY());
-
+        System.out.println(ver.getCenterX());
     }
     //Перемещение сторон
     private void sideGo(Line side){

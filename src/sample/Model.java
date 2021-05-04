@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -28,21 +27,18 @@ class Model implements  Observable {
     private double verY;
     private double verX1;
     private double verY1;
-   private String timeVer;//для временного хранения выбранных вершин
+    private String timeVer;//для временного хранения выбранных вершин
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
     private char indexArc='A';//Индекс для уголов
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
-
+    //Коллекции
     private LinkedList<Circle> circles=new LinkedList<>();//коллекция для точек
     private LinkedList<Line> lines=new LinkedList<>();//коллекция для линий
     private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
-
-
+    GridView gridViews=new GridView();
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
-    //Коллекция для хранения фигур
-    private ObservableList<Figura> figCol = FXCollections.observableArrayList();
 
     //Конструктор без переменных
     Model(){
@@ -84,6 +80,7 @@ class Model implements  Observable {
                         if (c3 != null) {
                             verX1 = c3.getCenterX();
                             verY1 = c3.getCenterY();
+                            System.out.println(verX1+" "+verX);
                             Line l1 = findLine(c1[1]);//найти линию
                             SideGo(l1);//перемещение линии
                         }
@@ -180,7 +177,7 @@ class Model implements  Observable {
                         poindOldAdd=true;
                         verX=c.getCenterX();
                         verY=c.getCenterY();
-                       SideGo(nl);
+                        SideGo(nl);
                  }else {
                      setPoindOldAdd(false);
                 }
@@ -227,5 +224,7 @@ class Model implements  Observable {
         }
         return null;//если ничего не найдено
     }
+
+
 }
 
