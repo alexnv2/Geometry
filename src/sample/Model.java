@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import lombok.Data;
-import lombok.val;
+
 
 import java.util.LinkedList;
 
@@ -40,17 +40,14 @@ class Model implements  Observable {
     private char indexArc='A';//Индекс для уголов
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
     //Коллекции
-    private LinkedList<Circle> circles=new LinkedList<>();//коллекция для точек
-    private LinkedList<Line> lines=new LinkedList<>();//коллекция для линий
     private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
-
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
-    //private val x;
-    //private val y;
+
+
 
 
     //Конструктор без переменных
@@ -80,42 +77,9 @@ class Model implements  Observable {
         //Обработка событий
         //Перемещение с нажатой клавишей
         a.setOnMouseDragged(e-> {
-             a.setFill(Color.RED);
-             VertexGo(a);
-             findPoindCircles(a.getId());//меняем координаты в коллекции
-
-            for (String s1: col) {//в цикл коллекцию фигур
-                if (s1.length() == 3) {//только отрезки типа АаВ
-                    char c1[] = s1.toCharArray();//строку в массив
-                    //выбираем точку начала отрезка
-                    if(a.getId().equals(String.valueOf(c1[0]))) {
-                        //найти точку
-                        Circle c3 = findCircle(c1[2]);
-                        if (c3 != null) {
-                            verX1 = c3.getCenterX();
-                            verY1 = c3.getCenterY();
-                            //обновить мировые координаты
-                            findPoindCircles1(c3.getId());
-
-                            Line l1 = findLine(c1[1]);//найти линию
-                            findPoindLines(l1.getId());
-                            SideGo(l1);//перемещение линии
-                        }
-                        //выбираем точку конца отрезка
-                    }else if(a.getId().equals(String.valueOf(c1[2]))) {
-                         Circle c3 = findCircle(c1[0]);
-                         if (c3 != null) {
-                            verX1 = c3.getCenterX();
-                            verY1 = c3.getCenterY();
-                            //обновить мировые координаты
-                            findPoindCircles1(c3.getId());
-                            Line l2 = findLine(c1[1]);
-                            findPoindLines(l2.getId());
-                            SideGo(l2);
-                        }
-                    }
-                }
-            }
+            if(!movePoindCircles(a)){
+                leftStatus.setText("Перемещение запрещено! Данная точка расчетная.");
+            };//передать нажатую точку
         });
          //Нажатие клавиши
         a.setOnMousePressed(e->{
@@ -127,7 +91,7 @@ class Model implements  Observable {
         //Наведение на точку
         a.setOnMouseEntered(e->{
             a.setCursor(Cursor.HAND);
-            a.setRadius(10);
+            a.setRadius(8);
             leftStatus.setText("Точка "+a.getId());
 
         });
@@ -148,13 +112,12 @@ class Model implements  Observable {
         return a;
     }
     //Добавление точек на доску
-    char createPoindAdd(Pane a){
+    String createPoindAdd(Pane a){
         Circle cl;
-        char c=indexPoind;
+        String c=String.valueOf(indexPoind);
         cl = createPoind(a);//Создать
         a.getChildren().add(cl);//добавить
-        circles.add(cl);//добавить в коллекцию
-        poindCircles.add(new PoindCircle(cl,cl.getId(),verX0,verY0));
+        poindCircles.add(new PoindCircle(cl,cl.getId(),verX0,verY0,true,false));
         VertexGo(cl);//куда добавить
         //Увеличить индекс
         indexPoind += 1;
@@ -190,21 +153,54 @@ class Model implements  Observable {
          Line nl;
          nl = createLine(a);//добавить линию
          a.getChildren().add(nl);//добавить на доску
-         lines.add(nl);//добавить в коллекцию
-         poindLines.add(new PoindLine(nl,nl.getId(),verX0,verY0,verX0,verY0));
-         col.add(String.valueOf(indexLine));
+         poindLines.add(new PoindLine(nl,nl.getId(),verX0,verY0,verX0,verY0,true,false,0));
          indexLine+=1;//увеличить индекс
          return nl;
       }
-     //Присоеденить вторую точку к линии
+      //Добавление луча на доску
+    Line createRayAdd(Pane pane){
+        Line ray;
+        ray=createRay(pane);
+        pane.getChildren().add(ray);
+        poindLines.add(new PoindLine(ray,ray.getId(),verX0,verY0,verX0,verY0,true,false,1));
+        indexLine+=1;
+        return ray;
+    }
+      Line createRay(Pane pane){
+          Line line=new Line();
+          verX1=verX;
+          verY1=verY;
+          line.setStartX(verX1);
+          line.setStartY(verY1);
+          line.setEndX(verX);
+          line.setEndY(verY);
+          line.setId(String.valueOf(indexLine));//Индефикатор узла
+          line.setUserData(String.valueOf(indexLine));//Имя узла
+          line.setStroke(Color.DARKSLATEBLUE);//Color
+          line.setStrokeWidth(2);//Толщина
+          //Наведение на отрезок
+          line.setOnMouseEntered(e->{
+              line.setCursor(Cursor.HAND);
+              leftStatus.setText("Отрезок "+line.getId());
+              line.setStrokeWidth(3);
+          });
+          line.setOnMouseExited(e-> {
+              leftStatus.setText("");
+              line.setStrokeWidth(2);
+          });
+          return line;
+      }
+     //Присоеденить вторую точку к линии, когда линия проходит близко к точке
     public void lineAddPoind(Line nl, boolean poindAdd2){
-        for(Circle c: circles){
+        Circle pCl;
+        for(PoindCircle c: poindCircles){
            if(c!=null && nl!=null && poindAdd2) {
-              double d=distance(c.getCenterX(),c.getCenterY(),verX,verY);
+              pCl=c.getCircle();
+              double d=distance(pCl.getCenterX(),pCl.getCenterY(),verX,verY);
                  if (d<15){
                         poindOldAdd=true;
-                        verX=c.getCenterX();
-                        verY=c.getCenterY();
+                        verX=pCl.getCenterX();
+                        verY=pCl.getCenterY();
                         SideGo(nl);
                  }else {
                      setPoindOldAdd(false);
@@ -236,26 +232,30 @@ class Model implements  Observable {
         col.add(valueOf);
     }
 
-    //Поиск по коллеуции circles (передается имя точки, типа А)
-    Circle findCircle(char c){
-        for (Circle c0: circles){
+    //Поиск по коллеуции PoindCircles (передается имя точки, типа А)
+    //Вызов из movePoindCircles(Circle a)
+    //Возвращает объект точку
+    Circle findCircle(String c){
+        for (PoindCircle c0: poindCircles){
             if (c0.getId().equals(String.valueOf(c))){;
-                return c0;
+                return c0.getCircle();
             }
         }
        return null;//ничего не найдено
     }
-    //Поиск по коллекции Lines (передается имя отрезка, типа а)
+    //Поиск по коллекции PoindLine (передается имя отрезка, типа а)
+    //Вызов из
+    //Возвращает найденную линию
     Line findLine(char c){
-        for(Line lo: lines){
+        for(PoindLine lo: poindLines){
             if(lo.getId().equals(String.valueOf(c))) {
-                return lo;
+                return lo.getLine();
             }
         }
         return null;//если ничего не найдено
     }
    //Поиск по коллекции PoindCircles, вход ID
-    private void findPoindCircles(String i){
+    public void findPoindCircles(String i){
       for(PoindCircle p: poindCircles) {
           if (p != null) {
               if (p.getId().equals(i)) {
@@ -278,6 +278,7 @@ class Model implements  Observable {
     }
 
     //Поиск по коллекции PoindLine, вход ID
+    //Вызов из
     public void findPoindLines(String i){
         for (PoindLine pl: poindLines){
             if(pl!=null){
@@ -289,6 +290,99 @@ class Model implements  Observable {
                 }
             }
         }
+    }
+    //Заносятся стартовые координаты линии луча при его создании
+    //Вызов из контролера onMouseMoved
+    public void findPoindLines1(String i){
+        for (PoindLine pl: poindLines){
+            if(pl!=null){
+                if(pl.getId().equals(i)){
+                    pl.setStX(verX01);
+                    pl.setStY(verY01);
+                }
+            }
+        }
+    }
+
+    //Перемещение точки на доске с нажатой кнопкой
+    //Вызов из метода Circle createPoind(Pane s) прикрепленного события
+    public boolean movePoindCircles(Circle a) {
+        a.setFill(Color.RED);
+        if (findPoindCircleMove(a.getId())){//true-разрешено перемещение
+            VertexGo(a);
+            findPoindCircles(a.getId());//меняем координаты в коллекции
+
+            for (String s1 : col) {//в цикл коллекцию фигур
+                if (s1.length() == 3) {//только отрезки типа АаВ
+                    char c1[] = s1.toCharArray();//строку в массив
+                    //выбираем точку начала отрезка
+                    if (a.getId().equals(String.valueOf(c1[0]))) {
+                        //найти точку
+                        Circle c3 = findCircle(String.valueOf(c1[2]));
+                        if (c3 != null) {
+                            verX1 = c3.getCenterX();
+                            verY1 = c3.getCenterY();
+                            //обновить мировые координаты
+                            findPoindCircles1(c3.getId());
+
+                            Line l1 = findLine(c1[1]);//найти линию
+                            findPoindLines(l1.getId());
+                            SideGo(l1);//перемещение линии
+                        }
+                        //выбираем точку конца отрезка
+                    } else if (a.getId().equals(String.valueOf(c1[2]))) {
+                        Circle c3 = findCircle(String.valueOf(c1[0]));
+                        if (c3 != null) {
+                            verX1 = c3.getCenterX();
+                            verY1 = c3.getCenterY();
+                            //обновить мировые координаты
+                            findPoindCircles1(c3.getId());
+                            Line l2 = findLine(c1[1]);
+                            findPoindLines(l2.getId());
+                            SideGo(l2);
+                        }
+                    }
+                }
+            }
+        }else return false;
+        return true;
+    }
+     //Поиск по коллекция PoindCircle, разрешено ли редактирование
+    //Вызов из  movePoindCircles(Circle a)
+    //Возвращает логическое значение bMove
+    private boolean findPoindCircleMove(String id){
+        boolean bfMove=false;
+        for (PoindCircle p: poindCircles) {
+
+            if (p != null) {
+                if (p.getId().equals(id)) {
+                    bfMove=p.isBMove();
+                }
+            }
+        }
+        return bfMove;
+    }
+    //Тестовый медод для вывода информации по коолекциям
+    public void ColTest(){
+        System.out.println("Коллекция Sting");
+        int a=0;
+        for(String s: col){
+            System.out.println(a+" "+s);
+            a+=1;
+        }
+        System.out.println("Коллекция PoindCircle");
+        int z=0;
+        for(PoindCircle p: poindCircles){
+            System.out.println(z+" "+p);
+            z+=1;
+        }
+        System.out.println("Коллекция PoindLine");
+        int t=0;
+        for( PoindLine d: poindLines){
+            System.out.println(t+" "+d);
+            t+=1;
+        }
+
     }
 }
 
