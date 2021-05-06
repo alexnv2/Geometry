@@ -1,7 +1,6 @@
 package sample;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -27,12 +26,18 @@ class Model implements  Observable {
     private Label rightStatus;//правый статус, вывод координат
     private double verX;//координата Х на доске от мышки
     private double verY;//координата Y на доске от мышки
-    private double verX1;//координата StartX для Line
-    private double verY1;//Координата StartY для Line
+    private double verX1;//координата StartX для отрезков
+    private double verY1;//Координата StartY для отрезков
+    private double rayStartX;//
+    private double rayStartY;
+    private double rayEndX;
+    private double rayEndY;
     private double verX0;//координата X мировая на доске, зависят от мышки
     private double verY0;//координата Y мировая на доске, зависят от мышки
-    private double verX01;//координата X мировая для Line StartX and StartY
-    private double verY01;//координата Y мировая для Line StartX and StartY
+    private double verLineStartX;//координата X мировая для Line StartX
+    private double verLineStartY;//координата Y мировая для Line StartY
+    private double verLineEndX;//координата X мировая для Line EndX
+    private double verLineEndY;//координата Y мировая для Line EndY
 
     private String timeVer;//для временного хранения выбранных вершин
     private char indexPoind='A';//Индекс для точек
@@ -124,14 +129,24 @@ class Model implements  Observable {
         return c;
     }
 //Создание  отрезка
-     Line createLine(Pane s){
+     Line createLine(Pane s, int seg){
         Line l=new Line();
-        verX1=verX;
-        verY1=verY;
-        l.setStartX(verX1);
-        l.setStartY(verY1);
-        l.setEndX(verX);
-        l.setEndY(verY);
+        if(seg==0) {
+            verX1 = verX;
+            verY1 = verY;
+            l.setStartX(verX1);
+            l.setStartY(verY1);
+            l.setEndX(verX);
+            l.setEndY(verY);
+        }else{
+            rayEndX=verX;
+            rayEndY=verY;
+            l.setStartX(verX);
+            l.setStartY(verY);
+            l.setEndX(rayEndX);
+            l.setEndY(rayEndY);
+        }
+
         l.setId(String.valueOf(indexLine));//Индефикатор узла
         l.setUserData(String.valueOf(indexLine));//Имя узла
         l.setStroke(Color.DARKSLATEBLUE);//Color
@@ -149,13 +164,13 @@ class Model implements  Observable {
          return l;
      }
      //Добавление линии на доску
-     Line createLineAdd(Pane a){
-         Line nl;
-         nl = createLine(a);//добавить линию
-         a.getChildren().add(nl);//добавить на доску
-         poindLines.add(new PoindLine(nl,nl.getId(),verX0,verY0,verX0,verY0,true,false,0));
+     Line createLineAdd(Pane pane, int segment){
+         Line newLine;
+         newLine = createLine(pane,segment);//добавить линию
+         pane.getChildren().add(newLine);//добавить на доску
+         poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
          indexLine+=1;//увеличить индекс
-         return nl;
+         return newLine;
       }
       //Добавление луча на доску
     Line createRayAdd(Pane pane){
@@ -226,7 +241,11 @@ class Model implements  Observable {
         sideAll=o;
         notifyObservers("SideGo");
     }
-
+    //Перемещение луча и прямой
+    void RayGo(Line o){
+        sideAll=o;
+        notifyObservers("RayGo");
+    }
     //Добавление в коллекцию из контролера
     public void setCol(String valueOf) {
         col.add(valueOf);
@@ -270,23 +289,23 @@ class Model implements  Observable {
         for (PoindCircle p: poindCircles){
             if(p!=null){
                 if(p.getId().equals(i)){
-                    verX01=p.getX();
-                    verY01=p.getY();
+                    verLineStartX =p.getX();
+                    verLineStartY =p.getY();
                 }
             }
         }
     }
 
-    //Поиск по коллекции PoindLine, вход ID
+    //Поиск по коллекции PoindLine, для замены декартовых координат вход ID
     //Вызов из
     public void findPoindLines(String i){
         for (PoindLine pl: poindLines){
             if(pl!=null){
                 if(pl.getId().equals(i)){
-                    pl.setEnX(verX0);
-                    pl.setEnY(verY0);
-                    pl.setStX(verX01);
-                    pl.setStY(verY01);
+                    pl.setEnX(verLineEndX);
+                    pl.setEnY(verLineEndY);
+                    pl.setStX(verLineStartX);
+                    pl.setStY(verLineStartY);
                 }
             }
         }
@@ -297,8 +316,8 @@ class Model implements  Observable {
         for (PoindLine pl: poindLines){
             if(pl!=null){
                 if(pl.getId().equals(i)){
-                    pl.setStX(verX01);
-                    pl.setStY(verY01);
+                    pl.setStX(verLineStartX);
+                    pl.setStY(verLineStartY);
                 }
             }
         }

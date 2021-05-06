@@ -9,7 +9,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -25,26 +24,31 @@ public class  Controller extends View {
     @FXML
     private Button btnPoind;//кнопка добавить точку
     @FXML
-    private Button btnLine;
+    private Button btnSegment;
     @FXML
     private Button btnRay;
+    @FXML
+    private Button btnLine;
     @FXML
     private Pane paneGrid;//контейнер для сетки
     public Label leftStatus;//Левый статус
     public Label rightStatus;//Правый статус
     private Line nl;//отрезок
     private Line ray;//тестовый луч
-    private String poindRay1;//вторая точка луча
-    private String poindRay2;//вторая точка луча
+    private String poindLine1;//первая  точка луча, прямой, отрезка
+    private String poindLine2;//вторая точка луча, прямой, отрезка
 
-    private boolean poindAdd2=false;//true - создание второй точки для отрезка
-    private boolean lineAdd=false;//true - создать отрезок
+
     private boolean poindAdd=false;//true - создать точку
-    private boolean poindAdd1=false;//true - создание первой точки для отрезка
-    private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
+    private boolean segmentAdd =false;//true - создать отрезок
     private boolean rayAdd=false;//true - создание луча
-    private boolean rayAdd1=false;//true - первая точка луча
-    private boolean rayAdd2=false;//true - вторая точка луча
+    private boolean lineAdd=false;//true - создание прямой
+
+    private boolean poindAdd1=false;//true - создание первой точки для отрезка
+    private boolean poindAdd2=false;//true - создание второй точки для отрезка
+
+    private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
+
     private  Tooltip tooltip=new Tooltip()  ;
 
 
@@ -92,15 +96,21 @@ public class  Controller extends View {
         poindAdd=true;//Установить режим добавления
     }
     //Нажата кнока "Добавить отрезок"
-    public void btnLineClick() {
+    public void btnSegmentClick() {
         leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
-        lineAdd=true;
+        segmentAdd =true;
         infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
     //Нажата кнопка "Добавить Луч"
     public void btnRay(ActionEvent actionEvent) {
         leftStatus.setText("Укажите на доске точку начала луча");//Установить статус
         rayAdd=true;
+        infoStatus="";//Для коллекции Col
+    }
+    //Нажата кнопка "Добавить прямую"
+    public void btnLine() {
+        leftStatus.setText("Укажите на доске точку начала прямой");//Установить статус
+        lineAdd=true;
         infoStatus="";//Для коллекции Col
     }
     //Перемещение мыши без нажатия кнопки по доске
@@ -110,8 +120,9 @@ public class  Controller extends View {
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
         model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
-        //координаты для создания отрезка
-        if (lineAdd==true && nl!=null && poindAdd2==true){
+        //Создание отрезка
+        if (segmentAdd ==true && nl!=null && poindAdd2==true){
+            poindSetRevAccess(nl);
             model.SideGo(nl);//проводим отрезок
             poindAdd1 = true;//первая точка создана
         }
@@ -120,26 +131,54 @@ public class  Controller extends View {
         model.lineAddPoind(nl,poindAdd2);
 
         //Создание луча
-        if(rayAdd==true && ray!=null && rayAdd2==true){
-            //Найти первую точку луча
-            Circle c1=model.findCircle(poindRay1);
-            //найти вторую точку луча
-            Circle c2=model.findCircle(poindRay2);
-            model.VertexGo(c2);
-            //обновить координаты точки
-            model.findPoindCircles(poindRay2);
-            double x=c1.getCenterX()+(c2.getCenterX()-c1.getCenterX())*5;
-            double y=c1.getCenterY()+(c2.getCenterY()-c1.getCenterY())*5;
+        if(rayAdd==true && nl!=null && poindAdd2==true){
+            //Расчитать координаты окончагия луча
+            double x=model.getRayEndX()+(model.getVerX()-model.getRayEndX())*3;
+            double y=model.getRayEndY()+(model.getVerY()-model.getRayEndY())*3;
             //Добавить коордитаны пересчета в коллекцию
-            model.setVerX01(gridViews.revAccessX(ray.getStartX()));
-            model.setVerY01(gridViews.revAccessY(ray.getStartY()));
-            model.findPoindLines1(ray.getId());
-            model.setVerX(x);
-            model.setVerY(y);
-            model.SideGo(ray);//проводим отрезок
-            rayAdd1 = true;//первая точка создана
+            model.setRayStartX(x);
+            model.setRayStartY(y);
+           // poindSetRevAccess(nl);
+            model.setVerLineStartX(gridViews.revAccessX(model.getRayEndX()));
+            model.setVerLineStartY(gridViews.revAccessY(model.getRayEndY()));
+            model.setVerLineEndX(gridViews.revAccessX(x));
+            model.setVerLineEndY(gridViews.revAccessY(y));
+            model.findPoindLines(nl.getId());
+            model.RayGo(nl);//проводим отрезок
+            poindAdd1 = true;//первая точка создана
+        }
+        //Создание прямой
+        if (lineAdd==true && nl!=null && poindAdd2==true){
+            Circle c=model.findCircle(poindLine1);//первая точка
+            //расчитать концов прямой по уравнению прямой
+            double x=c.getCenterX()+(model.getVerX()-c.getCenterX())*3;
+            double y=c.getCenterY()+(model.getVerY()-c.getCenterY())*3;
+            double x1=c.getCenterX()+(model.getVerX()-c.getCenterX())*-3;
+            double y1=c.getCenterY()+(model.getVerY()-c.getCenterY())*-3;
+
+            //Добавить коордитаны пересчета в коллекцию
+            model.setVerLineStartX(gridViews.revAccessX(x1));
+            model.setVerLineStartY(gridViews.revAccessY(y1));
+            model.setVerLineEndX(gridViews.revAccessX(x));
+            model.setVerLineEndY(gridViews.revAccessY(y));
+            model.findPoindLines(nl.getId());
+           //задать координаты прямой
+            model.setRayStartX(x1);
+            model.setRayStartY(y1);
+            model.setRayEndX(x);
+            model.setRayEndY(y);
+            //проводим прямую
+            model.RayGo(nl);
+            poindAdd1 = true;//разрешение для постройки 2 точки
         }
     }
+    //Добавить перерасчетные координаты
+    public void poindSetRevAccess(Line o){
+        model.setVerLineStartX(gridViews.revAccessX(o.getStartX()));
+        model.setVerLineStartY(gridViews.revAccessY(o.getStartY()));
+        model.findPoindLines1(nl.getId());
+    }
+
     //Перемещение мыши с нажатой кнопкой
     public void onMouseDraggen(MouseEvent mouseEvent) {
         //координаты, нужны для перемещения объектов на доске
@@ -181,67 +220,61 @@ public class  Controller extends View {
             poindAdd = false;
         }
         //Добавление отрезка
-        if (lineAdd==true && poindAdd1==false) {
-            if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-                String d1 = model.createPoindAdd(paneShape);//сщздать новую
-                infoStatus = String.valueOf(d1);//добавить вершину в список
-            } else {
-                infoStatus = infoStatus +model.getTimeVer();//Вершина из временной переменной
-            }
-            nl = model.createLineAdd(paneShape);//создать линию
-            //Пересчитать координаты старта линии для PoindLine
-            model.setVerX01(gridViews.revAccessX(nl.getStartX()));
-            model.setVerY01(gridViews.revAccessY(nl.getStartY()));
-            infoStatus = infoStatus + nl.getId();//Добавить линию в список
-            poindAdd2 = true;//режим добавления второй точки
+        if (segmentAdd ==true && poindAdd1==false) {
+            addLineRayStart(0);//Создание первой точки и линии
         }
-            //Вторая точка для отрезка
-            if (lineAdd == true && poindAdd1 == true) {
-               if (model.isPoindOldAdd() == false) {
-                    String d2 = model.createPoindAdd(paneShape);//создать новую
-                    infoStatus = infoStatus + String.valueOf(d2);//добавить вторую вершину(получтся типа AaB)
-               }else {
-                    infoStatus = infoStatus +model.getTimeVer();
-                }
-                //закрыть режим добавления отрезка
-                model.setCol(infoStatus);
-                model.findPoindLines(nl.getId());
-                lineAdd = false;//окончание режима добавления
-                poindAdd1 = false;//закрыть 1 точку
-                poindAdd2 = false;//закрыть 2 точку
-                model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+        //Вторая точка для отрезка
+        if (segmentAdd == true && poindAdd1 == true) {
+              addLineRayEnd();
+              segmentAdd = false;//окончание режима добавления
             }
-
         //Добавления луча
-            if (rayAdd==true && rayAdd1==false) {
-                if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-                    poindRay1 = model.createPoindAdd(paneShape);
-                    infoStatus = String.valueOf(poindRay1);//добавить вершину в список
-                } else {
-                    infoStatus = infoStatus + model.getTimeVer();//Вершина из временной переменной
-                    poindRay1=model.getTimeVer();
-                }
-                ray = model.createRayAdd(paneShape);//создать луч
-                //Пересчитать координаты старта линии для PoindLine
-                model.setVerX01(gridViews.revAccessX(ray.getStartX()));
-                model.setVerY01(gridViews.revAccessY(ray.getStartY()));
-                infoStatus = infoStatus + ray.getId();//Добавить линию в список
-                //сразу создать вторую точку имя в d2
-                poindRay2 = model.createPoindAdd(paneShape);
-                model.setTimeVer(String.valueOf(poindRay2));//для временного хранения, передается в onMouseMoved()
-                infoStatus = infoStatus + String.valueOf(poindRay2);//добавить вторую вершину(получтся типа AaB)
-                model.setCol(infoStatus);
-                rayAdd2=true;
-            }
-                if(rayAdd==true && rayAdd1==true) {
-                    rayAdd = false;//закончили режим добавления луча
-                    rayAdd1 = false;//закрыть 1 точку
-                    rayAdd2=false;
-                    model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
-                }
+        if (rayAdd==true && poindAdd1==false) {
+              addLineRayStart(1);
+        }
+        //Втрорая точка луча
+        if(rayAdd==true && poindAdd1==true) {
+              addLineRayEnd();
+              rayAdd=false;
+        }
+         //Добавление прямой
+        if (lineAdd==true && poindAdd1==false){
+            addLineRayStart(2);//Создание первой точки и линии
+        }
+        if (lineAdd==true && poindAdd1==true){
+            addLineRayEnd();
+            lineAdd=false;
+        }
         mouseEvent.consume();
         }//End onMousePressed()
 
+    //Добавление отрезков, лучей, прямых
+    public void addLineRayStart(int Segment){
+        if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
+            poindLine1 = model.createPoindAdd(paneShape);//создать новую
+            infoStatus = String.valueOf(poindLine1);//добавить вершину в список
+        } else {
+            infoStatus = infoStatus +model.getTimeVer();//Вершина из временной переменной
+            poindLine1=model.getTimeVer();
+        }
+        nl = model.createLineAdd(paneShape,Segment);//создать линию
+        infoStatus = infoStatus + nl.getId();//Добавить линию в список
+        poindAdd2 = true;//режим добавления второй точки
+    }
+    public void addLineRayEnd(){
+        if (model.isPoindOldAdd() == false) {
+            poindLine2 = model.createPoindAdd(paneShape);//создать новую
+            infoStatus = infoStatus + String.valueOf(poindLine2);//добавить вторую вершину(получтся типа AaB)
+        }else {
+            infoStatus = infoStatus +model.getTimeVer();
+            poindLine2=model.getTimeVer();
+        }
+        //закрыть режим добавления отрезка
+        model.setCol(infoStatus);
+        poindAdd1 = false;//закрыть 1 точку
+        poindAdd2 = false;//закрыть 2 точку
+        model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+    }
 
     // Изменение масштаба координатной сетки
     public void onScroll(ScrollEvent scrollEvent) {
@@ -293,7 +326,7 @@ public class  Controller extends View {
         //Сюда добавить код
         //Установка режима добавления отрезков
         leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
-        lineAdd=true;
+        segmentAdd =true;
         infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
     //Всплывающие подсказки при наведении на кнопку "Точка"
@@ -302,21 +335,28 @@ public class  Controller extends View {
         btnPoind.setTooltip(tooltip);
     }
     //Всплывающее окно при наведении на кнопку "Отрезок"
-    public void onMoseEnteredLine(MouseEvent mouseEvent) {
+    public void onMoseEnteredSegment(MouseEvent mouseEvent) {
         tooltip.setText("Добавить отрезок");
-        btnLine.setTooltip(tooltip);
+        btnSegment.setTooltip(tooltip);
     }
-    //МВсплывающее окно пр наведении на кнопку "Луч"
+    //Всплывающее окно при наведении на кнопку "Луч"
     public void onMouseEnteredRay() {
         tooltip.setText("Добавить луч");
         btnRay.setTooltip(tooltip);
-        infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
+    }
+    //Всплывающее окно при наведении на кнопку "Прямая"
+    public void onMouseEnteredLine(MouseEvent mouseEvent) {
+        tooltip.setText("Добавить прямую");
+        btnLine.setTooltip(tooltip);
     }
 
     //Тестовая кнопка вывод информации по всем коолекциям для тестирования системы
     public void btnTest() {
         model.ColTest();
     }
+
+
+
 
 }
 

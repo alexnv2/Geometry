@@ -26,7 +26,8 @@ class View implements Observer{
         switch (message) {
 
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
-            case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон
+            case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон отрезков
+            case "RayGo" ->this.rayGo(model.getSideAll());//для луча и прямой
           /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
@@ -52,5 +53,12 @@ class View implements Observer{
         side.setStartY(model.getVerY());
         side.setEndX(model.getVerX1());
         side.setEndY(model.getVerY1());
+    }
+    //Перемещение луча и прямой
+    private void rayGo(Line ray){
+        ray.setStartX(model.getRayStartX());
+        ray.setStartY(model.getRayStartY());
+        ray.setEndX(model.getRayEndX());
+        ray.setEndY(model.getRayEndY());
     }
 }
