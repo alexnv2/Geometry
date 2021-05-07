@@ -2,6 +2,10 @@ package sample;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -9,9 +13,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.val;
 
@@ -29,6 +41,9 @@ public class  Controller extends View {
     private Button btnRay;
     @FXML
     private Button btnLine;
+    @FXML
+    //Web браузер для вывода данных
+    public WebView webViewLeft;
     @FXML
     private Pane paneGrid;//контейнер для сетки
     public Label leftStatus;//Левый статус
@@ -113,6 +128,17 @@ public class  Controller extends View {
         lineAdd=true;
         infoStatus="";//Для коллекции Col
     }
+
+    //Кропка треугольники
+    public void btnTreanle(ActionEvent actionEvent) {
+        leftStatus.setText("Укажите на доске три точки для построения ьреугольника");//Установить статус
+        lineAdd=true;
+        infoStatus="";//Для коллекции Col
+        model.webViewLeftString(webViewLeft, 0);//Определения
+      //  model.webViewLeftString(webViewLeft, 10);//Определения остроугольного треугольника
+
+    }
+
     //Перемещение мыши без нажатия кнопки по доске
     public void onMouseMoved(MouseEvent mouseEvent) {
         model.setVerX(mouseEvent.getX());
@@ -355,8 +381,88 @@ public class  Controller extends View {
         model.ColTest();
     }
 
+//первый признак подобия треугольников
+    public void onClickEquilPod(ActionEvent actionEvent) {
 
+    }
+//втророй подобия равенства треугольников
+    public void onClickSecondPod(ActionEvent actionEvent) {
 
+    }
+//третий подобия равенства треугольников
+    public void onClickTreadPod(ActionEvent actionEvent) {
+    }
+    //первый признак равенства треугольников
+    public void onClickEquil(ActionEvent actionEvent) {
+        model.setWindShow(0);
+        TwofxmlLoader();
+    }
 
+    //втророй признак равенства треугольников
+    public void onClickSecond(ActionEvent actionEvent) {
+        model.setWindShow(1);
+        TwofxmlLoader();
+    }
+
+    //третий признак равенства треугольников
+    public void onClickTread(ActionEvent actionEvent) {
+        model.setWindShow(2);
+        TwofxmlLoader();
+    }
+
+    public void TwofxmlLoader() {
+        try {
+            Parent root1 = FXMLLoader.load(getClass().getResource("equality.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));
+            stage.setTitle("Признаки равенства треугольников");
+            stage.setResizable(false);
+
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+//Нажата кнопка меню "Признаки равнобедренного треугольника
+    public void btnIsosceles(ActionEvent actionEvent) {
+        model.webViewLeftString(webViewLeft, 1);
+    }
+//Пункт меню "О программе"
+    public void onAbout() {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
+        window.initStyle(StageStyle.UTILITY);//Только кнопка закрыть
+        VBox root=new VBox();
+        root.setStyle(
+                "-fx-background-image: url(/Images/About.png); " +
+                        "-fx-background-repeat: no-repeat;"
+        );
+        root.setAlignment(Pos.TOP_CENTER);
+
+        Label label2=new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
+        label2.setFont(Font.font("Verdana", FontWeight.BOLD,24.0));
+        label2.setTextFill(Color.SANDYBROWN);
+        label2.setTextAlignment(TextAlignment.CENTER);
+        Label label=new Label("Учебно-справочное пособие");
+        label.setFont(Font.font("Verdana", FontWeight.BOLD,34.0));
+        label.setTextFill(Color.YELLOW);
+        label.setTextAlignment(TextAlignment.CENTER);
+        Label label1=new Label("Геометрия\n\n");
+        label1.setFont(Font.font("Verdana", FontWeight.BOLD,58.0));
+        label1.setTextFill(Color.YELLOW);
+        label1.setTextAlignment(TextAlignment.CENTER);
+        Label label3=new Label("Выполнил ученик 8Б класса \n Носов Алексей \n2021 г.");
+        label3.setFont(Font.font("Verdana", FontWeight.BOLD,24.0));
+        label3.setTextFill(Color.YELLOW);
+        label3.setTextAlignment(TextAlignment.CENTER);
+
+        root.getChildren().addAll(label2,label,label1,label3);
+        Scene scene = new Scene(root, 864, 489);
+        window.setScene(scene);
+        window.setTitle("О программе");
+        window.show();
+
+    }
 }
 

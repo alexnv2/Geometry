@@ -4,6 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 //Первый класс для вывода на экран
 class View implements Observer{
@@ -28,6 +30,7 @@ class View implements Observer{
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
             case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон отрезков
             case "RayGo" ->this.rayGo(model.getSideAll());//для луча и прямой
+            case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
           /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
@@ -60,5 +63,12 @@ class View implements Observer{
         ray.setStartY(model.getRayStartY());
         ray.setEndX(model.getRayEndX());
         ray.setEndY(model.getRayEndY());
+    }
+    //Заполнение web страниц слева и внизу
+    private void webViewGo(WebView webView) {
+        webView.setContextMenuEnabled(false);
+        WebEngine w=webView.getEngine();
+        w.loadContent(model.getStringWebView());
+        // w.load("https://yandex.ru");
     }
 }

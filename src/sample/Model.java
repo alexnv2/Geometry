@@ -3,13 +3,18 @@ package sample;
 
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import lombok.Data;
+import static Properties.StringConstant.*;
 
 
+import java.io.File;
 import java.util.LinkedList;
 
 import static java.lang.StrictMath.pow;
@@ -24,6 +29,13 @@ class Model implements  Observable {
     private Line sideAll;
     private Label leftStatus;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
+    private Text textGo;//text
+    private TableView mTableView;
+    private WebView webView;
+
+    private double textX, textY;//координаты букв
+    private String stringWebView;//text left
+
     private double verX;//координата Х на доске от мышки
     private double verY;//координата Y на доске от мышки
     private double verX1;//координата StartX для отрезков
@@ -52,6 +64,13 @@ class Model implements  Observable {
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
 
+    public void setWindShow(int w){
+        WIND_SHOW=w;
+    }
+    public int getWindShow(){
+        return WIND_SHOW;
+    }
+
 
 
 
@@ -71,6 +90,42 @@ class Model implements  Observable {
             observer.notification(message);
           }
     }
+
+    //Текст для левой части
+    public void webViewLeftString(WebView o, int c){
+        String pathImages= new File(".").getAbsolutePath();
+        System.out.println(pathImages);
+        String pathImg1="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_bisector.png"+" width=274 height=242>";
+        String pathImg2="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_median.png"+ " width=343 height=194>";
+        String pathImg3="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_higth.png"+" width=344 height=292>";
+        String pathImg4="<img src=file:\\"+pathImages+"\\src\\Images\\Area_1.png"+" width=91 height=53>";
+        String pathImg5="<img src=file:\\"+pathImages+"\\src\\Images\\Area_2.png"+" width=131 height=61>";
+        String pathImg6="<img src=file:\\"+pathImages+"\\src\\Images\\Area_4.png"+" width=91 height=53>";
+        String pathImg7="<img src=file:\\"+pathImages+"\\src\\Images\\Area_5.png"+" width=91 height=53>";
+        String pathImg8="<img src=file:\\"+pathImages+"\\src\\Images\\Area_8.png"+" width=91 height=53>";
+        String pathImg9="<img src=file:\\"+pathImages+"\\src\\Images\\Area_9.png"+" width=83 height=54>";
+        String pathImg10="<img src=file:\\"+pathImages+"\\src\\Images\\Area_10.png"+" width=91 height=55";
+        String pathImg11="<img src=file:\\"+pathImages+"\\src\\Images\\AreaGeron.png"+" width=275 height=122";
+
+        switch (c) {
+            case 0: setStringWebView(WEB_HTML+TR_OPR + TR_ANGLE + TR_NERAVENSVO+ TR_SUNANGLE+TR_AREA_1+
+                    pathImg4+TR_AREA_2+pathImg5+TR_AREA_3+pathImg11+WEB_END);break;
+            case 1: setStringWebView(WEB_HTML+TR_TEOREMA33+TR_TEOREMA34+WEB_END);break;
+            case 2: setStringWebView(WEB_HTML+TR_BISSECTOR+TR_BISSEC_FOR+pathImg1+WEB_END);break;
+            case 3: setStringWebView((WEB_HTML+TR_MEDIANA+TR_DLINA_MEDIAN+pathImg2+WEB_END));break;
+            case 4: setStringWebView(WEB_HTML+TR_HIGTH+TR_ORTOSENTR+TR_DLINA_HIGHT+pathImg3+WEB_END);break;
+            case 5: setStringWebView(WEB_HTML+TR_AREA_8+pathImg8+TR_AREA_9+pathImg9+WEB_END);break;
+            case 6: setStringWebView(WEB_HTML+TR_AREA_10+pathImg10+WEB_END);break;
+            case 7: setStringWebView(WEB_HTML+TR_CIRCLE+TR_CIRCLE_IN+TR_AREA_4+pathImg6+WEB_END);break;
+            case 8: setStringWebView(WEB_HTML+TR_CIRCLE+TR_CIRCLE_OUT+TR_AREA_5+pathImg7+WEB_END);break;
+            case 9: setStringWebView(WEB_HTML+TR_MIDDLE_PER+WEB_END);break;
+            case 10: setStringWebView(WEB_HTML+TR_OXYGEN+WEB_END);break;
+
+        }
+        webViewGo(o);//на вывод
+    }
+
+
     //Создание  точек и прявязка свойств
     Circle createPoind(Pane s){
         Circle a=new Circle();
@@ -246,6 +301,17 @@ class Model implements  Observable {
         sideAll=o;
         notifyObservers("RayGo");
     }
+    //Перемещение букв
+    void TextGo(Text o){
+        textGo=o;
+        notifyObservers("TextGo");
+    }
+
+    //Слева и внизу
+    void webViewGo(WebView o){
+        webView =o;
+        notifyObservers("WebView");
+    }
     //Добавление в коллекцию из контролера
     public void setCol(String valueOf) {
         col.add(valueOf);
@@ -403,5 +469,7 @@ class Model implements  Observable {
         }
 
     }
+
+
 }
 
