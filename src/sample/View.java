@@ -1,7 +1,6 @@
 package sample;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.web.WebEngine;
@@ -15,42 +14,42 @@ class View implements Observer{
     //Объявляем класс сетки с методами перемещения координатной сетки и масштабирования
     //Как расширение класса пересчетв мировых координат в в окна просмотра
     GridView gridViews=new GridView();
+    //Конструктор класса отображения
     View() {
         //Регистрация слушателя в классе Model
         model.registerObserver(this);
-        //Регистрация еще одного слушателя в классе Model
-       // View1 v = new View1();
-       // model.registerObserver(v);
-    }
+     }
+     //Переопределить метод из класса интерфейса
     @Override
-    //Какую информацию надо вывести, переопределяем класс интефейса
+    //Какую информацию надо вывести
     public  void  notification(String message){
         switch (message) {
-
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
             case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон отрезков
             case "RayGo" ->this.rayGo(model.getSideAll());//для луча и прямой
             case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
+            case "LeftStatusGo" ->this.statusGo(model.getStatus());
           /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
             case "ArcGo" -> this.arcGo(model.getArcGo());//дуги
             case "ArcColorGo"->this.ArcColor(model.getArcGo());
             case "TableGo"->this.tableGo(model.getMTableView());//таблица
-            case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
             case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
 
            */
         }
     }
-
+    /*
+    Методы для вывода информации на экран
+    Все данные расчитываются в класса модели (Model)
+     */
     //Перемещение точек
     private void vertexGo(Circle ver){
         ver.setCenterX(model.getVerX());
         ver.setCenterY(model.getVerY());
-
     }
-    //Перемещение сторон
+    //Перемещение отрезков
     private void sideGo(Line side){
         side.setStartX(model.getVerX());
         side.setStartY(model.getVerY());
@@ -64,11 +63,14 @@ class View implements Observer{
         ray.setEndX(model.getRayEndX());
         ray.setEndY(model.getRayEndY());
     }
-    //Заполнение web страниц слева и внизу
+    //Заполнение web страниц слева
     private void webViewGo(WebView webView) {
         webView.setContextMenuEnabled(false);
         WebEngine w=webView.getEngine();
         w.loadContent(model.getStringWebView());
-        // w.load("https://yandex.ru");
+    }
+    //Вывод в статусную строку
+    private void statusGo(Label label){
+        label.setText(model.getStringLeftStatus());
     }
 }

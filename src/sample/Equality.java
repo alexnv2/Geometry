@@ -13,7 +13,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
-import static Properties.StringConstant.*;
+import static ContstantString.StringWeb.*;
 
 public class Equality extends View {
 

@@ -1,5 +1,6 @@
 package sample;
 
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,24 +27,30 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.val;
+import static ContstantString.StringStatus.*;
 
-
+/*
+Класс управления приложением (Controller)
+Реагирует на все события управления от мыши и клавиатуры.
+Вызывает методы из класса модели для обработки событий
+ */
 public class  Controller extends View {
 
+    //Связать переменные с шаблоном FXML
     @FXML
     public Pane paneShape;//контейнер для геометрических фигур
     public StackPane Cartesian;//контейнер для декартовых координат
     @FXML
     private Button btnPoind;//кнопка добавить точку
     @FXML
-    private Button btnSegment;
+    private Button btnSegment;//кнопка добавить отрезок
     @FXML
-    private Button btnRay;
+    private Button btnRay;//кнопка добавить луч
     @FXML
-    private Button btnLine;
+    private Button btnLine;//кнопка добавить прямую
     @FXML
     //Web браузер для вывода данных
-    public WebView webViewLeft;
+    public WebView webViewLeft;//для размещения информации слева от доски
     @FXML
     private Pane paneGrid;//контейнер для сетки
     public Label leftStatus;//Левый статус
@@ -63,16 +70,16 @@ public class  Controller extends View {
     private boolean poindAdd2=false;//true - создание второй точки для отрезка
 
     private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
-
-    private  Tooltip tooltip=new Tooltip()  ;
+    //Для всплывающих подсказок
+    private final Tooltip tooltip=new Tooltip()  ;
 
 
 
     //Инициализация контролера
     @FXML
     private void initialize() {
-
-        model.setLeftStatus(leftStatus);//Передать ссылку на статус
+        model.setStatus(leftStatus);//Передать ссылку на статус для модели
+        model.webViewLeftString(webViewLeft, 11);
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);
@@ -102,36 +109,47 @@ public class  Controller extends View {
         tooltip.setFont(Font.font(12));
         tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
                          "-fx-text-fill: black");
+
     }
 
 
     //Нажата кнопкп "Добавить точку"
     public void btnPoindClick() {
-        leftStatus.setText("Укажите на доске место для точки");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_1);
+        model.statusGo(leftStatus);//Установить статус
         poindAdd=true;//Установить режим добавления
     }
     //Нажата кнока "Добавить отрезок"
     public void btnSegmentClick() {
-        leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_2);
+        model.statusGo(leftStatus);
         segmentAdd =true;
         infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
     //Нажата кнопка "Добавить Луч"
     public void btnRay(ActionEvent actionEvent) {
-        leftStatus.setText("Укажите на доске точку начала луча");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_3);
+        model.statusGo(leftStatus);
         rayAdd=true;
         infoStatus="";//Для коллекции Col
     }
     //Нажата кнопка "Добавить прямую"
     public void btnLine() {
-        leftStatus.setText("Укажите на доске точку начала прямой");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_4);
+        model.statusGo(leftStatus);
         lineAdd=true;
         infoStatus="";//Для коллекции Col
     }
 
     //Кропка треугольники
-    public void btnTreanle(ActionEvent actionEvent) {
-        leftStatus.setText("Укажите на доске три точки для построения ьреугольника");//Установить статус
+    public void btnTreangle(ActionEvent actionEvent) {
+        //Установить статус
+        model.setStringLeftStatus(STA_5);
+        model.statusGo(leftStatus);
         lineAdd=true;
         infoStatus="";//Для коллекции Col
         model.webViewLeftString(webViewLeft, 0);//Определения
@@ -287,15 +305,16 @@ public class  Controller extends View {
         infoStatus = infoStatus + nl.getId();//Добавить линию в список
         poindAdd2 = true;//режим добавления второй точки
     }
+    //Метод окончания добавления фигур
     public void addLineRayEnd(){
         if (model.isPoindOldAdd() == false) {
             poindLine2 = model.createPoindAdd(paneShape);//создать новую
-            infoStatus = infoStatus + String.valueOf(poindLine2);//добавить вторую вершину(получтся типа AaB)
+            infoStatus = infoStatus + poindLine2;//добавить вторую вершину(получтся типа AaB)
         }else {
             infoStatus = infoStatus +model.getTimeVer();
             poindLine2=model.getTimeVer();
         }
-        //закрыть режим добавления отрезка
+        //закрыть режим добавления
         model.setCol(infoStatus);
         poindAdd1 = false;//закрыть 1 точку
         poindAdd2 = false;//закрыть 2 точку
@@ -331,9 +350,6 @@ public class  Controller extends View {
                     l.setStartY(gridViews.accessY(pl.getStY()));
                     l.setEndX(gridViews.accessX(pl.getEnX()));
                     l.setEndY(gridViews.accessY(pl.getEnY()));
-                //}
-                //обновляем лучи
-
             }
         }
 
@@ -343,7 +359,9 @@ public class  Controller extends View {
         //Вывод информации о геометрических фигурах
         //Сюда добавить код
         //Установка режима добавления точек
-        leftStatus.setText("Укажите на доске место для точки");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_6);
+        model.statusGo(leftStatus);
         poindAdd=true;//Установить режим добавления
     }
     //Нажата кнопка меню "Отрезок"
@@ -351,10 +369,19 @@ public class  Controller extends View {
         //Вывод информации об отрезах
         //Сюда добавить код
         //Установка режима добавления отрезков
-        leftStatus.setText("Укажите на доске начало и конец отрезка");//Установить статус
+        //Установить статус
+        model.setStringLeftStatus(STA_7);
+        model.statusGo(leftStatus);
         segmentAdd =true;
         infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
+
+    //Нажата кнопка меню "Признаки равнобедренного треугольника
+    public void btnIsosceles(ActionEvent actionEvent) {
+        model.webViewLeftString(webViewLeft, 1);
+    }
+
+
     //Всплывающие подсказки при наведении на кнопку "Точка"
     public void onMouseEnteredPoind() {
         tooltip.setText("Добавить точку");
@@ -381,17 +408,7 @@ public class  Controller extends View {
         model.ColTest();
     }
 
-//первый признак подобия треугольников
-    public void onClickEquilPod(ActionEvent actionEvent) {
 
-    }
-//втророй подобия равенства треугольников
-    public void onClickSecondPod(ActionEvent actionEvent) {
-
-    }
-//третий подобия равенства треугольников
-    public void onClickTreadPod(ActionEvent actionEvent) {
-    }
     //первый признак равенства треугольников
     public void onClickEquil(ActionEvent actionEvent) {
         model.setWindShow(0);
@@ -409,7 +426,18 @@ public class  Controller extends View {
         model.setWindShow(2);
         TwofxmlLoader();
     }
+    //первый признак подобия треугольников
+    public void onClickEquilPod(ActionEvent actionEvent) {
 
+    }
+    //втророй подобия равенства треугольников
+    public void onClickSecondPod(ActionEvent actionEvent) {
+
+    }
+    //третий подобия равенства треугольников
+    public void onClickTreadPod(ActionEvent actionEvent) {
+    }
+//Загрузка шаблона окна для признаков равенства треугольников
     public void TwofxmlLoader() {
         try {
             Parent root1 = FXMLLoader.load(getClass().getResource("equality.fxml"));
@@ -424,11 +452,8 @@ public class  Controller extends View {
         }
     }
 
-//Нажата кнопка меню "Признаки равнобедренного треугольника
-    public void btnIsosceles(ActionEvent actionEvent) {
-        model.webViewLeftString(webViewLeft, 1);
-    }
-//Пункт меню "О программе"
+
+//Нажата кнопка меню "О программе"
     public void onAbout() {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
@@ -464,5 +489,6 @@ public class  Controller extends View {
         window.show();
 
     }
+
 }
 

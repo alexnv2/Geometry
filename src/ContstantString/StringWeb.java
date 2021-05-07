@@ -1,4 +1,4 @@
-package SringConstant;
+package ContstantString;
 
 public final class StringWeb {
  public static int WIND_SHOW=0;
@@ -49,7 +49,7 @@ public final class StringWeb {
  public static final String TR_CIRCLE_IN="<p><span id=\"it-norm\">В любой треугольник можно вписать окружность и только одну.</span></p><p>Точка пересечения биссектрис треугольника является цетром вписанной окружности.</p>";
  public static final String TR_CIRCLE_OUT="<p><span id=\"it-norm\">Около любого треугольника можно описать окружность и только одну.</span></></p><p>Точка пересечения серединных перпендикуляторов треугольника является центром описанной окружности.</>";
  public static final String TR_MIDDLE_PER="<p><span id=\"it-bold\">Серединным перпендикуляром </span>называется прямая, перпендикулярная стороне треугольника и делящая её пополам.</p><p><span id=\"it-norm\">Все серединные перпендикуляры пересекаются в одной точке, которая равно удаленна от всех вершин треугольника.</p>";
-
+ public static final String OP_GEOMETRY_1="<p><span id=\"it-bold\">Геометрия </span>- одна из самых древних наук, она возникла давно, ещё до нашей эры. В переводе с греческого слово <span id=\"it-bold\">геометрия</span> обозначает землемерение (гео - земля, метрио - мерить). В дальнейшем она сформировалась в науку, занимающуеся изучением геометрических фигур</p>" ;
 
  private StringWeb(){}
 }

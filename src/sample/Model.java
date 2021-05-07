@@ -1,6 +1,9 @@
 package sample;
-
-
+/*
+Класс Модели, получает запросы на отработку событий их котроллера и
+выставляет переменные и отправляет сообщения классу отобраюения (View),
+который выводит эти данные на экран.
+ */
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -11,14 +14,16 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
-import static Properties.StringConstant.*;
-
 
 import java.io.File;
 import java.util.LinkedList;
 
+import static ContstantString.StringStatus.*;
+//import static ContstantString.StringStatus.STA_8;
+import static ContstantString.StringWeb.*;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
+
 
 @Data
 //Класс модель для расчета и выдачи информации для представления
@@ -27,7 +32,7 @@ class Model implements  Observable {
     //Переменные класса
     private Circle vertex;
     private Line sideAll;
-    private Label leftStatus;//левый статус, вывод действий
+    private Label Status;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
     private Text textGo;//text
     private TableView mTableView;
@@ -35,6 +40,7 @@ class Model implements  Observable {
 
     private double textX, textY;//координаты букв
     private String stringWebView;//text left
+    private String stringLeftStatus;
 
     private double verX;//координата Х на доске от мышки
     private double verY;//координата Y на доске от мышки
@@ -78,12 +84,13 @@ class Model implements  Observable {
     Model(){
      }
 
+
     //регистрация слушателя, переопределяем функцию интерфейса
     @Override
     public void registerObserver(Observer o) {
         observers.add(o);
     }
-    //уведомление слушателя, переопределяем функцию интерфейса
+    //Уведомление слушателя, переопределяем функцию интерфейса
     @Override
     public void notifyObservers(String message) {
         for (Observer observer : observers) {
@@ -91,7 +98,7 @@ class Model implements  Observable {
           }
     }
 
-    //Текст для левой части
+    //Текст для отобоажения в левой части
     public void webViewLeftString(WebView o, int c){
         String pathImages= new File(".").getAbsolutePath();
         System.out.println(pathImages);
@@ -120,7 +127,7 @@ class Model implements  Observable {
             case 8: setStringWebView(WEB_HTML+TR_CIRCLE+TR_CIRCLE_OUT+TR_AREA_5+pathImg7+WEB_END);break;
             case 9: setStringWebView(WEB_HTML+TR_MIDDLE_PER+WEB_END);break;
             case 10: setStringWebView(WEB_HTML+TR_OXYGEN+WEB_END);break;
-
+            case 11: setStringWebView(WEB_HTML+OP_GEOMETRY_1+WEB_END);break;
         }
         webViewGo(o);//на вывод
     }
@@ -138,8 +145,10 @@ class Model implements  Observable {
         //Перемещение с нажатой клавишей
         a.setOnMouseDragged(e-> {
             if(!movePoindCircles(a)){
-                leftStatus.setText("Перемещение запрещено! Данная точка расчетная.");
-            };//передать нажатую точку
+                //Установить статус
+                setStringLeftStatus(STA_8);
+                statusGo(Status);//Установить статус
+            }//передать нажатую точку
         });
          //Нажатие клавиши
         a.setOnMousePressed(e->{
@@ -152,21 +161,24 @@ class Model implements  Observable {
         a.setOnMouseEntered(e->{
             a.setCursor(Cursor.HAND);
             a.setRadius(8);
-            leftStatus.setText("Точка "+a.getId());
-
+            //Установить статус
+            setStringLeftStatus(STA_9+a.getId());
+            statusGo(Status);
         });
         //Отпускание кнопки
         a.setOnMouseReleased(e->{
             a.setFill(Color.DARKSLATEBLUE);
-            leftStatus.setText("");
-
-        });
+            //Установить статус
+            setStringLeftStatus("");
+            statusGo(Status);
+         });
         //Уход с точкм
         a.setOnMouseExited(e->{
             a.setCursor(Cursor.DEFAULT);
             a.setRadius(5);
-            leftStatus.setText("");
-
+            //Установить статус
+            setStringLeftStatus("");
+            statusGo(Status);
         });
         //Добавить точку на рабочий стол
         return a;
@@ -209,11 +221,15 @@ class Model implements  Observable {
          //Наведение на отрезок
          l.setOnMouseEntered(e->{
              l.setCursor(Cursor.HAND);
-             leftStatus.setText("Отрезок "+l.getId());
+             //Установить статус
+             setStringLeftStatus(STA_10+l.getId());
+             statusGo(Status);
              l.setStrokeWidth(3);
          });
          l.setOnMouseExited(e->{
-             leftStatus.setText("");
+             //Установить статус
+             setStringLeftStatus("");
+             statusGo(Status);
              l.setStrokeWidth(2);
          });
          return l;
@@ -251,11 +267,13 @@ class Model implements  Observable {
           //Наведение на отрезок
           line.setOnMouseEntered(e->{
               line.setCursor(Cursor.HAND);
-              leftStatus.setText("Отрезок "+line.getId());
+              //leftStatus.setText("Отрезок "+line.getId());
               line.setStrokeWidth(3);
           });
           line.setOnMouseExited(e-> {
-              leftStatus.setText("");
+              //Установить статус
+              setStringLeftStatus("");
+              statusGo(Status);
               line.setStrokeWidth(2);
           });
           return line;
@@ -312,6 +330,11 @@ class Model implements  Observable {
         webView =o;
         notifyObservers("WebView");
     }
+    //Вывод в статусной строке
+    public void statusGo(Label o){
+        Status=o;
+        notifyObservers("LeftStatusGo");
+     }
     //Добавление в коллекцию из контролера
     public void setCol(String valueOf) {
         col.add(valueOf);
@@ -322,7 +345,7 @@ class Model implements  Observable {
     //Возвращает объект точку
     Circle findCircle(String c){
         for (PoindCircle c0: poindCircles){
-            if (c0.getId().equals(String.valueOf(c))){;
+            if (c0.getId().equals(String.valueOf(c))){
                 return c0.getCircle();
             }
         }
@@ -399,7 +422,7 @@ class Model implements  Observable {
 
             for (String s1 : col) {//в цикл коллекцию фигур
                 if (s1.length() == 3) {//только отрезки типа АаВ
-                    char c1[] = s1.toCharArray();//строку в массив
+                    char[] c1 = s1.toCharArray();//строку в массив
                     //выбираем точку начала отрезка
                     if (a.getId().equals(String.valueOf(c1[0]))) {
                         //найти точку
