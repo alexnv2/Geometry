@@ -1,6 +1,6 @@
-package Properties;
+package SringConstant;
 
-public final class StringConstant {
+public final class StringWeb {
  public static int WIND_SHOW=0;
  public static final String WEB_HTML="<!doctype html><html lang=\"ru\"><head><meta charset=\"utf-8\"><style> p {font-size: 12pt; font-family: \"Times New Roman\";}#it-bold{font:italic bold 12pt Times New Roman;}#it-norm{font-style:italic ;}</style></head><body>" ;
  public static final String WEB_END="</body></html>";
@@ -51,5 +51,5 @@ public final class StringConstant {
  public static final String TR_MIDDLE_PER="<p><span id=\"it-bold\">Серединным перпендикуляром </span>называется прямая, перпендикулярная стороне треугольника и делящая её пополам.</p><p><span id=\"it-norm\">Все серединные перпендикуляры пересекаются в одной точке, которая равно удаленна от всех вершин треугольника.</p>";
 
 
- private StringConstant(){}
+ private StringWeb(){}
 }
