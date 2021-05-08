@@ -6,7 +6,7 @@ package sample;
  */
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.LinkedList;
 
 import static ContstantString.StringStatus.*;
-//import static ContstantString.StringStatus.STA_8;
 import static ContstantString.StringWeb.*;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
@@ -30,26 +29,28 @@ import static java.lang.StrictMath.sqrt;
 class Model implements  Observable {
 
     //Переменные класса
-    private Circle vertex;
-    private Line sideAll;
+    private Circle vertex; //точка
+    private Line line;//линия, луч, прямая
     private Label Status;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
-    private Text textGo;//text
-    private TableView mTableView;
-    private WebView webView;
+    private Text textGo;//Для наименования точек, отрезков, прямых и т.д
+    private WebView webView; //браузер в левой части доски
+    private TextArea textArea;//получаем ссылку на правую часть доски для вывода информации о фигурах
 
-    private double textX, textY;//координаты букв
+    private double textX, textY;//координаты букв для передачи в View
     private String stringWebView;//text left
-    private String stringLeftStatus;
+    private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
+    private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
+    private String txtShape="";//хранит строку о геометрической фигуре на доске
 
-    private double verX;//координата Х на доске от мышки
-    private double verY;//координата Y на доске от мышки
+    private double verX;//координата экрана Х  от мышки
+    private double verY;//координата экрана Y от мышки
     private double verX1;//координата StartX для отрезков
     private double verY1;//Координата StartY для отрезков
-    private double rayStartX;//
-    private double rayStartY;
-    private double rayEndX;
-    private double rayEndY;
+    private double rayStartX;//координаты экрана для луча и прямой StartX
+    private double rayStartY;//координаты экрана для луча и прямой StartY
+    private double rayEndX;//координаты экрана для луча и прямой EndX
+    private double rayEndY;//координаты экрана для луча и прямой EndY
     private double verX0;//координата X мировая на доске, зависят от мышки
     private double verY0;//координата Y мировая на доске, зависят от мышки
     private double verLineStartX;//координата X мировая для Line StartX
@@ -58,6 +59,8 @@ class Model implements  Observable {
     private double verLineEndY;//координата Y мировая для Line EndY
 
     private String timeVer;//для временного хранения выбранных вершин
+    private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
+    private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
     private char indexArc='A';//Индекс для уголов
@@ -77,9 +80,6 @@ class Model implements  Observable {
         return WIND_SHOW;
     }
 
-
-
-
     //Конструктор без переменных
     Model(){
      }
@@ -96,6 +96,13 @@ class Model implements  Observable {
         for (Observer observer : observers) {
             observer.notification(message);
           }
+    }
+    //для вывода файла html в web
+    public  void webHTML(WebView o,String file){
+      String pathFile= new File("").getAbsolutePath();
+      String pathHTML="file:"+pathFile+"\\src\\Web\\"+file;
+      leftHTML=pathHTML;
+      webGo(o);
     }
 
     //Текст для отобоажения в левой части
@@ -131,72 +138,143 @@ class Model implements  Observable {
         }
         webViewGo(o);//на вывод
     }
+    //Выбираем и размещаем в правой части доски информацию о геометрической фигуре
+   public void txtAreaOutput(){
 
+        for (PoindCircle p: poindCircles){
+            if(p.getCircle()!=null) {
+                String s1 = p.getId();
+                double s2 = p.getX();
+                double s3 = p.getY();
+                txtShape = txtShape + "Точка: " + s1 + " (" + s2 + "," + s3 + ")\n";
+            }
+        }
+        for (PoindLine p: poindLines) {
+            if (p.getLine() != null) {
+                String s1 = p.getId();
+                int l = p.getSegment();
+                if (l == 0) {
+                    findNameSegment(s1);
+                    double lengthSegment = Math.round(findPoindandLine(verSegmentStart, verSegmentEnd) * 100);
+                    txtShape = txtShape + "Отрезок: " + verSegmentStart + verSegmentEnd + " Длина:" + lengthSegment / 100 + "\n";
+                } else if (l == 1) {
+                    findNameSegment(s1);
+                    txtShape = txtShape + "Луч: " + s1 + " или " + verSegmentStart + verSegmentEnd + "\n";
+                } else if (l == 2) {
+                    findNameSegment(s1);
+                    txtShape = txtShape + "Прямая: " + s1 + " или " + verSegmentStart + verSegmentEnd + "\n";
+                }
+            }
+        }
+        textAreaGo();
+    }
 
+    //Поиск по линии, возвращает начало и конец отрезка
+    //Вход из для метода txtAreaOutput
+    //Выход: устанавливает значение двух переменных
+    private void findNameSegment(String s){
+        for (String name: col) {
+            if (name.length() == 3) {
+                char[] c = name.toCharArray();
+                if(s.equals(String.valueOf(c[1]))){
+                 verSegmentStart = String.valueOf(c[0]);
+                 verSegmentEnd = String.valueOf(c[2]);
+                }
+            }
+        }
+    }
+
+    // Поиск координат точек
+    //Вход: ID первой точки и ID второй точки
+    //Ввозвращает: длину отрезка
+    double findPoindandLine(String poindStart, String poindEnd){
+        double lengthSegment;
+        double x1 = 0,y1=0,x2=0,y2=0;
+        for(PoindCircle p:  poindCircles){
+            if(p.getId().equals(poindStart)){
+                x1=p.getX();
+                y1=p.getY();
+            }
+            if (p.getId().equals(poindEnd)){
+                x2=p.getX();
+                y2=p.getY();
+            }
+        }
+        return distance(x1,y1,x2,y2);
+    }
     //Создание  точек и прявязка свойств
-    Circle createPoind(Pane s){
-        Circle a=new Circle();
-        a.setRadius(5);
-        a.setFill(Color.LIGHTBLUE);
-        a.setFill(Color.DARKSLATEBLUE);
-        a.setId(String.valueOf(indexPoind));//Индефикатор узла
-        a.setUserData(String.valueOf(indexPoind));//Имя узла
+    Circle createPoind(){
+        Circle circle=new Circle();
+        circle.setRadius(5);
+        circle.setFill(Color.LIGHTBLUE);
+        circle.setFill(Color.DARKSLATEBLUE);
+        circle.setId(String.valueOf(indexPoind));//Индефикатор узла
+        circle.setUserData(String.valueOf(indexPoind));//Имя узла
         //Обработка событий
         //Перемещение с нажатой клавишей
-        a.setOnMouseDragged(e-> {
-            if(!movePoindCircles(a)){
+        circle.setOnMouseDragged(e-> {
+            if(!movePoindCircles(circle)){
                 //Установить статус
                 setStringLeftStatus(STA_8);
+                System.out.println("меняем координаты");
                 statusGo(Status);//Установить статус
+                setTxtShape("");
+                txtAreaOutput();
+
             }//передать нажатую точку
         });
          //Нажатие клавиши
-        a.setOnMousePressed(e->{
-            a.setFill(Color.RED);
+        circle.setOnMousePressed(e->{
+            circle.setFill(Color.RED);
             poindOldAdd=true;//взять эту точку для отрезка
-            timeVer=a.getId();
+            timeVer=circle.getId();
 
         });
         //Наведение на точку
-        a.setOnMouseEntered(e->{
-            a.setCursor(Cursor.HAND);
-            a.setRadius(8);
+        circle.setOnMouseEntered(e->{
+            circle.setCursor(Cursor.HAND);
+            circle.setRadius(8);
             //Установить статус
-            setStringLeftStatus(STA_9+a.getId());
+            setStringLeftStatus(STA_9+circle.getId());
             statusGo(Status);
         });
         //Отпускание кнопки
-        a.setOnMouseReleased(e->{
-            a.setFill(Color.DARKSLATEBLUE);
+        circle.setOnMouseReleased(e->{
+            circle.setFill(Color.DARKSLATEBLUE);
             //Установить статус
             setStringLeftStatus("");
             statusGo(Status);
          });
         //Уход с точкм
-        a.setOnMouseExited(e->{
-            a.setCursor(Cursor.DEFAULT);
-            a.setRadius(5);
+        circle.setOnMouseExited(e->{
+            circle.setCursor(Cursor.DEFAULT);
+            circle.setRadius(5);
             //Установить статус
             setStringLeftStatus("");
             statusGo(Status);
         });
-        //Добавить точку на рабочий стол
-        return a;
+        return circle;//завершено создание новой точки
     }
     //Добавление точек на доску
-    String createPoindAdd(Pane a){
-        Circle cl;
-        String c=String.valueOf(indexPoind);
-        cl = createPoind(a);//Создать
-        a.getChildren().add(cl);//добавить
-        poindCircles.add(new PoindCircle(cl,cl.getId(),verX0,verY0,true,false));
-        VertexGo(cl);//куда добавить
+    String createPoindAdd(Pane pane){
+        Circle newPoind;//Объявить переменную
+        newPoind = createPoind();//Создать точку
+        pane.getChildren().add(newPoind);//добавить на доску
+        //добавить в коллецию точек
+        poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,true,false));
+        //добавить в коллекцию фигур
+        setCol(newPoind.getId());
+        //Передать в View для вывода на экран
+        VertexGo(newPoind);
         //Увеличить индекс
         indexPoind += 1;
-        return c;
+        //Добавить в правую часть доски
+        setTxtShape("");
+        txtAreaOutput();
+        return newPoind.getId();//возвращает имя созданной точки
     }
 //Создание  отрезка
-     Line createLine(Pane s, int seg){
+     Line createLine(int seg){
         Line l=new Line();
         if(seg==0) {
             verX1 = verX;
@@ -237,7 +315,7 @@ class Model implements  Observable {
      //Добавление линии на доску
      Line createLineAdd(Pane pane, int segment){
          Line newLine;
-         newLine = createLine(pane,segment);//добавить линию
+         newLine = createLine(segment);//добавить линию
          pane.getChildren().add(newLine);//добавить на доску
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
          indexLine+=1;//увеличить индекс
@@ -311,12 +389,12 @@ class Model implements  Observable {
     }
     //Перемещение сторон
     void SideGo(Line o){
-        sideAll=o;
+        line =o;
         notifyObservers("SideGo");
     }
     //Перемещение луча и прямой
     void RayGo(Line o){
-        sideAll=o;
+        line =o;
         notifyObservers("RayGo");
     }
     //Перемещение букв
@@ -330,11 +408,20 @@ class Model implements  Observable {
         webView =o;
         notifyObservers("WebView");
     }
+    void webGo(WebView o){
+        webView =o;
+        notifyObservers("WebGo");
+
+    }
     //Вывод в статусной строке
     public void statusGo(Label o){
         Status=o;
         notifyObservers("LeftStatusGo");
      }
+     //Вывод в правую часть доски
+    public void textAreaGo(){
+        notifyObservers("TextShapeGo");
+    }
     //Добавление в коллекцию из контролера
     public void setCol(String valueOf) {
         col.add(valueOf);
@@ -413,13 +500,14 @@ class Model implements  Observable {
     }
 
     //Перемещение точки на доске с нажатой кнопкой
-    //Вызов из метода Circle createPoind(Pane s) прикрепленного события
+    //Вызов из метода Circle createPoind() метод onMouseDragon
     public boolean movePoindCircles(Circle a) {
         a.setFill(Color.RED);
         if (findPoindCircleMove(a.getId())){//true-разрешено перемещение
             VertexGo(a);
             findPoindCircles(a.getId());//меняем координаты в коллекции
-
+            setTxtShape("");
+            txtAreaOutput();
             for (String s1 : col) {//в цикл коллекцию фигур
                 if (s1.length() == 3) {//только отрезки типа АаВ
                     char[] c1 = s1.toCharArray();//строку в массив
@@ -436,6 +524,8 @@ class Model implements  Observable {
                             Line l1 = findLine(c1[1]);//найти линию
                             findPoindLines(l1.getId());
                             SideGo(l1);//перемещение линии
+                            setTxtShape("");
+                            txtAreaOutput();
                         }
                         //выбираем точку конца отрезка
                     } else if (a.getId().equals(String.valueOf(c1[2]))) {
@@ -461,7 +551,6 @@ class Model implements  Observable {
     private boolean findPoindCircleMove(String id){
         boolean bfMove=false;
         for (PoindCircle p: poindCircles) {
-
             if (p != null) {
                 if (p.getId().equals(id)) {
                     bfMove=p.isBMove();

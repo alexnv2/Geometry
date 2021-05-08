@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.web.WebEngine;
@@ -25,10 +26,12 @@ class View implements Observer{
     public  void  notification(String message){
         switch (message) {
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
-            case "SideGo" -> this.sideGo(model.getSideAll());//отрисовка сторон отрезков
-            case "RayGo" ->this.rayGo(model.getSideAll());//для луча и прямой
+            case "SideGo" -> this.sideGo(model.getLine());//отрисовка сторон отрезков
+            case "RayGo" ->this.rayGo(model.getLine());//для луча и прямой
             case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
-            case "LeftStatusGo" ->this.statusGo(model.getStatus());
+            case "LeftStatusGo" ->this.statusGo(model.getStatus());//вывод статуса
+            case "WebGo"->this.webGo(model.getWebView());//вывод файла HTML
+            case "TextShapeGo"->this.textShapeGo(model.getTextArea());//для вывода в правое окно
           /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
@@ -40,6 +43,12 @@ class View implements Observer{
            */
         }
     }
+    //Вывод в правую часть доски
+    private void textShapeGo(TextArea txtArea) {
+        txtArea.setText(model.getTxtShape());
+    }
+
+
     /*
     Методы для вывода информации на экран
     Все данные расчитываются в класса модели (Model)
@@ -68,6 +77,12 @@ class View implements Observer{
         webView.setContextMenuEnabled(false);
         WebEngine w=webView.getEngine();
         w.loadContent(model.getStringWebView());
+    }
+    //Загрузить файл в формате html и вывести слева
+    private void webGo(WebView web){
+        web.setContextMenuEnabled(false);
+        WebEngine w=web.getEngine();
+        w.load(model.getLeftHTML());
     }
     //Вывод в статусную строку
     private void statusGo(Label label){

@@ -9,7 +9,7 @@
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <MenuBar VBox.vgrow="NEVER">
     <menus>
-      <Menu mnemonicParsing="false" text="Обекты">
+      <Menu mnemonicParsing="false" text="Фигуры">
         <items>
           <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка" />
           <MenuItem mnemonicParsing="false" text="Прямая" />
@@ -42,13 +42,14 @@
           <MenuItem mnemonicParsing="false" text="Unselect All" />
         </items>
       </Menu>
-      <Menu mnemonicParsing="false" text="Аксиомы">
+      <Menu mnemonicParsing="false" text="Аксиомы и следствия">
         <items>
-          <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          <MenuItem mnemonicParsing="false" text="Аксиомы взаимного расположения точек, прямых и плоскостей" />
+          <MenuItem mnemonicParsing="false" text="Аксиомы наложения и равенства" />
+          <MenuItem mnemonicParsing="false" text="Аксиомы измерения отрезков" />
+          <MenuItem mnemonicParsing="false" text="Аксиома параллельных" />
+
         </items>
-      </Menu>
-      <Menu mnemonicParsing="false" text="Следствия">
-        <MenuItem mnemonicParsing="false" text="Action 1" />
       </Menu>
       <Menu mnemonicParsing="false" text="Помощь">
         <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#onAbout" text="О программе" />
@@ -56,17 +57,17 @@
     </menus>
   </MenuBar>
   <HBox prefHeight="25.0" prefWidth="900.0">
-    <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" text="Точка" />
-    <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" text="Отрезок" />
-    <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" text="Луч" />
-    <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" text="Прямая" />
-    <Button mnemonicParsing="false" text="Угол" />
-    <Button mnemonicParsing="false" text="Перпендикуляр" />
-    <Button mnemonicParsing="false" onAction="#btnTreangle" text="Треугольник" />
+    <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER" />
+    <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnAngle" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnVertical" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" text="Медиана" />
     <Button mnemonicParsing="false" text="Высота" />
     <Button mnemonicParsing="false" text="Биссектриса" />
-    <Button mnemonicParsing="false" text="Удалить" />
+    <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" />
   </HBox>
   <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -74,16 +75,14 @@
       <AnchorPane>
         <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
       </AnchorPane>
-
         <StackPane fx:id="Cartesian">
         <Pane fx:id="paneGrid" />
         <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
         </Pane>
         </StackPane>
-
       <AnchorPane>
-
-
+        <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                  AnchorPane.topAnchor="0.0"/>
       </AnchorPane>
     </items>
   </SplitPane>
@@ -98,6 +97,6 @@
 
     </Label>
     <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-    <Label fx:id="rightStatus" font="$x3" maxWidth="-1.0" HBox.hgrow="NEVER" textFill="blue"/>
+    <Label fx:id="rightStatus" font="$x3" maxWidth="-1.0" textFill="blue" HBox.hgrow="NEVER" />
   </HBox>
 </VBox>

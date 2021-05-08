@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -40,6 +41,7 @@ public class  Controller extends View {
     @FXML
     public Pane paneShape;//контейнер для геометрических фигур
     public StackPane Cartesian;//контейнер для декартовых координат
+    public TextArea txtShape;//контейнер для правой части доски
     @FXML
     private Button btnPoind;//кнопка добавить точку
     @FXML
@@ -48,6 +50,12 @@ public class  Controller extends View {
     private Button btnRay;//кнопка добавить луч
     @FXML
     private Button btnLine;//кнопка добавить прямую
+    @FXML
+    private Button btnAngle;
+    @FXML
+    private Button btnVertical;
+    @FXML
+    private Button btnDelete;
     @FXML
     //Web браузер для вывода данных
     public WebView webViewLeft;//для размещения информации слева от доски
@@ -79,7 +87,8 @@ public class  Controller extends View {
     @FXML
     private void initialize() {
         model.setStatus(leftStatus);//Передать ссылку на статус для модели
-        model.webViewLeftString(webViewLeft, 11);
+        model.setTextArea(txtShape);
+        model.webHTML(webViewLeft,"geometry.html");//Вывод в web файла html
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);
@@ -109,6 +118,13 @@ public class  Controller extends View {
         tooltip.setFont(Font.font(12));
         tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
                          "-fx-text-fill: black");
+        //Добавить изображение к кнопкам
+        btnPoind.setStyle("-fx-background-image: url(/Images/point.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnSegment.setStyle("-fx-background-image: url(/Images/point&line.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnAngle.setStyle("-fx-background-image: url(/Images/angle.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnVertical.setStyle("-fx-background-image: url(/Images/vertical.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnDelete.setStyle("-fx-background-image: url(/Images/delete.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnLine.setStyle("-fx-background-image: url(/Images/line.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
 
     }
 
@@ -119,6 +135,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_1);
         model.statusGo(leftStatus);//Установить статус
         poindAdd=true;//Установить режим добавления
+
     }
     //Нажата кнока "Добавить отрезок"
     public void btnSegmentClick() {
@@ -257,11 +274,10 @@ public class  Controller extends View {
             gridViews.setVPx(mouseEvent.getX());
             gridViews.setVPy(mouseEvent.getY());
         }
-        //Добавление точки
+        //Добавление точки на доске
         if (poindAdd) {
-            String  d = model.createPoindAdd(paneShape);
-            model.setCol(String.valueOf(d));
-            poindAdd = false;
+            String newPoind=model.createPoindAdd(paneShape);
+            poindAdd = false;//Режим добавления точки окончен
         }
         //Добавление отрезка
         if (segmentAdd ==true && poindAdd1==false) {
@@ -271,6 +287,9 @@ public class  Controller extends View {
         if (segmentAdd == true && poindAdd1 == true) {
               addLineRayEnd();
               segmentAdd = false;//окончание режима добавления
+              //Вывод информации об объектах в правую часть доски
+              model.setTxtShape("");
+              model.txtAreaOutput();
             }
         //Добавления луча
         if (rayAdd==true && poindAdd1==false) {
@@ -280,6 +299,9 @@ public class  Controller extends View {
         if(rayAdd==true && poindAdd1==true) {
               addLineRayEnd();
               rayAdd=false;
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
          //Добавление прямой
         if (lineAdd==true && poindAdd1==false){
@@ -288,6 +310,9 @@ public class  Controller extends View {
         if (lineAdd==true && poindAdd1==true){
             addLineRayEnd();
             lineAdd=false;
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
         mouseEvent.consume();
         }//End onMousePressed()

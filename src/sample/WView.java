@@ -14,7 +14,7 @@ public class WView {
     private double k0 =0.2; //Нумерация по умолчанию начинается 1
     private int k1=1; //Первая точка входа для масштабирования
     private int k2=0;//Степень для масштаба
-    private double k3=1;//Коэффициент масштабирования
+    private double k3=5;//Коэффициент масштабирования
     private double VPx, VPy;//Координаты мыши при нажатии кнопки
     private  double Ko=100;//Коэффициент округления координат
 
