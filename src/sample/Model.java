@@ -504,9 +504,9 @@ class Model implements  Observable {
             for (String s1 : col) {//в цикл коллекцию фигур
                 if (s1.length() == 3) {//только отрезки типа АаВ
                     char[] c1 = s1.toCharArray();//строку в массив
-                    int segment=findSegmentLine(String.valueOf(c1[1]));//определить тип линии
+                    int segment = findSegmentLine(String.valueOf(c1[1]));//определить тип линии
                     //выбираем точку начала отрезка
-                    if (circle.getId().equals(String.valueOf(c1[0])) && segment==0) {
+                    if (circle.getId().equals(String.valueOf(c1[0])) && segment == 0) {
                         //найти точку
                         Circle c3 = findCircle(String.valueOf(c1[2]));
                         if (c3 != null) {
@@ -515,17 +515,17 @@ class Model implements  Observable {
                             //обновить мировые координаты
                             findPoindCircles1(c3.getId());
                             Line l1 = findLine(c1[1]);//найти линию
-                            verLineStartX=gridViews.revAccessX(verX);
-                            verLineStartY=gridViews.revAccessY(verY);
-                            verLineEndX=gridViews.revAccessX(verX1);
-                            verLineEndY=gridViews.revAccessY(verY1);
+                            verLineStartX = gridViews.revAccessX(verX);
+                            verLineStartY = gridViews.revAccessY(verY);
+                            verLineEndX = gridViews.revAccessX(verX1);
+                            verLineEndY = gridViews.revAccessY(verY1);
                             findPoindLines(l1.getId());
                             SideGo(l1);//перемещение линии
                             setTxtShape("");
                             txtAreaOutput();
                         }
                         //выбираем точку конца отрезка
-                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment==0) {
+                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 0) {
                         Circle c3 = findCircle(String.valueOf(c1[0]));
                         if (c3 != null) {
                             verX1 = c3.getCenterX();
@@ -533,37 +533,37 @@ class Model implements  Observable {
                             //обновить мировые координаты
                             findPoindCircles1(c3.getId());
                             Line l2 = findLine(c1[1]);
-                            verLineStartX=gridViews.revAccessX(verX);
-                            verLineStartY=gridViews.revAccessY(verY);
-                            verLineEndX=gridViews.revAccessX(verX1);
-                            verLineEndY=gridViews.revAccessY(verY1);
+                            verLineStartX = gridViews.revAccessX(verX);
+                            verLineStartY = gridViews.revAccessY(verY);
+                            verLineEndX = gridViews.revAccessX(verX1);
+                            verLineEndY = gridViews.revAccessY(verY1);
                             findPoindLines(l2.getId());
                             SideGo(l2);
                         }
                         //перемещение начала луча
-                    }else if(circle.getId().equals(String.valueOf(c1[0])) && segment==1){
-                        Circle c3=findCircle(String.valueOf(c1[2]));
-                        if(c3!=null){
-                            rayEndX=verX;
-                            rayEndY=verY;
-                            double x=verX +(c3.getCenterX()-verX)*3;
-                            double y=verY+(c3.getCenterY()-verY)*3;
+                    } else if (circle.getId().equals(String.valueOf(c1[0])) && segment == 1) {
+                        Circle c3 = findCircle(String.valueOf(c1[2]));
+                        if (c3 != null) {
+                            rayEndX = verX;
+                            rayEndY = verY;
+                            double x = verX + (c3.getCenterX() - verX) * 3;
+                            double y = verY + (c3.getCenterY() - verY) * 3;
                             //Добавить коордитаны пересчета в коллекцию
-                            rayStartX=x;
-                            rayStartY=y;
+                            rayStartX = x;
+                            rayStartY = y;
                             Line l2 = findLine(c1[1]);
-                            verLineStartX=gridViews.revAccessX(rayEndX);
-                            verLineStartY=gridViews.revAccessY(rayEndY);
-                            verLineEndX=gridViews.revAccessX(rayStartX);
-                            verLineEndY=gridViews.revAccessY(rayStartY);
+                            verLineStartX = gridViews.revAccessX(rayEndX);
+                            verLineStartY = gridViews.revAccessY(rayEndY);
+                            verLineEndX = gridViews.revAccessX(rayStartX);
+                            verLineEndY = gridViews.revAccessY(rayStartY);
                             findPoindLines(l2.getId());
                             RayGo(l2);
                         }
-                    //перемещение точки на луче
-                    }else if(circle.getId().equals(String.valueOf(c1[2])) && segment==1) {
-                        Circle c3=findCircle(String.valueOf(c1[0]));
-                        if(c3!=null) {
-                            rayEndX = c3.getCenterX() ;
+                        //перемещение точки на луче
+                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 1) {
+                        Circle c3 = findCircle(String.valueOf(c1[0]));
+                        if (c3 != null) {
+                            rayEndX = c3.getCenterX();
                             rayEndY = c3.getCenterY();
                             double x = c3.getCenterX() + (verX - c3.getCenterX()) * 3;
                             double y = c3.getCenterY() + (verY - c3.getCenterY()) * 3;
@@ -571,24 +571,57 @@ class Model implements  Observable {
                             rayStartX = x;
                             rayStartY = y;
                             Line l2 = findLine(c1[1]);
-                            verLineStartX=gridViews.revAccessX(rayEndX);
-                            verLineStartY=gridViews.revAccessY(rayEndY);
-                            verLineEndX=gridViews.revAccessX(rayStartX);
-                            verLineEndY=gridViews.revAccessY(rayStartY);
+                            verLineStartX = gridViews.revAccessX(rayEndX);
+                            verLineStartY = gridViews.revAccessY(rayEndY);
+                            verLineEndX = gridViews.revAccessX(rayStartX);
+                            verLineEndY = gridViews.revAccessY(rayStartY);
                             findPoindLines(l2.getId());
                             RayGo(l2);
                         }
-                    //Перемещение прямой
-                }else if(circle.getId().equals(String.valueOf(c1[0])) && segment==2){
-                    System.out.println("Line A");
+                        //Перемещение прямой
+                    } else if (circle.getId().equals(String.valueOf(c1[0])) && segment == 2) {
+                        Circle c3 = findCircle(String.valueOf(c1[2]));
+                        if (c3 != null) {
+                            double x = c3.getCenterX() + (verX-c3.getCenterX()) * 3;
+                            double y = c3.getCenterY() + (verY-c3.getCenterY()) * 3;
+                            double x1 = c3.getCenterX() + (verX-c3.getCenterX()) * -3;
+                            double y1 = c3.getCenterY() + (verY-c3.getCenterY()) * -3;
+                            rayStartX = x1;
+                            rayStartY = y1;
+                            rayEndX = x;
+                            rayEndY = y;
+                            Line l2 = findLine(c1[1]);
+                            verLineStartX = gridViews.revAccessX(rayEndX);
+                            verLineStartY = gridViews.revAccessY(rayEndY);
+                            verLineEndX = gridViews.revAccessX(rayStartX);
+                            verLineEndY = gridViews.revAccessY(rayStartY);
+                            findPoindLines(l2.getId());
+                            RayGo(l2);
+                        }
 
-                }else if(circle.getId().equals(String.valueOf(c1[2])) && segment==2) {
-                    System.out.println("Line B");
-
-                }
-
+                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 2) {
+                        Circle c3 = findCircle(String.valueOf(c1[0]));
+                        if (c3 != null) {
+                            double x = c3.getCenterX() + (verX-c3.getCenterX() )* 3;
+                            double y = c3.getCenterY() + (verY-c3.getCenterY()) * 3;
+                            double x1 = c3.getCenterX() + (verX-c3.getCenterX()) * -3;
+                            double y1 = c3.getCenterY() + (verY-c3.getCenterY()) * -3;
+                            rayStartX = x1;
+                            rayStartY = y1;
+                            rayEndX = x;
+                            rayEndY = y;
+                            Line l2 = findLine(c1[1]);
+                            verLineStartX = gridViews.revAccessX(rayEndX);
+                            verLineStartY = gridViews.revAccessY(rayEndY);
+                            verLineEndX = gridViews.revAccessX(rayStartX);
+                            verLineEndY = gridViews.revAccessY(rayStartY);
+                            findPoindLines(l2.getId());
+                            RayGo(l2);
+                        }
+                    }
                 }
             }
+
         }else return false;//перемещение запрещено
         return true;//точка успешно перемещена в новое место
     }
