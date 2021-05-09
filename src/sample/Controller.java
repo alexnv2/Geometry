@@ -81,13 +81,12 @@ public class  Controller extends View {
     //Для всплывающих подсказок
     private final Tooltip tooltip=new Tooltip()  ;
 
-
-
     //Инициализация контролера
     @FXML
     private void initialize() {
         model.setStatus(leftStatus);//Передать ссылку на статус для модели
-        model.setTextArea(txtShape);
+        model.setTextArea(txtShape);//Передать ссылку фигуры
+        model.setGridViews(gridViews);//Передать ссылку для пересчета координат для Model
         model.webHTML(webViewLeft,"geometry.html");//Вывод в web файла html
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
@@ -199,7 +198,6 @@ public class  Controller extends View {
             //Добавить коордитаны пересчета в коллекцию
             model.setRayStartX(x);
             model.setRayStartY(y);
-           // poindSetRevAccess(nl);
             model.setVerLineStartX(gridViews.revAccessX(model.getRayEndX()));
             model.setVerLineStartY(gridViews.revAccessY(model.getRayEndY()));
             model.setVerLineEndX(gridViews.revAccessX(x));
@@ -269,7 +267,7 @@ public class  Controller extends View {
 
     //Нажата кнопка мыши на доске
     public void onMousePressed(MouseEvent mouseEvent) {
-        // Фиксируем точку нажатия кнопки мыши
+        // Фиксируем точку нажатия кнопки мыши для перемещения сетки и координатных осей
         if(mouseEvent.getTarget()==paneShape) {
             gridViews.setVPx(mouseEvent.getX());
             gridViews.setVPy(mouseEvent.getY());
@@ -413,7 +411,7 @@ public class  Controller extends View {
         btnPoind.setTooltip(tooltip);
     }
     //Всплывающее окно при наведении на кнопку "Отрезок"
-    public void onMoseEnteredSegment(MouseEvent mouseEvent) {
+    public void onMoseEnteredSegment() {
         tooltip.setText("Добавить отрезок");
         btnSegment.setTooltip(tooltip);
     }
