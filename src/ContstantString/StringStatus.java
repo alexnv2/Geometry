@@ -11,6 +11,10 @@ public final class StringStatus {
     public static final String STA_8="Перемещение запрещено! Данная точка расчетная.";
     public static final String STA_9="Точка ";
     public static final String STA_10="Отрезок ";
+    public static final String STA_11="Луч ";
+    public static final String STA_12="Прямая ";
+    public static final String STA_14="Укажите на доске три точки для построения угла.";
+
 
 
 

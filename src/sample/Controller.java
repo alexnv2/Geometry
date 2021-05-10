@@ -68,14 +68,17 @@ public class  Controller extends View {
     private String poindLine1;//первая  точка луча, прямой, отрезка
     private String poindLine2;//вторая точка луча, прямой, отрезка
 
-
+    //Ркжимы создания
     private boolean poindAdd=false;//true - создать точку
     private boolean segmentAdd =false;//true - создать отрезок
     private boolean rayAdd=false;//true - создание луча
     private boolean lineAdd=false;//true - создание прямой
+    private boolean angleAdd=false;//true -создание угла
+    private int angleCol=0;//индекс счета углов
 
     private boolean poindAdd1=false;//true - создание первой точки для отрезка
     private boolean poindAdd2=false;//true - создание второй точки для отрезка
+    private boolean poindAdd3=false;//true - создание третьей точки для угла
 
     private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
     //Для всплывающих подсказок
@@ -160,6 +163,14 @@ public class  Controller extends View {
         lineAdd=true;
         infoStatus="";//Для коллекции Col
     }
+    //Режим добавления угла
+    public void btnAngle(ActionEvent actionEvent) {
+        //Установить статус
+        model.setStringLeftStatus(STA_14);
+        model.statusGo(leftStatus);
+        angleAdd=true;
+        infoStatus="";//Для коллекции Col
+    }
 
     //Кропка треугольники
     public void btnTreangle(ActionEvent actionEvent) {
@@ -180,6 +191,19 @@ public class  Controller extends View {
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
         model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
+       //Создание угла
+        if(angleAdd==true && nl!=null && poindAdd2==true){
+            poindSetRevAccess(nl);
+            model.SideGo(nl);//проводим отрезок
+
+
+            if(angleCol==1){
+                poindAdd3=true;//третья точка создана
+            }
+        }
+
+
+
         //Создание отрезка
         if (segmentAdd ==true && nl!=null && poindAdd2==true){
             poindSetRevAccess(nl);
@@ -289,9 +313,25 @@ public class  Controller extends View {
               model.setTxtShape("");
               model.txtAreaOutput();
             }
+        //Добавление угла первая и вторая точка
+        if (angleAdd ==true && poindAdd1==false) {
+            addLineRayStart(3);//Создание первой точки и линии
+            angleCol+=1;
+        }
+        //Третья точка для угла
+        if(angleAdd==true && poindAdd3==true){
+            addLineRayEnd();
+            angleAdd= false;//окончание режима добавления
+            poindAdd3=false;
+            angleCol=0;
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
+        }
+
         //Добавления луча
         if (rayAdd==true && poindAdd1==false) {
-              addLineRayStart(1);
+            addLineRayStart(1);
         }
         //Втрорая точка луча
         if(rayAdd==true && poindAdd1==true) {
@@ -325,6 +365,7 @@ public class  Controller extends View {
             poindLine1=model.getTimeVer();
         }
         nl = model.createLineAdd(paneShape,Segment);//создать линию
+        nl.toBack();//переместить линию вниз под точку
         infoStatus = infoStatus + nl.getId();//Добавить линию в список
         poindAdd2 = true;//режим добавления второй точки
     }

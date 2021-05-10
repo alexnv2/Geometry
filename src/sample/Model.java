@@ -101,8 +101,9 @@ class Model implements  Observable {
     //для вывода файла html в web
     public  void webHTML(WebView o,String file){
       String pathFile= new File("").getAbsolutePath();
-      String pathHTML="file:"+pathFile+"\\src\\Web\\"+file;
-      leftHTML=pathHTML;
+        leftHTML= "file:"+pathFile+"\\src\\Web\\"+file;
+       // setStringLeftStatus(leftHTML);
+       // statusGo(Status);
       webGo(o);
     }
 
@@ -123,19 +124,19 @@ class Model implements  Observable {
         String pathImg11="<img src=file:\\"+pathImages+"\\src\\Images\\AreaGeron.png"+" width=275 height=122";
 
         switch (c) {
-            case 0: setStringWebView(WEB_HTML+TR_OPR + TR_ANGLE + TR_NERAVENSVO+ TR_SUNANGLE+TR_AREA_1+
-                    pathImg4+TR_AREA_2+pathImg5+TR_AREA_3+pathImg11+WEB_END);break;
-            case 1: setStringWebView(WEB_HTML+TR_TEOREMA33+TR_TEOREMA34+WEB_END);break;
-            case 2: setStringWebView(WEB_HTML+TR_BISSECTOR+TR_BISSEC_FOR+pathImg1+WEB_END);break;
-            case 3: setStringWebView((WEB_HTML+TR_MEDIANA+TR_DLINA_MEDIAN+pathImg2+WEB_END));break;
-            case 4: setStringWebView(WEB_HTML+TR_HIGTH+TR_ORTOSENTR+TR_DLINA_HIGHT+pathImg3+WEB_END);break;
-            case 5: setStringWebView(WEB_HTML+TR_AREA_8+pathImg8+TR_AREA_9+pathImg9+WEB_END);break;
-            case 6: setStringWebView(WEB_HTML+TR_AREA_10+pathImg10+WEB_END);break;
-            case 7: setStringWebView(WEB_HTML+TR_CIRCLE+TR_CIRCLE_IN+TR_AREA_4+pathImg6+WEB_END);break;
-            case 8: setStringWebView(WEB_HTML+TR_CIRCLE+TR_CIRCLE_OUT+TR_AREA_5+pathImg7+WEB_END);break;
-            case 9: setStringWebView(WEB_HTML+TR_MIDDLE_PER+WEB_END);break;
-            case 10: setStringWebView(WEB_HTML+TR_OXYGEN+WEB_END);break;
-            case 11: setStringWebView(WEB_HTML+OP_GEOMETRY_1+WEB_END);break;
+            case 0 -> setStringWebView(WEB_HTML + TR_OPR + TR_ANGLE + TR_NERAVENSVO + TR_SUNANGLE + TR_AREA_1 +
+                    pathImg4 + TR_AREA_2 + pathImg5 + TR_AREA_3 + pathImg11 + WEB_END);
+            case 1 -> setStringWebView(WEB_HTML + TR_TEOREMA33 + TR_TEOREMA34 + WEB_END);
+            case 2 -> setStringWebView(WEB_HTML + TR_BISSECTOR + TR_BISSEC_FOR + pathImg1 + WEB_END);
+            case 3 -> setStringWebView((WEB_HTML + TR_MEDIANA + TR_DLINA_MEDIAN + pathImg2 + WEB_END));
+            case 4 -> setStringWebView(WEB_HTML + TR_HIGTH + TR_ORTOSENTR + TR_DLINA_HIGHT + pathImg3 + WEB_END);
+            case 5 -> setStringWebView(WEB_HTML + TR_AREA_8 + pathImg8 + TR_AREA_9 + pathImg9 + WEB_END);
+            case 6 -> setStringWebView(WEB_HTML + TR_AREA_10 + pathImg10 + WEB_END);
+            case 7 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_IN + TR_AREA_4 + pathImg6 + WEB_END);
+            case 8 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_OUT + TR_AREA_5 + pathImg7 + WEB_END);
+            case 9 -> setStringWebView(WEB_HTML + TR_MIDDLE_PER + WEB_END);
+            case 10 -> setStringWebView(WEB_HTML + TR_OXYGEN + WEB_END);
+            case 11 -> setStringWebView(WEB_HTML + OP_GEOMETRY_1 + WEB_END);
         }
         webViewGo(o);//на вывод
     }
@@ -189,7 +190,6 @@ class Model implements  Observable {
     //Вход: ID первой точки и ID второй точки
     //Ввозвращает: длину отрезка
     double findPoindandLine(String poindStart, String poindEnd){
-        double lengthSegment;
         double x1 = 0,y1=0,x2=0,y2=0;
         for(PoindCircle p:  poindCircles){
             if(p.getId().equals(poindStart)){
@@ -204,7 +204,8 @@ class Model implements  Observable {
         return distance(x1,y1,x2,y2);
     }
     //Создание  точек и прявязка свойств
-    Circle createPoind(){
+    Circle
+    createPoind(){
         Circle circle=new Circle();
         circle.setRadius(5);
         circle.setFill(Color.LIGHTBLUE);
@@ -271,7 +272,7 @@ class Model implements  Observable {
 //Создание  отрезка
      Line createLine(int seg){
         Line l=new Line();
-        if(seg==0) {
+        if(seg==0 || seg==3) {
             verX1 = verX;
             verY1 = verY;
             l.setStartX(verX1);
@@ -295,8 +296,22 @@ class Model implements  Observable {
          l.setOnMouseEntered(e->{
              l.setCursor(Cursor.HAND);
              //Установить статус
-             setStringLeftStatus(STA_10+l.getId());
-             statusGo(Status);
+             for (PoindLine p: poindLines) {
+                 if (p.getId().equals(l.getId())) {
+                     if (p.getSegment() == 0) {
+                         //Найти и вывести имя отрезка
+                         findNameSegment(l.getId());
+                         setStringLeftStatus(STA_10 + verSegmentStart + verSegmentEnd);
+                         statusGo(Status);
+                     }else if(p.getSegment()==1){
+                         setStringLeftStatus(STA_11 + l.getId());
+                         statusGo(Status);
+                     }else if(p.getSegment()==2){
+                         setStringLeftStatus(STA_12 + l.getId());
+                         statusGo(Status);
+                     }
+                 }
+             }
              l.setStrokeWidth(3);
          });
          l.setOnMouseExited(e->{
@@ -316,41 +331,7 @@ class Model implements  Observable {
          indexLine+=1;//увеличить индекс
          return newLine;
       }
-      //Добавление луча на доску
-    Line createRayAdd(Pane pane){
-        Line ray;
-        ray=createRay(pane);
-        pane.getChildren().add(ray);
-        poindLines.add(new PoindLine(ray,ray.getId(),verX0,verY0,verX0,verY0,true,false,1));
-        indexLine+=1;
-        return ray;
-    }
-      Line createRay(Pane pane){
-          Line line=new Line();
-          verX1=verX;
-          verY1=verY;
-          line.setStartX(verX1);
-          line.setStartY(verY1);
-          line.setEndX(verX);
-          line.setEndY(verY);
-          line.setId(String.valueOf(indexLine));//Индефикатор узла
-          line.setUserData(String.valueOf(indexLine));//Имя узла
-          line.setStroke(Color.DARKSLATEBLUE);//Color
-          line.setStrokeWidth(2);//Толщина
-          //Наведение на отрезок
-          line.setOnMouseEntered(e->{
-              line.setCursor(Cursor.HAND);
-              //leftStatus.setText("Отрезок "+line.getId());
-              line.setStrokeWidth(3);
-          });
-          line.setOnMouseExited(e-> {
-              //Установить статус
-              setStringLeftStatus("");
-              statusGo(Status);
-              line.setStrokeWidth(2);
-          });
-          return line;
-      }
+
      //Присоеденить вторую точку к линии, когда линия проходит близко к точке
     public void lineAddPoind(Line nl, boolean poindAdd2){
         Circle pCl;
@@ -495,8 +476,8 @@ class Model implements  Observable {
     public boolean movePoindCircles(Circle circle) {
         circle.setFill(Color.RED);
         if (findPoindCircleMove(circle.getId())){//true-разрешено перемещение
-            VertexGo(circle);//перемещение точки
             findPoindCircles(circle.getId());//меняем координаты в коллекции
+            VertexGo(circle);//перемещение точки
             //обновляем координаты в правой части доски
             setTxtShape("");
             txtAreaOutput();

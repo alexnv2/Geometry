@@ -61,7 +61,7 @@
     <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
-    <Button fx:id="btnAngle" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnAngle" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" onAction="#btnAngle" />
     <Button fx:id="btnVertical" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" text="Медиана" />
@@ -74,6 +74,9 @@
     <items>
       <AnchorPane>
         <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
       </AnchorPane>
         <StackPane fx:id="Cartesian">
         <Pane fx:id="paneGrid" />
@@ -81,8 +84,7 @@
         </Pane>
         </StackPane>
       <AnchorPane>
-        <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="0.0"/>
+        <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
       </AnchorPane>
     </items>
   </SplitPane>
