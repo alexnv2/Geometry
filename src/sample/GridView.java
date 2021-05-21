@@ -207,7 +207,10 @@ public class GridView extends WView{
             setWt(Cartesian.getHeight()/2);
             setWb(-Cartesian.getHeight()/2);
         }
+
         paneGrid.getChildren().clear();//Очистить экран и память
         gridCartesian();
+
+
     }
 }

@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -28,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.val;
+
 import static ContstantString.StringStatus.*;
 
 /*
@@ -42,6 +44,8 @@ public class  Controller extends View {
     public Pane paneShape;//контейнер для геометрических фигур
     public StackPane Cartesian;//контейнер для декартовых координат
     public TextArea txtShape;//контейнер для правой части доски
+    @FXML
+    private Button btnTreangle;
     @FXML
     private Button btnPoind;//кнопка добавить точку
     @FXML
@@ -74,11 +78,14 @@ public class  Controller extends View {
     private boolean rayAdd=false;//true - создание луча
     private boolean lineAdd=false;//true - создание прямой
     private boolean angleAdd=false;//true -создание угла
+    private boolean treangleAdd=false;//true - создание треугольника
+    private String poindTreangle1;//первая точка треугольника
     private int angleCol=0;//индекс счета углов
+
 
     private boolean poindAdd1=false;//true - создание первой точки для отрезка
     private boolean poindAdd2=false;//true - создание второй точки для отрезка
-    private boolean poindAdd3=false;//true - создание третьей точки для угла
+   // private boolean poindAdd3=false;//true - создание третьей точки для угла
 
     private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
     //Для всплывающих подсказок
@@ -152,7 +159,7 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_3);
         model.statusGo(leftStatus);
-        rayAdd=true;
+        rayAdd=true;//режим построения луча
         infoStatus="";//Для коллекции Col
     }
     //Нажата кнопка "Добавить прямую"
@@ -160,7 +167,7 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_4);
         model.statusGo(leftStatus);
-        lineAdd=true;
+        lineAdd=true;//режим построения прямой
         infoStatus="";//Для коллекции Col
     }
     //Режим добавления угла
@@ -168,7 +175,7 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.statusGo(leftStatus);
-        angleAdd=true;
+        angleAdd=true;//режим построения угла
         infoStatus="";//Для коллекции Col
     }
 
@@ -177,7 +184,7 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_5);
         model.statusGo(leftStatus);
-        lineAdd=true;
+        treangleAdd = true;
         infoStatus="";//Для коллекции Col
         model.webViewLeftString(webViewLeft, 0);//Определения
       //  model.webViewLeftString(webViewLeft, 10);//Определения остроугольного треугольника
@@ -191,18 +198,14 @@ public class  Controller extends View {
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
         model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
-       //Создание угла
-        if(angleAdd==true && nl!=null && poindAdd2==true){
+       //Добавление угла или треугольника
+        if((treangleAdd==true || angleAdd==true) && nl!=null && poindAdd2==true ){
             poindSetRevAccess(nl);
             model.SideGo(nl);//проводим отрезок
-
-
-            if(angleCol==1){
-                poindAdd3=true;//третья точка создана
+            if(angleCol==2){//2-для угла, треугольника
+                poindAdd1=true;
             }
         }
-
-
 
         //Создание отрезка
         if (segmentAdd ==true && nl!=null && poindAdd2==true){
@@ -310,19 +313,54 @@ public class  Controller extends View {
               addLineRayEnd();
               segmentAdd = false;//окончание режима добавления
               //Вывод информации об объектах в правую часть доски
+              model.setCol(infoStatus);
               model.setTxtShape("");
               model.txtAreaOutput();
+
             }
-        //Добавление угла первая и вторая точка
+        //Добавление угла первая  точка
         if (angleAdd ==true && poindAdd1==false) {
             addLineRayStart(3);//Создание первой точки и линии
-            angleCol+=1;
+            angleCol+=1;//увеличиваем счетчик вершин
         }
-        //Третья точка для угла
-        if(angleAdd==true && poindAdd3==true){
+        //Окончание построения угла
+        if(angleAdd==true && poindAdd1==true){
             addLineRayEnd();
+            model.arcVertexAdd(infoStatus,paneShape);//рисуем арку дуги
             angleAdd= false;//окончание режима добавления
-            poindAdd3=false;
+            poindAdd1=false;
+            angleCol=0;
+            //Вывод информации об объектах в правую часть доски
+            model.setCol(infoStatus);
+            model.setTxtShape("");
+            model.txtAreaOutput();
+
+        }
+        //Построение треугольника
+        if (treangleAdd ==true && poindAdd1==false) {
+            addLineRayStart(4);//Создание первой точки и линии
+            angleCol+=1;//увеличиваем счетчик вершин
+        }
+        //Окончание построения треугольника
+        if(treangleAdd==true && poindAdd1==true){
+            addLineRayEnd();
+          //  System.out.println(poindTreangle1);
+            nl = model.createLineAdd(paneShape,4);
+            Circle c=model.findCircle(poindTreangle1);
+            model.setVerX(c.getCenterX());
+            model.setVerY(c.getCenterY());
+            model.SideGo(nl);
+            model.setVerLineStartX(model.getVerX0());
+            model.setVerLineStartY(model.getVerY0());
+            model.setVerLineEndX(gridViews.revAccessX(c.getCenterX()));
+            model.setVerLineEndY(gridViews.revAccessY(c.getCenterY()));
+            model.findPoindLines(nl.getId());
+            infoStatus = infoStatus + nl.getId();//Добавить линию в список
+            model.setCol(infoStatus);
+            //добавить последнию линию для завершения треугольника
+            //model.arcVertexAdd(infoStatus,paneShape);
+            treangleAdd= false;//окончание режима добавления
+            poindAdd1=false;
             angleCol=0;
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
@@ -333,13 +371,15 @@ public class  Controller extends View {
         if (rayAdd==true && poindAdd1==false) {
             addLineRayStart(1);
         }
-        //Втрорая точка луча
-        if(rayAdd==true && poindAdd1==true) {
-              addLineRayEnd();
-              rayAdd=false;
+        //Окончание построения луча
+        if(rayAdd==true && poindAdd1==true){
+            addLineRayEnd();
+            rayAdd=false;
             //Вывод информации об объектах в правую часть доски
+            model.setCol(infoStatus);
             model.setTxtShape("");
             model.txtAreaOutput();
+
         }
          //Добавление прямой
         if (lineAdd==true && poindAdd1==false){
@@ -349,8 +389,10 @@ public class  Controller extends View {
             addLineRayEnd();
             lineAdd=false;
             //Вывод информации об объектах в правую часть доски
+            model.setCol(infoStatus);
             model.setTxtShape("");
             model.txtAreaOutput();
+
         }
         mouseEvent.consume();
         }//End onMousePressed()
@@ -358,16 +400,21 @@ public class  Controller extends View {
     //Добавление отрезков, лучей, прямых
     public void addLineRayStart(int Segment){
         if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-            poindLine1 = model.createPoindAdd(paneShape);//создать новую
-            infoStatus = String.valueOf(poindLine1);//добавить вершину в список
+            poindLine1 = model.createPoindAdd(paneShape);//создать новую вершину
+            infoStatus = infoStatus+String.valueOf(poindLine1);//добавить вершину в список
         } else {
             infoStatus = infoStatus +model.getTimeVer();//Вершина из временной переменной
             poindLine1=model.getTimeVer();
         }
+        //Сохранить первую точку треугольника
+        if (treangleAdd==true && poindAdd2==false){
+            poindTreangle1=infoStatus;
+        }
         nl = model.createLineAdd(paneShape,Segment);//создать линию
         nl.toBack();//переместить линию вниз под точку
         infoStatus = infoStatus + nl.getId();//Добавить линию в список
-        poindAdd2 = true;//режим добавления второй точки
+       // System.out.println(infoStatus);
+        poindAdd2 = true;//режим добавления второй точки и последующих
     }
     //Метод окончания добавления фигур
     public void addLineRayEnd(){
@@ -379,10 +426,11 @@ public class  Controller extends View {
             poindLine2=model.getTimeVer();
         }
         //закрыть режим добавления
-        model.setCol(infoStatus);
+        //model.setCol(infoStatus);
         poindAdd1 = false;//закрыть 1 точку
         poindAdd2 = false;//закрыть 2 точку
         model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+       // System.out.println("end: "+infoStatus);
     }
 
     // Изменение масштаба координатной сетки
@@ -414,6 +462,19 @@ public class  Controller extends View {
                     l.setStartY(gridViews.accessY(pl.getStY()));
                     l.setEndX(gridViews.accessX(pl.getEnX()));
                     l.setEndY(gridViews.accessY(pl.getEnY()));
+            }
+        }
+        //Обновление дуг углов
+        for (VertexArc va: model.getVertexArcs()){
+            if(va!=null){
+                Arc a=va.getArc();
+                a.setCenterX(gridViews.accessX(va.getCenterX()));
+                a.setCenterY(gridViews.accessY(va.getCenterY()));
+                a.setRadiusX(va.getRadiusX());
+                a.setRadiusY(va.getRadiusY());
+                a.setStartAngle(va.getStartAngle());
+                a.setLength(va.getLengthAngle());
+
             }
         }
 
@@ -466,7 +527,12 @@ public class  Controller extends View {
         tooltip.setText("Добавить прямую");
         btnLine.setTooltip(tooltip);
     }
-
+    //Всплывающее окно при наведении на кнопку "Треугольник"
+    public void onMouseEnteredTreangle(MouseEvent mouseEvent) {
+         tooltip.setText("Добавить треугольник");
+         btnTreangle.setTooltip(tooltip);
+    }
+   
     //Тестовая кнопка вывод информации по всем коолекциям для тестирования системы
     public void btnTest() {
         model.ColTest();
@@ -553,6 +619,7 @@ public class  Controller extends View {
         window.show();
 
     }
+
 
 }
 

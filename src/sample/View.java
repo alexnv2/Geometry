@@ -2,6 +2,8 @@ package sample;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.web.WebEngine;
@@ -32,12 +34,14 @@ class View implements Observer{
             case "LeftStatusGo" ->this.statusGo(model.getStatus());//вывод статуса
             case "WebGo"->this.webGo(model.getWebView());//вывод файла HTML
             case "TextShapeGo"->this.textShapeGo(model.getTextArea());//для вывода в правое окно
+           // case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
+            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дугм для треугольников
+            case "ArcColorGo"->this.ArcColor(model.getArcGo());//цвет дуги
+
           /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
-            case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
-            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги
-            case "ArcColorGo"->this.ArcColor(model.getArcGo());
-            case "TableGo"->this.tableGo(model.getMTableView());//таблица
+
+
             case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
 
            */
@@ -87,5 +91,21 @@ class View implements Observer{
     //Вывод в статусную строку
     private void statusGo(Label label){
         label.setText(model.getStringLeftStatus());
+    }
+
+    //Изменение цвета линий
+    private void ArcColor(Arc arc){
+        Color c=model.getColorGo();
+        arc.setStroke(c);
+    }
+
+    //Дуги углов
+    private void arcGo(Arc arc){
+        arc.setCenterX(model.getVerX());
+        arc.setCenterY(model.getVerY());
+        arc.setRadiusX(model.getArcRadius());
+        arc.setRadiusY(model.getArcRadius());
+        arc.setStartAngle(model.getAngleStart());
+        arc.setLength(model.getAngleLength());
     }
 }

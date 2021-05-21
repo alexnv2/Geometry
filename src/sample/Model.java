@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -20,8 +22,7 @@ import java.util.LinkedList;
 
 import static ContstantString.StringStatus.*;
 import static ContstantString.StringWeb.*;
-import static java.lang.StrictMath.pow;
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 
 @Data
@@ -37,6 +38,8 @@ class Model implements  Observable {
     private WebView webView; //браузер в левой части доски
     private TextArea textArea;//получаем ссылку на правую часть доски для вывода информации о фигурах
     private GridView gridViews;
+    private Arc arcGo;
+    private Color ColorGo;
 
     private double textX, textY;//координаты букв для передачи в View
     private String stringWebView;//text left
@@ -48,6 +51,7 @@ class Model implements  Observable {
     private double verY;//координата экрана Y от мышки
     private double verX1;//координата StartX для отрезков
     private double verY1;//Координата StartY для отрезков
+
     private double rayStartX;//координаты экрана для луча и прямой StartX
     private double rayStartY;//координаты экрана для луча и прямой StartY
     private double rayEndX;//координаты экрана для луча и прямой EndX
@@ -62,14 +66,20 @@ class Model implements  Observable {
     private String timeVer;//для временного хранения выбранных вершин
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
     private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
+    private String verSegmentAngle;//имя угла
     private char indexPoind='A';//Индекс для точек
     private char indexLine='a';//Индекс для линий и отрезков
     private char indexArc='A';//Индекс для уголов
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
+
+    private double arcRadius;//радиус дуги
+    private double angleStart;//начало дуги гр.
+    private double angleLength;//длина дуги гр.
     //Коллекции
     private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
+    private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
@@ -110,7 +120,7 @@ class Model implements  Observable {
     //Текст для отобоажения в левой части
     public void webViewLeftString(WebView o, int c){
         String pathImages= new File(".").getAbsolutePath();
-        System.out.println(pathImages);
+       // System.out.println(pathImages);
         String pathImg1="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_bisector.png"+" width=274 height=242>";
         String pathImg2="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_median.png"+ " width=343 height=194>";
         String pathImg3="<img src=file:\\"+pathImages+"\\src\\Images\\dlina_higth.png"+" width=344 height=292>";
@@ -165,7 +175,13 @@ class Model implements  Observable {
                 } else if (l == 2) {
                     findNameSegment(s1);
                     txtShape = txtShape + "Прямая: " + s1 + " или " + verSegmentStart + verSegmentEnd + "\n";
+                } else if (l==3 ){
+                    if(findNameSegment(s1)==true) {
+                        double a=angleAccount(verSegmentStart,verSegmentAngle,verSegmentEnd);
+                        txtShape = txtShape + "Угол " + verSegmentStart + verSegmentAngle + verSegmentEnd +"= "+a+ " гр. \n";
+                    }
                 }
+
             }
         }
         textAreaGo();
@@ -174,16 +190,36 @@ class Model implements  Observable {
     //Поиск по линии, возвращает начало и конец отрезка
     //Вход из для метода txtAreaOutput
     //Выход: устанавливает значение двух переменных
-    private void findNameSegment(String s){
+    private boolean findNameSegment(String s){
         for (String name: col) {
             if (name.length() == 3) {
                 char[] c = name.toCharArray();
                 if(s.equals(String.valueOf(c[1]))){
                  verSegmentStart = String.valueOf(c[0]);
                  verSegmentEnd = String.valueOf(c[2]);
+                 return true;
+                }
+            }
+            if (name.length() == 5) {
+                char[] c = name.toCharArray();
+                if(s.equals(String.valueOf(c[1]))){
+                    verSegmentStart = String.valueOf(c[0]);
+                    verSegmentAngle=String.valueOf(c[2]);
+                    verSegmentEnd = String.valueOf(c[4]);
+                    return true;
                 }
             }
         }
+        return false;
+    }
+// расчет угла в градусах по названию угла
+    //Вход угол АВС
+    public double angleAccount(String s1, String s2, String s3){
+        Circle c1=findCircle(s2);
+        Circle c2=findCircle(s1);
+        Circle c3=findCircle(s3);
+        double a=angleTriangle(c1.getCenterX(),c1.getCenterY(),c2.getCenterX(),c2.getCenterY(),c3.getCenterX(),c3.getCenterY());
+        return a;
     }
 
     // Поиск координат точек
@@ -272,7 +308,7 @@ class Model implements  Observable {
 //Создание  отрезка
      Line createLine(int seg){
         Line l=new Line();
-        if(seg==0 || seg==3) {
+        if(seg==0 || seg==3 || seg==4) {//Отрезок или угол или треугольник
             verX1 = verX;
             verY1 = verY;
             l.setStartX(verX1);
@@ -385,6 +421,18 @@ class Model implements  Observable {
         notifyObservers("WebGo");
 
     }
+
+    //Дуги
+    void ArcGo(Arc o){
+        arcGo=o;
+        notifyObservers("ArcGo");
+    }
+    //Цвет дуг
+    void ArcColorGo(Arc o){
+        arcGo=o;
+        notifyObservers("ArcColorGo");
+    }
+
     //Вывод в статусной строке
     public void statusGo(Label o){
         Status=o;
@@ -630,6 +678,7 @@ class Model implements  Observable {
         }
         return bfMove;
     }
+
     //Тестовый медод для вывода информации по коолекциям
     public void ColTest(){
         System.out.println("Коллекция Sting");
@@ -650,9 +699,93 @@ class Model implements  Observable {
             System.out.println(t+" "+d);
             t+=1;
         }
-
+        System.out.println("Коллекция дуг");
+        int b=0;
+        for(VertexArc va:vertexArcs){
+            System.out.println(b+" "+va);
+            b+=1;
+        }
     }
 
+    //Рисуем дуги на входе строка вида АаВвС (три вершины и две стороны)
+    public  void arcVertexAdd(String arc,Pane pane){
+        char[] arcChar=arc.toCharArray();//преобразовать в массив символов
+        Circle o1=findCircle(String.valueOf(arcChar[2]));
+        Circle o2=findCircle(String.valueOf(arcChar[0]));
+        Circle o3=findCircle(String.valueOf(arcChar[4]));
+        Arc arc1=new Arc();
+        setColorGo(Color.DARKSLATEBLUE);
+        arc1.setType(ArcType.ROUND);
+        arc1.setFill(Color.LIGHTBLUE);
+        ArcColorGo(arc1);
+        pane.getChildren().add(arc1);
+        arcVertex(o1,o2,o3,arc1);
+    }
+    //Расчет для построения угла
+    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc a1){
+        double angleABC=angleTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        angleLength=angleABC;
+        arcRadius=30;
+        double arcLight=angleTriangle(o1.getCenterX(),o1.getCenterY(), o1.getCenterX()+200, o1.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        double str=areaTriangle(o1.getCenterX(), o1.getCenterY(), o1.getCenterX()+200, o1.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        double str1=areaTriangle(o3.getCenterX(), o3.getCenterY(), o2.getCenterX(), o2.getCenterY(), o1.getCenterX(), o1.getCenterY());
+        if (str<0){
+            arcLight=360+arcLight;
+        }else {
+            arcLight=-arcLight;
+        }
+        if(str1>0){
+            arcLight=arcLight-angleABC;
+        }
+        angleStart=arcLight;
+        verX=o1.getCenterX();
+        verY=o1.getCenterY();
+        //добавить в коллекцию дуг
+        vertexArcs.add(new VertexArc(a1,o1.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY),arcRadius,
+                arcRadius,angleStart,angleLength,false));
+        ArcGo(a1);
+    }
+    //Прямой угол вместо дуги
+    public void rectangle90(Circle o1,Circle o2, Circle o3, Circle o4, Line l1, Line l2){
+        double tx=o2.getCenterX()-o1.getCenterX();
+        double ty=o2.getCenterY()-o1.getCenterY();
+        double t= 0.15;
+        double ax=o1.getCenterX()+tx*t;
+        double ay=o1.getCenterY()+ty*t;
+        intersection(ax,ay,o1.getCenterX(),o1.getCenterY(),o3.getCenterX(),o3.getCenterY());
+        setVerX1(ax);
+        setVerY1(ay);
+        SideGo(l1);
+        intersection(ax,ay,o1.getCenterX(),o1.getCenterY(),o4.getCenterX(),o4.getCenterY());
+        setVerX1(ax);
+        setVerY1(ay);
+        SideGo(l2);
+        //System.out.println(ax+" "+ay+"  "+getVerX()+"  "+getVerY() );
+    }
+
+    //Нахождение углов  АВС координаты А, В, С, возвращает угол
+    private double angleTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
+        double ab=distance(x1,y1,x2,y2);
+        double ac=distance(x1,y1,x3,y3);
+        double bc=distance(x2,y2,x3,y3);
+        return round(toDegrees(acos((pow(ab,2)+pow(ac,2)-pow(bc,2))/(2*ab*ac))));
+    }
+    //Площадь треугольника
+    private double areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
+        return ((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1))/2;
+    }
+
+    //Точка пересечения двух прямых под 90 градусов, для высот
+    private void intersection(double x1, double y1, double x2, double y2, double x3, double y3) {
+        double a1 = y3 - y2;
+        double b1 = x2 - x3;
+        double c1 = x2 * y3 - x3 * y2;
+        double c2 = -x1 * (x3 - x2) + y1 * (y2 - y3);
+        //Вычисление главного определителя
+        double o = -pow(a1, 2) - pow(b1, 2);
+        setVerX((-c1 * a1 - c2 * b1)/o);
+        setVerY((a1 * c2 - b1 * c1)/o);
+    }
 
 }
 

@@ -63,7 +63,7 @@
     <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnAngle" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" onAction="#btnAngle" />
     <Button fx:id="btnVertical" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
-    <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" text="Медиана" />
     <Button mnemonicParsing="false" text="Высота" />
     <Button mnemonicParsing="false" text="Биссектриса" />
