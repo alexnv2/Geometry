@@ -64,17 +64,17 @@ class View implements Observer{
     }
     //Перемещение отрезков
     private void sideGo(Line side){
-        side.setStartX(model.getVerX());
-        side.setStartY(model.getVerY());
-        side.setEndX(model.getVerX1());
-        side.setEndY(model.getVerY1());
+        side.setStartX(model.getVerX1());
+        side.setStartY(model.getVerY1());
+        side.setEndX(model.getVerX());
+        side.setEndY(model.getVerY());
     }
     //Перемещение луча и прямой
     private void rayGo(Line ray){
-        ray.setStartX(model.getRayStartX());
-        ray.setStartY(model.getRayStartY());
-        ray.setEndX(model.getRayEndX());
-        ray.setEndY(model.getRayEndY());
+        ray.setStartX(model.getRayEndX());
+        ray.setStartY(model.getRayEndY());
+        ray.setEndX(model.getRayStartX());
+        ray.setEndY(model.getRayStartY());
     }
     //Заполнение web страниц слева
     private void webViewGo(WebView webView) {

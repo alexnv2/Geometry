@@ -7,7 +7,6 @@ package sample;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
@@ -63,7 +62,7 @@ class Model implements  Observable {
     private double verLineEndX;//координата X мировая для Line EndX
     private double verLineEndY;//координата Y мировая для Line EndY
 
-    private String timeVer;//для временного хранения выбранных вершин
+    private Circle timeVer;//для временного хранения выбранных вершин
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
     private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
     private String verSegmentAngle;//имя угла
@@ -76,7 +75,7 @@ class Model implements  Observable {
     private double angleStart;//начало дуги гр.
     private double angleLength;//длина дуги гр.
     //Коллекции
-    private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
+  //  private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
     private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
@@ -151,68 +150,38 @@ class Model implements  Observable {
         webViewGo(o);//на вывод
     }
     //Выбираем и размещаем в правой части доски информацию о геометрической фигуре
-   public void txtAreaOutput(){
-
-        for (PoindCircle p: poindCircles){
-            if(p.getCircle()!=null) {
-                String s1 = p.getId();
-                double s2 = p.getX();
-                double s3 = p.getY();
-                txtShape = txtShape + "Точка: " + s1 + " (" + s2 + "," + s3 + ")\n";
-            }
-        }
-        for (PoindLine p: poindLines) {
-            if (p.getLine() != null) {
-                String s1 = p.getId();
-                int l = p.getSegment();
-                if (l == 0) {
-                    findNameSegment(s1);
-                    double lengthSegment = Math.round(findPoindandLine(verSegmentStart, verSegmentEnd) * 100);
-                    txtShape = txtShape + "Отрезок: " + verSegmentStart + verSegmentEnd + " Длина:" + lengthSegment / 100 + "\n";
-                } else if (l == 1) {
-                    findNameSegment(s1);
-                    txtShape = txtShape + "Луч: " + s1 + " или " + verSegmentStart + verSegmentEnd + "\n";
-                } else if (l == 2) {
-                    findNameSegment(s1);
-                    txtShape = txtShape + "Прямая: " + s1 + " или " + verSegmentStart + verSegmentEnd + "\n";
-                } else if (l==3 ){
-                    if(findNameSegment(s1)==true) {
-                        double a=angleAccount(verSegmentStart,verSegmentAngle,verSegmentEnd);
-                        txtShape = txtShape + "Угол " + verSegmentStart + verSegmentAngle + verSegmentEnd +"= "+a+ " гр. \n";
-                    }
+   public void txtAreaOutput() {
+       for (PoindCircle p : poindCircles) {
+           if (p.getCircle() != null) {
+               String s1 = p.getId();
+               double s2 = p.getX();
+               double s3 = p.getY();
+               txtShape = txtShape + "Точка: " + s1 + " (" + s2 + "," + s3 + ")\n";
+           }
+       }
+       for (PoindLine p : poindLines) {
+           if (p.getLine() != null) {
+               int l = p.getSegment();
+               if (l == 0) {
+                   double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                   txtShape = txtShape + "Отрезок: " + p.getId() + " Длина:" + lengthSegment / 100 + "\n";
+               }
+                else if (l == 1) {
+                    txtShape = txtShape + "Луч: " + p.getLine().getId() + " или " + p.getId() + "\n";
+                }else if (l == 2) {
+                    txtShape = txtShape + "Прямая: " + p.getLine().getId() + " или " + p.getId() + "\n";
                 }
-
             }
         }
-        textAreaGo();
+        for( VertexArc v: vertexArcs){
+            if(v!=null) {
+                txtShape = txtShape + "Угол " + v.getId() +"= "+v.getLengthAngle()+ " гр. \n";
+                }
+            }
+       textAreaGo();
     }
 
-    //Поиск по линии, возвращает начало и конец отрезка
-    //Вход из для метода txtAreaOutput
-    //Выход: устанавливает значение двух переменных
-    private boolean findNameSegment(String s){
-        for (String name: col) {
-            if (name.length() == 3) {
-                char[] c = name.toCharArray();
-                if(s.equals(String.valueOf(c[1]))){
-                 verSegmentStart = String.valueOf(c[0]);
-                 verSegmentEnd = String.valueOf(c[2]);
-                 return true;
-                }
-            }
-            if (name.length() == 5) {
-                char[] c = name.toCharArray();
-                if(s.equals(String.valueOf(c[1]))){
-                    verSegmentStart = String.valueOf(c[0]);
-                    verSegmentAngle=String.valueOf(c[2]);
-                    verSegmentEnd = String.valueOf(c[4]);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-// расчет угла в градусах по названию угла
+    // расчет угла в градусах по названию угла
     //Вход угол АВС
     public double angleAccount(String s1, String s2, String s3){
         Circle c1=findCircle(s2);
@@ -240,8 +209,7 @@ class Model implements  Observable {
         return distance(x1,y1,x2,y2);
     }
     //Создание  точек и прявязка свойств
-    Circle
-    createPoind(){
+    Circle  createPoind(){
         Circle circle=new Circle();
         circle.setRadius(5);
         circle.setFill(Color.LIGHTBLUE);
@@ -251,16 +219,28 @@ class Model implements  Observable {
         //Обработка событий
         //Перемещение с нажатой клавишей
         circle.setOnMouseDragged(e-> {
-            if(!movePoindCircles(circle)){//вызов функции перемещения
-                setStringLeftStatus(STA_8);
-                statusGo(Status);//Установить статус "Перемещение запрещено"
-            }
+                if(findPoindCircleMove(circle.getId())) {
+                    circle.setCenterX(e.getX());
+                    circle.setCenterY(e.getY());
+                    //добавить новые координаты в коллекцию PoindCircle
+                    findCirclesUpdateXY(circle.getId());
+                    //добавить новые координаты в коллекцию PoindLine
+                    findSegmentLine(circle.getId());
+                    //Добавить новые данные коллекцию VertexArc
+                    findArcUpdate(circle.getId());
+                    //Обновить координаты точки в правой части
+                    setTxtShape("");
+                    txtAreaOutput();
+                }else {
+                    setStringLeftStatus(STA_8);
+                    statusGo(Status);//Установить статус "Перемещение запрещено"
+                }
         });
          //Нажатие клавиши
         circle.setOnMousePressed(e->{
             circle.setFill(Color.RED);
             poindOldAdd=true;//взять эту точку для отрезка
-            timeVer=circle.getId();//сохранить выбранную точку для построения
+            timeVer=circle;//сохранить выбранную точку для построения
 
         });
         //Наведение на точку
@@ -275,6 +255,7 @@ class Model implements  Observable {
         circle.setOnMouseReleased(e->{
             circle.setFill(Color.DARKSLATEBLUE);
             poindOldAdd=false;//запрет брать точку для отрезков, прямых, лучей
+
          });
         //Уход с точкм
         circle.setOnMouseExited(e->{
@@ -288,81 +269,81 @@ class Model implements  Observable {
         return circle;//завершено создание новой точки
     }
     //Добавление точек на доску
-    String createPoindAdd(Pane pane){
+    Circle createPoindAdd(){
         Circle newPoind;//Объявить переменную
         newPoind = createPoind();//Создать точку
-        pane.getChildren().add(newPoind);//добавить на доску
         //добавить в коллецию точек
         poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,true,false));
         //добавить в коллекцию фигур
-        setCol(newPoind.getId());
-        //Передать в View для вывода на экран
+         //Передать в View для вывода на экран
         VertexGo(newPoind);
         //Увеличить индекс
         indexPoind += 1;
         //Добавить в правую часть доски
         setTxtShape("");
         txtAreaOutput();
-        return newPoind.getId();//возвращает имя созданной точки
+        return newPoind;//возвращает точку
     }
 //Создание  отрезка
      Line createLine(int seg){
-        Line l=new Line();
+        Line newLine=new Line();
         if(seg==0 || seg==3 || seg==4) {//Отрезок или угол или треугольник
             verX1 = verX;
             verY1 = verY;
-            l.setStartX(verX1);
-            l.setStartY(verY1);
-            l.setEndX(verX);
-            l.setEndY(verY);
+            newLine.setStartX(verX);
+            newLine.setStartY(verY);
+            newLine.setEndX(verX1);
+            newLine.setEndY(verY1);
         }else{
             rayEndX=verX;
             rayEndY=verY;
-            l.setStartX(verX);
-            l.setStartY(verY);
-            l.setEndX(rayEndX);
-            l.setEndY(rayEndY);
+            newLine.setStartX(rayEndX);
+            newLine.setStartY(rayEndY);
+            newLine.setEndX(verX);
+            newLine.setEndY(verY);
         }
 
-        l.setId(String.valueOf(indexLine));//Индефикатор узла
-        l.setUserData(String.valueOf(indexLine));//Имя узла
-        l.setStroke(Color.DARKSLATEBLUE);//Color
-        l.setStrokeWidth(2);//Толщина
+        newLine.setId(String.valueOf(indexLine));//Индефикатор узла
+        newLine.setUserData(String.valueOf(indexLine));//Имя узла
+        newLine.setStroke(Color.DARKSLATEBLUE);//Color
+        newLine.setStrokeWidth(2);//Толщина
+         newLine.setOnMousePressed(e->{
+             System.out.println("poind");
+         });
          //Наведение на отрезок
-         l.setOnMouseEntered(e->{
-             l.setCursor(Cursor.HAND);
+         newLine.setOnMouseEntered(e->{
+             newLine.setCursor(Cursor.HAND);
              //Установить статус
              for (PoindLine p: poindLines) {
-                 if (p.getId().equals(l.getId())) {
+                 if (p.getId().equals(newLine.getId())) {
                      if (p.getSegment() == 0) {
                          //Найти и вывести имя отрезка
-                         findNameSegment(l.getId());
+                         //findNameSegment(newLine.getId());
                          setStringLeftStatus(STA_10 + verSegmentStart + verSegmentEnd);
                          statusGo(Status);
                      }else if(p.getSegment()==1){
-                         setStringLeftStatus(STA_11 + l.getId());
+                         setStringLeftStatus(STA_11 + newLine.getId());
                          statusGo(Status);
                      }else if(p.getSegment()==2){
-                         setStringLeftStatus(STA_12 + l.getId());
+                         setStringLeftStatus(STA_12 + newLine.getId());
                          statusGo(Status);
                      }
                  }
              }
-             l.setStrokeWidth(3);
+             newLine.setStrokeWidth(3);
          });
-         l.setOnMouseExited(e->{
+         newLine.setOnMouseExited(e->{
              //Установить статус
              setStringLeftStatus("");
              statusGo(Status);
-             l.setStrokeWidth(2);
+             newLine.setStrokeWidth(2);
          });
-         return l;
+         return newLine;
      }
      //Добавление линии на доску
-     Line createLineAdd(Pane pane, int segment){
+     Line createLineAdd(int segment){
          Line newLine;
          newLine = createLine(segment);//добавить линию
-         pane.getChildren().add(newLine);//добавить на доску
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
          indexLine+=1;//увеличить индекс
          return newLine;
@@ -442,44 +423,66 @@ class Model implements  Observable {
     public void textAreaGo(){
         notifyObservers("TextShapeGo");
     }
-    //Добавление в коллекцию из контролера
-    public void setCol(String valueOf) {
-        col.add(valueOf);
+
+    //Поиск по коллекции PoindLine для замены имени отрезка в коллекции
+    //Входа: Sting A, String B, String a (вершины созданного отрезка и линия)
+    //Выход: нет
+    public void findNameId(String poindA, String poindB, String linaA ){
+       for(PoindLine p: poindLines){
+           if(p!=null){
+               if(p.getId().equals(linaA)){
+                   p.setId(poindA+poindB);
+               }
+           }
+       }
     }
+
 
     //Поиск по коллеуции PoindCircles (передается имя точки, типа А)
     //Вызов из movePoindCircles(Circle a)
     //Возвращает объект точку
     Circle findCircle(String c){
-        for (PoindCircle c0: poindCircles){
-            if (c0.getId().equals(String.valueOf(c))){
-                return c0.getCircle();
+        for (PoindCircle c0: poindCircles) {
+            if (c0 != null) {
+                if (c0.getId().equals(String.valueOf(c))) {
+                    return c0.getCircle();
+                }
             }
         }
        return null;//ничего не найдено
     }
-    //Поиск по коллекции PoindLine (передается имя отрезка, типа а)
-    //Вызов из
-    //Возвращает найденную линию
-    Line findLine(char c){
-        for(PoindLine lo: poindLines){
-            if(lo.getId().equals(String.valueOf(c))) {
-                return lo.getLine();
-            }
-        }
-        return null;//если ничего не найдено
-    }
+
+
    //Поиск по коллекции PoindCircles, вход ID
-    public void findPoindCircles(String i){
+    //Меняем координаты точкм в коллекции
+    public void findCirclesUpdateXY(String id){
       for(PoindCircle p: poindCircles) {
           if (p != null) {
-              if (p.getId().equals(i)) {
+              if (p.getId().equals(id)) {
                   p.setX(verX0);//меняем координаты X
                   p.setY(verY0);//меняем координаты Y
               }
           }
       }
     }
+    //Поиск по коллекции PoindLines и замена мировых координат
+    //Вход: строка ID
+    //Выход: нет
+    public void findLinesUpdateXY(String id){
+       for(PoindLine p: poindLines){
+           if(p!=null){
+               if(p.getId().equals(id)){
+                 p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
+                 p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
+                 p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                 p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
+               }
+           }
+       }
+
+    }
+
+
     //Поиск по коллекции PoindCircles для замены координат при перемещении линий
     private void findPoindCircles1(String i){
         for (PoindCircle p: poindCircles){
@@ -492,177 +495,44 @@ class Model implements  Observable {
         }
     }
 
-    //Поиск по коллекции PoindLine, для замены декартовых координат вход ID
-    //Вызов из
-    public void findPoindLines(String i){
-        for (PoindLine pl: poindLines){
-            if(pl!=null){
-                if(pl.getId().equals(i)){
-                    pl.setEnX(verLineEndX);
-                    pl.setEnY(verLineEndY);
-                    pl.setStX(verLineStartX);
-                    pl.setStY(verLineStartY);
-                }
-            }
-        }
-    }
-    //Заносятся стартовые координаты линии луча при его создании
-    //Вызов из контролера onMouseMoved
-    public void findPoindLines1(String i){
-        for (PoindLine pl: poindLines){
-            if(pl!=null){
-                if(pl.getId().equals(i)){
-                    pl.setStX(verLineStartX);
-                    pl.setStY(verLineStartY);
-                }
-            }
-        }
-    }
 
-    //Перемещение точки на доске с нажатой кнопкой
-    //Вызов из метода createPoind() метод onMouseDragon
-    public boolean movePoindCircles(Circle circle) {
-        circle.setFill(Color.RED);
-        if (findPoindCircleMove(circle.getId())){//true-разрешено перемещение
-            findPoindCircles(circle.getId());//меняем координаты в коллекции
-            VertexGo(circle);//перемещение точки
-            //обновляем координаты в правой части доски
-            setTxtShape("");
-            txtAreaOutput();
-            //Проверяем линии присоединенные к точке
-            for (String s1 : col) {//в цикл коллекцию фигур
-                if (s1.length() == 3) {//только отрезки типа АаВ
-                    char[] c1 = s1.toCharArray();//строку в массив
-                    int segment = findSegmentLine(String.valueOf(c1[1]));//определить тип линии
-                    //выбираем точку начала отрезка
-                    if (circle.getId().equals(String.valueOf(c1[0])) && segment == 0) {
-                        //найти точку
-                        Circle c3 = findCircle(String.valueOf(c1[2]));
-                        if (c3 != null) {
-                            verX1 = c3.getCenterX();
-                            verY1 = c3.getCenterY();
-                            //обновить мировые координаты
-                            findPoindCircles1(c3.getId());
-                            Line l1 = findLine(c1[1]);//найти линию
-                            verLineStartX = gridViews.revAccessX(verX);
-                            verLineStartY = gridViews.revAccessY(verY);
-                            verLineEndX = gridViews.revAccessX(verX1);
-                            verLineEndY = gridViews.revAccessY(verY1);
-                            findPoindLines(l1.getId());
-                            SideGo(l1);//перемещение линии
-                            setTxtShape("");
-                            txtAreaOutput();
-                        }
-                        //выбираем точку конца отрезка
-                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 0) {
-                        Circle c3 = findCircle(String.valueOf(c1[0]));
-                        if (c3 != null) {
-                            verX1 = c3.getCenterX();
-                            verY1 = c3.getCenterY();
-                            //обновить мировые координаты
-                            findPoindCircles1(c3.getId());
-                            Line l2 = findLine(c1[1]);
-                            verLineStartX = gridViews.revAccessX(verX);
-                            verLineStartY = gridViews.revAccessY(verY);
-                            verLineEndX = gridViews.revAccessX(verX1);
-                            verLineEndY = gridViews.revAccessY(verY1);
-                            findPoindLines(l2.getId());
-                            SideGo(l2);
-                        }
-                        //перемещение начала луча
-                    } else if (circle.getId().equals(String.valueOf(c1[0])) && segment == 1) {
-                        Circle c3 = findCircle(String.valueOf(c1[2]));
-                        if (c3 != null) {
-                            rayEndX = verX;
-                            rayEndY = verY;
-                            double x = verX + (c3.getCenterX() - verX) * 3;
-                            double y = verY + (c3.getCenterY() - verY) * 3;
-                            //Добавить коордитаны пересчета в коллекцию
-                            rayStartX = x;
-                            rayStartY = y;
-                            Line l2 = findLine(c1[1]);
-                            verLineStartX = gridViews.revAccessX(rayEndX);
-                            verLineStartY = gridViews.revAccessY(rayEndY);
-                            verLineEndX = gridViews.revAccessX(rayStartX);
-                            verLineEndY = gridViews.revAccessY(rayStartY);
-                            findPoindLines(l2.getId());
-                            RayGo(l2);
-                        }
-                        //перемещение точки на луче
-                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 1) {
-                        Circle c3 = findCircle(String.valueOf(c1[0]));
-                        if (c3 != null) {
-                            rayEndX = c3.getCenterX();
-                            rayEndY = c3.getCenterY();
-                            double x = c3.getCenterX() + (verX - c3.getCenterX()) * 3;
-                            double y = c3.getCenterY() + (verY - c3.getCenterY()) * 3;
-                            //Добавить коордитаны пересчета в коллекцию
-                            rayStartX = x;
-                            rayStartY = y;
-                            Line l2 = findLine(c1[1]);
-                            verLineStartX = gridViews.revAccessX(rayEndX);
-                            verLineStartY = gridViews.revAccessY(rayEndY);
-                            verLineEndX = gridViews.revAccessX(rayStartX);
-                            verLineEndY = gridViews.revAccessY(rayStartY);
-                            findPoindLines(l2.getId());
-                            RayGo(l2);
-                        }
-                        //Перемещение прямой
-                    } else if (circle.getId().equals(String.valueOf(c1[0])) && segment == 2) {
-                        Circle c3 = findCircle(String.valueOf(c1[2]));
-                        if (c3 != null) {
-                            double x = c3.getCenterX() + (verX-c3.getCenterX()) * 3;
-                            double y = c3.getCenterY() + (verY-c3.getCenterY()) * 3;
-                            double x1 = c3.getCenterX() + (verX-c3.getCenterX()) * -3;
-                            double y1 = c3.getCenterY() + (verY-c3.getCenterY()) * -3;
-                            rayStartX = x1;
-                            rayStartY = y1;
-                            rayEndX = x;
-                            rayEndY = y;
-                            Line l2 = findLine(c1[1]);
-                            verLineStartX = gridViews.revAccessX(rayEndX);
-                            verLineStartY = gridViews.revAccessY(rayEndY);
-                            verLineEndX = gridViews.revAccessX(rayStartX);
-                            verLineEndY = gridViews.revAccessY(rayStartY);
-                            findPoindLines(l2.getId());
-                            RayGo(l2);
-                        }
-
-                    } else if (circle.getId().equals(String.valueOf(c1[2])) && segment == 2) {
-                        Circle c3 = findCircle(String.valueOf(c1[0]));
-                        if (c3 != null) {
-                            double x = c3.getCenterX() + (verX-c3.getCenterX() )* 3;
-                            double y = c3.getCenterY() + (verY-c3.getCenterY()) * 3;
-                            double x1 = c3.getCenterX() + (verX-c3.getCenterX()) * -3;
-                            double y1 = c3.getCenterY() + (verY-c3.getCenterY()) * -3;
-                            rayStartX = x1;
-                            rayStartY = y1;
-                            rayEndX = x;
-                            rayEndY = y;
-                            Line l2 = findLine(c1[1]);
-                            verLineStartX = gridViews.revAccessX(rayEndX);
-                            verLineStartY = gridViews.revAccessY(rayEndY);
-                            verLineEndX = gridViews.revAccessX(rayStartX);
-                            verLineEndY = gridViews.revAccessY(rayStartY);
-                            findPoindLines(l2.getId());
-                            RayGo(l2);
-                        }
-                    }
-                }
-            }
-
-        }else return false;//перемещение запрещено
-        return true;//точка успешно перемещена в новое место
-    }
     //Поиск по коллекции
-    //Возврат тип линии
-    int findSegmentLine(String s){
-        for(PoindLine p: poindLines){
-            if(p.getId().equals(s)){
-                return p.getSegment();
+    //Вход: имя вершины отрезка Sting A
+    //Замена координат для отрезка
+    public void findSegmentLine(String s){
+          for(PoindLine p: poindLines) {
+            if (p != null) {
+             String name=p.getId();
+             char[] chName=name.toCharArray();
+             if(s.equals(String.valueOf(chName[0]))){
+                 p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
+                 p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
+                 //Обновляем координаты окончания луча
+                 if(p.getSegment()==1){
+                     p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                     p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
+                 }
+                 //Обновляем коорлинаты прямой
+                 if(p.getSegment()==2) {
+                     p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                     p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
+                 }
+             }
+             if(s.equals(String.valueOf(chName[1]))){
+                 p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
+                 p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
+                 p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                 p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
+             }
+                //Обновляем коорлинаты прямой
+                if(p.getSegment()==2) {
+                    p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
+                    p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
+                    p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                    p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
+                }
             }
         }
-        return -1;
     }
      //Поиск по коллекция PoindCircle, разрешено ли редактирование
     //Вызов из  movePoindCircles(Circle a)
@@ -681,13 +551,7 @@ class Model implements  Observable {
 
     //Тестовый медод для вывода информации по коолекциям
     public void ColTest(){
-        System.out.println("Коллекция Sting");
-        int a=0;
-        for(String s: col){
-            System.out.println(a+" "+s);
-            a+=1;
-        }
-        System.out.println("Коллекция PoindCircle");
+         System.out.println("Коллекция PoindCircle");
         int z=0;
         for(PoindCircle p: poindCircles){
             System.out.println(z+" "+p);
@@ -707,43 +571,103 @@ class Model implements  Observable {
         }
     }
 
-    //Рисуем дуги на входе строка вида АаВвС (три вершины и две стороны)
-    public  void arcVertexAdd(String arc,Pane pane){
+    //Рисуем дуги на входе строка вида АВС (три вершины)
+    Arc arcVertexAdd(String arc){
         char[] arcChar=arc.toCharArray();//преобразовать в массив символов
-        Circle o1=findCircle(String.valueOf(arcChar[2]));
-        Circle o2=findCircle(String.valueOf(arcChar[0]));
-        Circle o3=findCircle(String.valueOf(arcChar[4]));
+        Circle o1=findCircle(String.valueOf(arcChar[0]));
+        Circle o2=findCircle(String.valueOf(arcChar[1]));
+        Circle o3=findCircle(String.valueOf(arcChar[2]));
         Arc arc1=new Arc();
+        arc1.setId(String.valueOf(arcChar[1]));
         setColorGo(Color.DARKSLATEBLUE);
         arc1.setType(ArcType.ROUND);
         arc1.setFill(Color.LIGHTBLUE);
+        arc1.setOpacity(0.5);
         ArcColorGo(arc1);
-        pane.getChildren().add(arc1);
         arcVertex(o1,o2,o3,arc1);
+        arc1.toBack();
+        //добавить в коллекцию дуг
+        vertexArcs.add(new VertexArc(arc1,arc,gridViews.revAccessX(o2.getCenterX()),gridViews.revAccessY(o2.getCenterY()),arcRadius,
+                arcRadius,angleStart,angleLength,false));
+        return arc1;
     }
-    //Расчет для построения угла
+
+    //Поиск по коллекции дуг углов
+    //Вход Строка вершина дуги
+    //Возврат дуга
+  /*  Arc findArc(String arc){
+        for(VertexArc v: vertexArcs ) {
+            if (v != null) {
+                char[] arcChar=v.getId().toCharArray();
+                if (v.getArc().getId().equals(arcChar[0])) {
+                    return v.getArc();
+                }
+                if (v.getArc().getId().equals(arcChar[2])) {
+                    return v.getArc();
+                }
+
+            }
+        }
+        return null;
+    }
+
+   */
+    //Обновление коллекции дуг после перемещения
+   private void findArcUpdate(String s){
+       for(VertexArc v: vertexArcs ) {
+           if (v != null) {
+               char[] arcChar=v.getId().toCharArray();
+              if (v.getArc().getId().equals(s)) {
+                   v.setCenterX(gridViews.revAccessX(verX));
+                   v.setCenterY(gridViews.revAccessY(verY));
+                   v.setStartAngle(v.getArc().getStartAngle());
+                   v.setLengthAngle(v.getArc().getLength());
+               }else if(s.equals(String.valueOf(arcChar[0]))){
+                   v.setCenterX(gridViews.revAccessX(v.getArc().getCenterX()));
+                   v.setCenterY(gridViews.revAccessY(v.getArc().getCenterY()));
+                   v.setStartAngle(v.getArc().getStartAngle());
+                   v.setLengthAngle(v.getArc().getLength());
+               }else if(s.equals(String.valueOf(arcChar[2]))){
+                   v.setCenterX(gridViews.revAccessX(v.getArc().getCenterX()));
+                   v.setCenterY(gridViews.revAccessY(v.getArc().getCenterY()));
+                   v.setStartAngle(v.getArc().getStartAngle());
+                   v.setLengthAngle(v.getArc().getLength());
+               }
+           }
+
+
+       }
+
+   }
+    //Расчет для построения угла ABC
     public void arcVertex(Circle o1, Circle o2, Circle o3, Arc a1){
         double angleABC=angleTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
         angleLength=angleABC;
         arcRadius=30;
-        double arcLight=angleTriangle(o1.getCenterX(),o1.getCenterY(), o1.getCenterX()+200, o1.getCenterY(), o3.getCenterX(), o3.getCenterY());
-        double str=areaTriangle(o1.getCenterX(), o1.getCenterY(), o1.getCenterX()+200, o1.getCenterY(), o3.getCenterX(), o3.getCenterY());
-        double str1=areaTriangle(o3.getCenterX(), o3.getCenterY(), o2.getCenterX(), o2.getCenterY(), o1.getCenterX(), o1.getCenterY());
+        double arcLight=angleTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        //System.out.println("Угол ВС "+arcLight);
+        double str=areaTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        double str1=areaTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        //System.out.println("str "+str+" str1 "+str1);
         if (str<0){
-            arcLight=360+arcLight;
+            arcLight=360-arcLight;
+         //   System.out.println("str<0 "+arcLight);
         }else {
-            arcLight=-arcLight;
+            arcLight=arcLight;
+         //   System.out.println("иначе минус "+arcLight);
         }
         if(str1>0){
             arcLight=arcLight-angleABC;
         }
-        angleStart=arcLight;
-        verX=o1.getCenterX();
-        verY=o1.getCenterY();
-        //добавить в коллекцию дуг
-        vertexArcs.add(new VertexArc(a1,o1.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY),arcRadius,
-                arcRadius,angleStart,angleLength,false));
-        ArcGo(a1);
+        setAngleStart(arcLight);
+       // System.out.println("угол "+angleLength+" нач. угол "+angleStart+" ");
+        double stX=verX;
+        double stY=verY;
+        verX=o2.getCenterX();
+        verY=o2.getCenterY();
+        ArcGo(a1);//перемещение дуги
+        verX=stX;
+        verY=stY;
     }
     //Прямой угол вместо дуги
     public void rectangle90(Circle o1,Circle o2, Circle o3, Circle o4, Line l1, Line l2){
@@ -763,13 +687,15 @@ class Model implements  Observable {
         //System.out.println(ax+" "+ay+"  "+getVerX()+"  "+getVerY() );
     }
 
-    //Нахождение углов  АВС координаты А, В, С, возвращает угол
+    //Нахождение углов  АВС координаты А, В, С, возвращает угол в градусах
     private double angleTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
         double ab=distance(x1,y1,x2,y2);
         double ac=distance(x1,y1,x3,y3);
         double bc=distance(x2,y2,x3,y3);
-        return round(toDegrees(acos((pow(ab,2)+pow(ac,2)-pow(bc,2))/(2*ab*ac))));
+       // return round(toDegrees(acos((pow(ab,2)+pow(ac,2)-pow(bc,2))/(2*ab*ac))));
+        return round(toDegrees(acos((pow(ab,2)+pow(bc,2)-pow(ac,2))/(2*ab*bc))));
     }
+
     //Площадь треугольника
     private double areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
         return ((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1))/2;

@@ -67,10 +67,9 @@ public class  Controller extends View {
     private Pane paneGrid;//контейнер для сетки
     public Label leftStatus;//Левый статус
     public Label rightStatus;//Правый статус
-    private Line nl;//отрезок
-    private Line ray;//тестовый луч
-    private String poindLine1;//первая  точка луча, прямой, отрезка
-    private String poindLine2;//вторая точка луча, прямой, отрезка
+    private Line newLine;//отрезок
+    private Circle poindLine1;//первая  точка луча, прямой, отрезка
+    private Circle poindLine2;//вторая точка луча, прямой, отрезка
 
     //Ркжимы создания
     private boolean poindAdd=false;//true - создать точку
@@ -87,7 +86,7 @@ public class  Controller extends View {
     private boolean poindAdd2=false;//true - создание второй точки для отрезка
    // private boolean poindAdd3=false;//true - создание третьей точки для угла
 
-    private String infoStatus;//строка для коллекции, типа А - точка, АаВ - точка, отрезок, точка
+    private String infoStatus;//Вершины угла
     //Для всплывающих подсказок
     private final Tooltip tooltip=new Tooltip()  ;
 
@@ -152,7 +151,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_2);
         model.statusGo(leftStatus);
         segmentAdd =true;
-        infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
+
     }
     //Нажата кнопка "Добавить Луч"
     public void btnRay(ActionEvent actionEvent) {
@@ -160,7 +159,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_3);
         model.statusGo(leftStatus);
         rayAdd=true;//режим построения луча
-        infoStatus="";//Для коллекции Col
+
     }
     //Нажата кнопка "Добавить прямую"
     public void btnLine() {
@@ -168,7 +167,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_4);
         model.statusGo(leftStatus);
         lineAdd=true;//режим построения прямой
-        infoStatus="";//Для коллекции Col
+
     }
     //Режим добавления угла
     public void btnAngle(ActionEvent actionEvent) {
@@ -185,7 +184,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_5);
         model.statusGo(leftStatus);
         treangleAdd = true;
-        infoStatus="";//Для коллекции Col
+        //infoStatus="";//Для коллекции Col
         model.webViewLeftString(webViewLeft, 0);//Определения
       //  model.webViewLeftString(webViewLeft, 10);//Определения остроугольного треугольника
 
@@ -198,72 +197,72 @@ public class  Controller extends View {
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
         model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
-       //Добавление угла или треугольника
-        if((treangleAdd==true || angleAdd==true) && nl!=null && poindAdd2==true ){
-            poindSetRevAccess(nl);
-            model.SideGo(nl);//проводим отрезок
+       //Добавление треугольника
+        if(treangleAdd==true  && newLine!=null && poindAdd2==true ){
+            model.SideGo(newLine);//проводим отрезок
+            model.findLinesUpdateXY(newLine.getId());
             if(angleCol==2){//2-для угла, треугольника
                 poindAdd1=true;
             }
         }
 
         //Создание отрезка
-        if (segmentAdd ==true && nl!=null && poindAdd2==true){
-            poindSetRevAccess(nl);
-            model.SideGo(nl);//проводим отрезок
+        if (segmentAdd ==true && newLine!=null && poindAdd2==true){
+            model.SideGo(newLine);//проводим отрезок
+            model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             poindAdd1 = true;//первая точка создана
         }
         //Вторая точка, если растояние до неё меньше 15px, конец отрезка
         //переходит на точку. Щелчок мышкой, вторая точка выбрана заданная
-        model.lineAddPoind(nl,poindAdd2);
+        model.lineAddPoind(newLine,poindAdd2);
 
         //Создание луча
-        if(rayAdd==true && nl!=null && poindAdd2==true){
+        if(rayAdd==true && newLine!=null && poindAdd2==true){
             //Расчитать координаты окончагия луча
             double x=model.getRayEndX()+(model.getVerX()-model.getRayEndX())*3;
             double y=model.getRayEndY()+(model.getVerY()-model.getRayEndY())*3;
             //Добавить коордитаны пересчета в коллекцию
             model.setRayStartX(x);
             model.setRayStartY(y);
+            //Пересчет координат в мировые
             model.setVerLineStartX(gridViews.revAccessX(model.getRayEndX()));
             model.setVerLineStartY(gridViews.revAccessY(model.getRayEndY()));
             model.setVerLineEndX(gridViews.revAccessX(x));
             model.setVerLineEndY(gridViews.revAccessY(y));
-            model.findPoindLines(nl.getId());
-            model.RayGo(nl);//проводим отрезок
+
+            model.RayGo(newLine);//проводим отрезок
+            model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             poindAdd1 = true;//первая точка создана
         }
+
         //Создание прямой
-        if (lineAdd==true && nl!=null && poindAdd2==true){
-            Circle c=model.findCircle(poindLine1);//первая точка
+        if (lineAdd==true && newLine!=null && poindAdd2==true){
+            //Circle c=model.findCircle(poindLine1);//первая точка
             //расчитать концов прямой по уравнению прямой
-            double x=c.getCenterX()+(model.getVerX()-c.getCenterX())*3;
-            double y=c.getCenterY()+(model.getVerY()-c.getCenterY())*3;
-            double x1=c.getCenterX()+(model.getVerX()-c.getCenterX())*-3;
-            double y1=c.getCenterY()+(model.getVerY()-c.getCenterY())*-3;
+            double x=poindLine1.getCenterX()+(model.getVerX()-poindLine1.getCenterX())*3;
+            double y=poindLine1.getCenterY()+(model.getVerY()-poindLine1.getCenterY())*3;
+            double x1=poindLine1.getCenterX()+(model.getVerX()-poindLine1.getCenterX())*-3;
+            double y1=poindLine1.getCenterY()+(model.getVerY()-poindLine1.getCenterY())*-3;
 
             //Добавить коордитаны пересчета в коллекцию
             model.setVerLineStartX(gridViews.revAccessX(x1));
             model.setVerLineStartY(gridViews.revAccessY(y1));
             model.setVerLineEndX(gridViews.revAccessX(x));
             model.setVerLineEndY(gridViews.revAccessY(y));
-            model.findPoindLines(nl.getId());
+            model.findLinesUpdateXY(newLine.getId());
            //задать координаты прямой
             model.setRayStartX(x1);
             model.setRayStartY(y1);
             model.setRayEndX(x);
             model.setRayEndY(y);
             //проводим прямую
-            model.RayGo(nl);
+            model.RayGo(newLine);
             poindAdd1 = true;//разрешение для постройки 2 точки
         }
+
+
     }
-    //Добавить перерасчетные координаты
-    public void poindSetRevAccess(Line o){
-        model.setVerLineStartX(gridViews.revAccessX(o.getStartX()));
-        model.setVerLineStartY(gridViews.revAccessY(o.getStartY()));
-        model.findPoindLines1(nl.getId());
-    }
+
 
     //Перемещение мыши с нажатой кнопкой
     public void onMouseDraggen(MouseEvent mouseEvent) {
@@ -301,8 +300,12 @@ public class  Controller extends View {
         }
         //Добавление точки на доске
         if (poindAdd) {
-            String newPoind=model.createPoindAdd(paneShape);
+            Circle newPoind=model.createPoindAdd();//создать точку
+            paneShape.getChildren().add(newPoind);//добавить на доску
             poindAdd = false;//Режим добавления точки окончен
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
         //Добавление отрезка
         if (segmentAdd ==true && poindAdd1==false) {
@@ -312,30 +315,45 @@ public class  Controller extends View {
         if (segmentAdd == true && poindAdd1 == true) {
               addLineRayEnd();
               segmentAdd = false;//окончание режима добавления
+              //Связать точки с прямой
+              lineBindCircles(poindLine1,poindLine2,newLine );
+              //Заменить имя
+              model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
               //Вывод информации об объектах в правую часть доски
-              model.setCol(infoStatus);
               model.setTxtShape("");
               model.txtAreaOutput();
+        }
 
-            }
         //Добавление угла первая  точка
         if (angleAdd ==true && poindAdd1==false) {
-            addLineRayStart(3);//Создание первой точки и линии
-            angleCol+=1;//увеличиваем счетчик вершин
-        }
-        //Окончание построения угла
-        if(angleAdd==true && poindAdd1==true){
-            addLineRayEnd();
-            model.arcVertexAdd(infoStatus,paneShape);//рисуем арку дуги
-            angleAdd= false;//окончание режима добавления
-            poindAdd1=false;
-            angleCol=0;
-            //Вывод информации об объектах в правую часть доски
-            model.setCol(infoStatus);
-            model.setTxtShape("");
-            model.txtAreaOutput();
+            if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
+                poindLine1 = model.createPoindAdd();//создать новую вершину
+                infoStatus = infoStatus+poindLine1.getId();//добавить вершину в список
+                paneShape.getChildren().add(poindLine1);
+            } else {
+                infoStatus = infoStatus +model.getTimeVer().getId();//Вершина из временной переменной
+                poindLine1=model.getTimeVer();
+            }
+            if(angleCol==1){
 
+            }
+            angleCol+=1;//увеличиваем счетчик вершин
+            if (angleCol==3){
+                poindAdd2 = false;//закрыть 2 точку
+                model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+                Arc arc=model.arcVertexAdd(infoStatus);
+                paneShape.getChildren().add(arc);//рисуем арку дуги
+                //Связываем арку с углом
+                arcBindPoind(infoStatus,arc);
+                angleAdd= false;//окончание режима добавления
+                poindAdd1=false;
+                angleCol=0;
+                //Вывод информации об объектах в правую часть доски
+                model.setTxtShape("");
+                model.txtAreaOutput();
+            }
         }
+
         //Построение треугольника
         if (treangleAdd ==true && poindAdd1==false) {
             addLineRayStart(4);//Создание первой точки и линии
@@ -345,18 +363,18 @@ public class  Controller extends View {
         if(treangleAdd==true && poindAdd1==true){
             addLineRayEnd();
           //  System.out.println(poindTreangle1);
-            nl = model.createLineAdd(paneShape,4);
+            newLine = model.createLineAdd(4);
             Circle c=model.findCircle(poindTreangle1);
             model.setVerX(c.getCenterX());
             model.setVerY(c.getCenterY());
-            model.SideGo(nl);
+            model.SideGo(newLine);
             model.setVerLineStartX(model.getVerX0());
             model.setVerLineStartY(model.getVerY0());
             model.setVerLineEndX(gridViews.revAccessX(c.getCenterX()));
             model.setVerLineEndY(gridViews.revAccessY(c.getCenterY()));
-            model.findPoindLines(nl.getId());
-            infoStatus = infoStatus + nl.getId();//Добавить линию в список
-            model.setCol(infoStatus);
+           // model.findPoindLines(newLine.getId());
+           // infoStatus = infoStatus + newLine.getId();//Добавить линию в список
+           // model.setCol(infoStatus);
             //добавить последнию линию для завершения треугольника
             //model.arcVertexAdd(infoStatus,paneShape);
             treangleAdd= false;//окончание режима добавления
@@ -374,9 +392,12 @@ public class  Controller extends View {
         //Окончание построения луча
         if(rayAdd==true && poindAdd1==true){
             addLineRayEnd();
-            rayAdd=false;
+            rayAdd=false;//закончить построение луча
+            //Связать точки с лучом
+            rayBindCircles(poindLine1,poindLine2,newLine );
+            //Заменить имя
+            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
             //Вывод информации об объектах в правую часть доски
-            model.setCol(infoStatus);
             model.setTxtShape("");
             model.txtAreaOutput();
 
@@ -387,12 +408,15 @@ public class  Controller extends View {
         }
         if (lineAdd==true && poindAdd1==true){
             addLineRayEnd();
+            //Связать точки с прямой
+            circlesBindLine(poindLine1, poindLine2, newLine);
+            //Заменить имя
+            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
             lineAdd=false;
             //Вывод информации об объектах в правую часть доски
-            model.setCol(infoStatus);
+           // model.setCol(infoStatus);
             model.setTxtShape("");
             model.txtAreaOutput();
-
         }
         mouseEvent.consume();
         }//End onMousePressed()
@@ -400,37 +424,112 @@ public class  Controller extends View {
     //Добавление отрезков, лучей, прямых
     public void addLineRayStart(int Segment){
         if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-            poindLine1 = model.createPoindAdd(paneShape);//создать новую вершину
-            infoStatus = infoStatus+String.valueOf(poindLine1);//добавить вершину в список
-        } else {
-            infoStatus = infoStatus +model.getTimeVer();//Вершина из временной переменной
-            poindLine1=model.getTimeVer();
+            poindLine1 = model.createPoindAdd();//создать новую вершину
+            paneShape.getChildren().add(poindLine1);
+         } else {
+             poindLine1=model.getTimeVer();
         }
         //Сохранить первую точку треугольника
-        if (treangleAdd==true && poindAdd2==false){
-            poindTreangle1=infoStatus;
-        }
-        nl = model.createLineAdd(paneShape,Segment);//создать линию
-        nl.toBack();//переместить линию вниз под точку
-        infoStatus = infoStatus + nl.getId();//Добавить линию в список
-       // System.out.println(infoStatus);
+       // if (treangleAdd==true && poindAdd2==false){
+        //    poindTreangle1=infoStatus;
+       // }
+        newLine = model.createLineAdd(Segment);//создать линию
+        paneShape.getChildren().add(newLine);//добавить на доску
+        newLine.toBack();//переместить линию вниз под точку
         poindAdd2 = true;//режим добавления второй точки и последующих
     }
     //Метод окончания добавления фигур
     public void addLineRayEnd(){
         if (model.isPoindOldAdd() == false) {
-            poindLine2 = model.createPoindAdd(paneShape);//создать новую
-            infoStatus = infoStatus + poindLine2;//добавить вторую вершину(получтся типа AaB)
+            poindLine2 = model.createPoindAdd();//создать новую
+            paneShape.getChildren().add(poindLine2);
         }else {
-            infoStatus = infoStatus +model.getTimeVer();
             poindLine2=model.getTimeVer();
         }
         //закрыть режим добавления
-        //model.setCol(infoStatus);
         poindAdd1 = false;//закрыть 1 точку
         poindAdd2 = false;//закрыть 2 точку
         model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
-       // System.out.println("end: "+infoStatus);
+     }
+
+    //Метод двунаправленного связывания точек начала и конца линии с самой линией
+    //для перемещения отрезков
+    //Вход ТочкаСтарт, ТочкаКонец, Линия
+    public void lineBindCircles(Circle c1, Circle c2, Line l){
+        l.startXProperty().bindBidirectional(c1.centerXProperty());
+        l.startYProperty().bindBidirectional(c1.centerYProperty());
+        l.endXProperty().bindBidirectional(c2.centerXProperty());
+        l.endYProperty().bindBidirectional(c2.centerYProperty());
+    }
+
+    //Связывания точек начала луча, промежуточной точки и самого луча
+    //Начало луча
+    public void rayBindCircles(Circle cStart, Circle cEnd, Line ray) {
+        ray.startXProperty().bindBidirectional(cStart.centerXProperty());
+        ray.startYProperty().bindBidirectional(cStart.centerYProperty());
+        //Расчет конца луча
+        ray.startYProperty().addListener((obj, oldValue, newValue) -> {
+            ray.setEndY(rayLineY(cStart, cEnd));
+        });
+        ray.startXProperty().addListener((obj, oldValue, newValue) -> {
+            ray.setEndX(rayLineX(cStart, cEnd));
+        });
+        //Точка на луче
+        cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> {
+            ray.setEndX(rayLineX(cStart, cEnd));
+        });
+        cEnd.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            ray.setEndY(rayLineY(cStart, cEnd));
+        });
+    }
+    //Связывание вершины угла с точкой
+    //Вход угол АВС
+    public void arcBindPoind(String s, Arc arc){
+        char[] arcChar=s.toCharArray();
+        Circle c1=model.findCircle(String.valueOf(arcChar[0]));
+        Circle c2=model.findCircle(String.valueOf(arcChar[1]));
+        Circle c3=model.findCircle(String.valueOf(arcChar[2]));
+        c2.centerXProperty().bindBidirectional(arc.centerXProperty());
+        c2.centerYProperty().bindBidirectional(arc.centerYProperty());
+        arc.centerXProperty().addListener((obj, oldValue, newValue)->{
+            model.arcVertex(c1,c2,c3,arc);
+        });
+        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
+            model.arcVertex(c1,c2,c3,arc);
+        });
+        c3.centerXProperty().addListener((obj, oldValue, newValue)->{
+            model.arcVertex(c1,c2,c3,arc);
+        });
+    }
+    //Связывание прямой с точками
+    public void circlesBindLine(Circle cStart, Circle cEnd, Line line) {
+        //Точка на прямой
+        cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> {
+            line.setEndX(rayLineX(cStart, cEnd));
+            line.setStartX(rayLineX(cEnd, cStart));
+        });
+        cEnd.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            line.setEndY(rayLineY(cStart, cEnd));
+            line.setStartY(rayLineY(cEnd, cStart));
+        });
+        cStart.centerXProperty().addListener((obj, oldValue, newValue) -> {
+            line.setEndX(rayLineX(cStart, cEnd));
+            line.setStartX(rayLineX(cEnd, cStart));
+        });
+        cStart.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            line.setEndY(rayLineY(cStart, cEnd));
+            line.setStartY(rayLineY(cEnd, cStart));
+        });
+    }
+
+    //Метод для расчета по параметрическому уравнению прямой
+    // координат начала и конца для прямой, окончания линии для луча
+    //Вход: точки лежещие на линии
+    double rayLineX(Circle c1, Circle c2){
+        return c1.getCenterX()+(c2.getCenterX()-c1.getCenterX())*3;
+    }
+    double rayLineY(Circle c1, Circle c2){
+        return c1.getCenterY()+(c2.getCenterY()-c1.getCenterY())*3;
     }
 
     // Изменение масштаба координатной сетки
@@ -439,8 +538,6 @@ public class  Controller extends View {
         gridViews.onScrollView(sc);
         updateShape();
     }
-
-
 
     //Обновление всех точек
     public void updateShape() {
@@ -498,7 +595,6 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_7);
         model.statusGo(leftStatus);
         segmentAdd =true;
-        infoStatus ="";//названия отрезка для коллекции(AaB -А-первая точка а - отрезок В - вторая точка)
     }
 
     //Нажата кнопка меню "Признаки равнобедренного треугольника
@@ -619,7 +715,6 @@ public class  Controller extends View {
         window.show();
 
     }
-
 
 }
 
