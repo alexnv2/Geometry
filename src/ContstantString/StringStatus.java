@@ -14,6 +14,8 @@ public final class StringStatus {
     public static final String STA_11="Луч ";
     public static final String STA_12="Прямая ";
     public static final String STA_14="Укажите на доске три точки для построения угла.";
+    public static final String STA_15="Наведите мышку на геометрическую фигуру для удаления и нажмите левую кнопку мышки ";
+    public static final String STA_16="Угол ";
 
 
 
