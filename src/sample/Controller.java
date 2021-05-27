@@ -84,14 +84,13 @@ public class  Controller extends View {
     private boolean lineAdd=false;//true - создание прямой
     private boolean angleAdd=false;//true -создание угла
     private boolean treangleAdd=false;//true - создание треугольника
-    private String poindTreangle1;//первая точка треугольника
+    private Circle poindTreangle1;//первая точка треугольника
+    private Line lineTriangle1;//первая сторона треугольника для построения
     private int angleCol=0;//индекс счета углов
 
 
     private boolean poindAdd1=false;//true - создание первой точки для отрезка
     private boolean poindAdd2=false;//true - создание второй точки для отрезка
-   // private boolean poindAdd3=false;//true - создание третьей точки для угла
-
 
 
     private String infoStatus;//Вершины угла
@@ -292,7 +291,6 @@ public class  Controller extends View {
 
         //Создание прямой
         if (lineAdd==true && newLine!=null && poindAdd2==true){
-            //Circle c=model.findCircle(poindLine1);//первая точка
             //расчитать концов прямой по уравнению прямой
             double x=poindLine1.getCenterX()+(model.getVerX()-poindLine1.getCenterX())*3;
             double y=poindLine1.getCenterY()+(model.getVerY()-poindLine1.getCenterY())*3;
@@ -390,11 +388,11 @@ public class  Controller extends View {
         if (angleAdd ==true && poindAdd1==false) {
             if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
                 poindLine1 = model.createPoindAdd();//создать новую вершину
-                infoStatus = infoStatus+poindLine1.getId();//добавить вершину в список
+                infoStatus = infoStatus+poindLine1.getId()+"_";//добавить вершину в список
                 paneShape.getChildren().add(poindLine1);
                 model.indexAdd(poindLine1);//увеличить индекс
             } else {
-                infoStatus = infoStatus +model.getTimeVer().getId();//Вершина из временной переменной
+                infoStatus = infoStatus +model.getTimeVer().getId()+"_";//Вершина из временной переменной
                 poindLine1=model.getTimeVer();
                 model.indexAdd(poindLine1);//увеличить индекс
             }
@@ -405,6 +403,7 @@ public class  Controller extends View {
             if (angleCol==3){
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+                System.out.println(infoStatus);
                 arc=model.arcVertexAdd(infoStatus);
                 paneShape.getChildren().add(arc);//рисуем арку дуги
                 arc.toBack();//перемещать узел вниз только после добавления на стол
@@ -420,27 +419,31 @@ public class  Controller extends View {
         }
         //Построение треугольника
         if (treangleAdd ==true && poindAdd1==false) {
-            addLineRayStart(4);//Создание первой точки и линии
+            addLineRayStart(3);//Создание первой точки и линии
             angleCol+=1;//увеличиваем счетчик вершин
-        }
+         }
         //Окончание построения треугольника
         if(treangleAdd==true && poindAdd1==true){
+            //Двунаправленная связь
+            model.lineBindCircles(poindTreangle1,poindLine1,lineTriangle1);
+            //Заменить имя
+            model.findNameId(poindTreangle1.getId(),poindLine1.getId(),lineTriangle1.getId());
             addLineRayEnd();
-          //  System.out.println(poindTreangle1);
-            newLine = model.createLineAdd(4);
-            Circle c=model.findCircle(poindTreangle1);
-            model.setVerX(c.getCenterX());
-            model.setVerY(c.getCenterY());
+            //Двунаправленная связь
+            model.lineBindCircles(poindLine1,poindLine2,newLine);
+            //Заменить имя
+            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            newLine = model.createLineAdd(3);
+            model.setVerX(poindTreangle1.getCenterX());
+            model.setVerY(poindTreangle1.getCenterY());
             model.SideGo(newLine);
-            model.setVerLineStartX(model.getVerX0());
-            model.setVerLineStartY(model.getVerY0());
-            model.setVerLineEndX(gridViews.revAccessX(c.getCenterX()));
-            model.setVerLineEndY(gridViews.revAccessY(c.getCenterY()));
-           // model.findPoindLines(newLine.getId());
-           // infoStatus = infoStatus + newLine.getId();//Добавить линию в список
-           // model.setCol(infoStatus);
-            //добавить последнию линию для завершения треугольника
-            //model.arcVertexAdd(infoStatus,paneShape);
+            //Двунаправленная связь
+            model.lineBindCircles(poindTreangle1,poindLine2,newLine);
+            paneShape.getChildren().add(newLine);
+            newLine.toBack();
+            model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
+            //Заменить имя
+            model.findNameId(poindTreangle1.getId(),poindLine2.getId(),newLine.getId());
             treangleAdd= false;//окончание режима добавления
             poindAdd1=false;
             angleCol=0;
@@ -488,7 +491,7 @@ public class  Controller extends View {
     /**
      * Метод addLineRayStart(int Segment)
      * Метод начала построения отрезков, лучей и прямых.
-     * Вход: номер геометрической фигуры, 0-отрезок, 1-луч, 2 прямая,3 угол, 4 треугольник
+     * Вход: номер геометрической фигуры, 0-отрезок, 1-луч, 2 прямая,3 треугольник
      * @param  Segment
      */
     public void addLineRayStart(int Segment){
@@ -500,11 +503,13 @@ public class  Controller extends View {
             poindLine1=model.getTimeVer();
             model.indexAdd(poindLine1);//увеличить индекс
         }
-        //Сохранить первую точку треугольника
-       // if (treangleAdd==true && poindAdd2==false){
-        //    poindTreangle1=infoStatus;
-       // }
+
         newLine = model.createLineAdd(Segment);//создать линию
+        //Сохранить первую точку треугольника и первую сторону
+        if (treangleAdd==true && poindAdd2==false){
+            poindTreangle1=poindLine1;
+            lineTriangle1=newLine;//
+        }
         paneShape.getChildren().add(newLine);//добавить на доску
         newLine.toBack();//переместить линию вниз под точку
         poindAdd2 = true;//режим добавления второй точки и последующих

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <MenuBar VBox.vgrow="NEVER">
     <menus>
       <Menu mnemonicParsing="false" text="Фигуры">
@@ -61,13 +61,13 @@
     <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
-    <Button fx:id="btnAngle" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" onAction="#btnAngle" />
+    <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnVertical" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" text="Медиана" />
     <Button mnemonicParsing="false" text="Высота" />
     <Button mnemonicParsing="false" text="Биссектриса" />
-    <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="20.0" prefWidth="40.0" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" />
+    <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" />
   </HBox>
   <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -80,11 +80,12 @@
       </AnchorPane>
         <StackPane fx:id="Cartesian">
         <Pane fx:id="paneGrid" />
-        <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
-        </Pane>
+          <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
+
+          </Pane>
         </StackPane>
       <AnchorPane>
-        <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <TextArea fx:id="txtShape" text="yyy" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
       </AnchorPane>
     </items>
   </SplitPane>

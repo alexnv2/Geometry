@@ -9,6 +9,10 @@ import javafx.scene.shape.Line;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+/**
+ * Класс View расширяет интерфейс Observer
+ * Базовый класс, предназначен для информации на экран
+ */
 //Первый класс для вывода на экран
 class View implements Observer{
 

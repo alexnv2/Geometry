@@ -14,6 +14,8 @@ import javafx.scene.web.WebView;
 import lombok.Data;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static ContstantString.StringStatus.*;
@@ -33,6 +35,7 @@ class Model implements  Observable {
 
     //Переменные класса
     private Circle vertex; //точка
+    private Circle selected;//Хранит ссылки на выбранные объекты
     private Line line;//линия, луч, прямая
     private Label Status;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
@@ -70,10 +73,16 @@ class Model implements  Observable {
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
     private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
     private String verSegmentAngle;//имя угла
-    private char indexPoind='A';//Индекс для точек
-    private char indexLine='a';//Индекс для линий и отрезков
-    private char indexArc='A';//Индекс для уголов
+
+    private String indexPoind="A";//Индекс для точек
+    private int indexPoindInt =0;
+    private String indexLine="a";//Индекс для прямых, отрезков, лучей
+    private int indexLineInt=0;
+
+    private int inDash=2;//индекс определяет внешний вид прямой (0-4 вида)
+
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
+    private double radiusPoind=5;//радиус точки
 
     private double arcRadius;//радиус дуги
     private double angleStart;//начало дуги гр.
@@ -85,6 +94,7 @@ class Model implements  Observable {
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
     private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
+    private ArrayList<Double> arrDash=new ArrayList<>();//массив для создания вида строк
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
@@ -132,6 +142,49 @@ class Model implements  Observable {
       webGo(o);
     }
 
+    /**
+     * Метод indexPoindAdd().
+     * Предназначен для увелечения индекса в названии точки.
+     */
+    private String indexPoindAdd(){
+        String s="";
+        if(indexPoindInt >0) {
+            s = indexPoind + indexPoindInt;
+        }else{
+            s=indexPoind;
+        }
+        char[] chars=indexPoind.toCharArray();
+        if(String.valueOf(chars[0]).equals("Z")){
+            indexPoind="A";
+            indexPoindInt +=1;
+        }else {
+            chars[0]+=1;
+            indexPoind=String.valueOf(chars[0]);
+        }
+        return s;
+    }
+
+    /**
+     * Метод indexLinedAdd().
+     * Предназначен для увелечения индекса в названии прямых, отрезков, лучей.
+     */
+    private String indexLineAdd(){
+        String s="";
+        if(indexLineInt >0) {
+            s = indexLine + indexLineInt;
+        }else{
+            s=indexLine;
+        }
+        char[] chars=indexLine.toCharArray();
+        if(String.valueOf(chars[0]).equals("z")){
+            indexLine="a";
+            indexLineInt +=1;
+        }else {
+            chars[0]+=1;
+            indexLine=String.valueOf(chars[0]);
+        }
+        return s;
+    }
     //Текст для отобоажения в левой части
     public void webViewLeftString(WebView o, int c){
         String pathImages= new File(".").getAbsolutePath();
@@ -166,6 +219,14 @@ class Model implements  Observable {
         webViewGo(o);//на вывод
     }
 
+    StringBuilder nameSplit(String s){
+        String[] name=s.split("_");
+        StringBuilder sb=new StringBuilder();
+        for (String n: name){
+            sb.append(n);
+        }
+        return sb;
+    }
     /**
      * Метод txtAreaOutput()
      * Предназначен для выборки из коллекций объектов информацию о геометрических фигурах
@@ -187,19 +248,22 @@ class Model implements  Observable {
                int l = p.getSegment();
                if (l == 0) {
                    double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
-                   txtShape = txtShape + STA_10+ p.getId() + " Длина:" + lengthSegment / 100 + "\n";
+                   txtShape = txtShape + STA_10+ nameSplit(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
                }
                 else if (l == 1) {
-                    txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + p.getId() + "\n";
+                    txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplit(p.getId()) + "\n";
                 }else if (l == 2) {
-                    txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + p.getId() + "\n";
-                }
+                    txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplit(p.getId()) + "\n";
+                }else if(l==3){
+                   double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                   txtShape = txtShape + STA_17+ nameSplit(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
+               }
             }
         }
        //Информация об углах
         for( VertexArc v: vertexArcs){
             if(v!=null) {
-                txtShape = txtShape + "Угол " + v.getId() +"= "+v.getLengthAngle()+ " гр. \n";
+                txtShape = txtShape + "Угол " + nameSplit(v.getId()) +"= "+v.getLengthAngle()+ " гр. \n";
                 }
             }
        textAreaGo();
@@ -216,11 +280,8 @@ class Model implements  Observable {
         newPoind = createPoind();//Создать точку
         //добавить в коллецию точек
         poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,true,false,0));
-        //добавить в коллекцию фигур
         //Передать в View для вывода на экран
         VertexGo(newPoind);
-        //Увеличить индекс
-        indexPoind += 1;
         //Добавить в правую часть доски
         setTxtShape("");
         txtAreaOutput();
@@ -234,11 +295,10 @@ class Model implements  Observable {
      */
     Circle  createPoind(){
         Circle circle=new Circle();
-        circle.setRadius(5);
+        circle.setRadius(radiusPoind);
         circle.setFill(Color.LIGHTBLUE);
         circle.setFill(Color.DARKSLATEBLUE);
-        circle.setId(String.valueOf(indexPoind));//Индефикатор узла
-        circle.setUserData(String.valueOf(indexPoind));//Имя узла
+        circle.setId(indexPoindAdd());//Индефикатор узла
         //Обработка событий
         //Перемещение с нажатой клавишей
         circle.setOnMouseDragged(e-> {
@@ -261,7 +321,8 @@ class Model implements  Observable {
         });
          //Нажатие клавиши
         circle.setOnMousePressed(e->{
-                circle.setFill(Color.RED);
+                selectCircle(circle);
+                //circle.setFill(Color.RED);
                 poindOldAdd = true;//взять эту точку для отрезка
                 timeVer = circle;//сохранить выбранную точку для построения
                 //Вызвать метод для увелечения счетчика index в колекции PoindCircles
@@ -279,7 +340,7 @@ class Model implements  Observable {
         });
         //Отпускание кнопки
         circle.setOnMouseReleased(e->{
-            circle.setFill(Color.DARKSLATEBLUE);
+           // circle.setFill(Color.DARKSLATEBLUE);
             poindOldAdd=false;//запрет брать точку для отрезков, прямых, лучей
 
          });
@@ -368,7 +429,7 @@ class Model implements  Observable {
 //Создание  отрезка
      Line createLine(int seg){
         Line newLine=new Line();
-        if(seg==0 || seg==3 || seg==4) {//Отрезок или угол или треугольник
+        if(seg==0 || seg==3) {//Отрезок или треугольник
             verX1 = verX;
             verY1 = verY;
             newLine.setStartX(verX);
@@ -383,11 +444,11 @@ class Model implements  Observable {
             newLine.setEndX(verX);
             newLine.setEndY(verY);
         }
-
-        newLine.setId(String.valueOf(indexLine));//Индефикатор узла
-        newLine.setUserData(String.valueOf(indexLine));//Имя узла
+        newLine.setId(indexLineAdd());//Индефикатор узла
         newLine.setStroke(Color.DARKSLATEBLUE);//Color
         newLine.setStrokeWidth(2);//Толщина
+
+         //Прявязка событий мышки
          newLine.setOnMousePressed(e->{
             // System.out.println("poind");
          });
@@ -400,13 +461,16 @@ class Model implements  Observable {
                  if (p.getLine().getId().equals(newLine.getId())) {
                      if (p.getSegment() == 0) {
                          //Найти и вывести имя отрезка
-                         setStringLeftStatus(STA_10 + p.getId());
+                         setStringLeftStatus(STA_10 + nameSplit(p.getId()));
                          statusGo(Status);
                      }else if(p.getSegment()==1){
-                         setStringLeftStatus(STA_11 + p.getId());
+                         setStringLeftStatus(STA_11 + nameSplit(p.getId()));
                          statusGo(Status);
                      }else if(p.getSegment()==2){
-                         setStringLeftStatus(STA_12 + p.getId());
+                         setStringLeftStatus(STA_12 + nameSplit(p.getId()));
+                         statusGo(Status);
+                     }else if(p.getSegment()==3){
+                         setStringLeftStatus(STA_17 + nameSplit(p.getId()));
                          statusGo(Status);
                      }
                  }
@@ -428,8 +492,16 @@ class Model implements  Observable {
      Line createLineAdd(int segment){
          Line newLine;
          newLine = createLine(segment);//добавить линию
+         //Вид линии
+         switch (inDash){
+             case 0->Collections.<Double>addAll(arrDash,2.0);
+             case 1->Collections.<Double>addAll(arrDash,15.0, 5.0);
+             case 2->Collections.<Double>addAll(arrDash,5.0, 4.0, 5.0, 4.0, 5.0);
+             case 3->Collections.<Double>addAll(arrDash,2.0, 10.0);
+             case 4->Collections.<Double>addAll(arrDash,10.0,4.0,10.0);
+         }
+         newLine.getStrokeDashArray().addAll(arrDash);
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
-         indexLine+=1;//увеличить индекс
          return newLine;
       }
 
@@ -529,7 +601,7 @@ class Model implements  Observable {
        for(PoindLine p: poindLines){
            if(p!=null){
                if(p.getId().equals(linaA)){
-                   p.setId(poindA+poindB);
+                   p.setId(poindA+"_"+poindB);
                }
            }
        }
@@ -568,9 +640,14 @@ class Model implements  Observable {
           }
       }
     }
-    //Поиск по коллекции PoindLines и замена мировых координат
-    //Вход: строка ID
-    //Выход: нет
+
+    /**
+     * Метод findLinesUpdateXY(String id).
+     * Предназначен для замены мировых координат при построении отрезков, лучей и прямых
+     * @param id - имя линии до замены
+     * Особенность метода, должен всегда вызываться до метода findNameId(Circle1, Circle2, Line), который
+     * меняет имя в коллекции PoindLines.
+     */
     public void findLinesUpdateXY(String id){
        for(PoindLine p: poindLines){
            if(p!=null){
@@ -579,7 +656,7 @@ class Model implements  Observable {
                  p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
                  p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
                  p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
-               }
+              }
            }
        }
 
@@ -594,9 +671,9 @@ class Model implements  Observable {
           for(PoindLine p: poindLines) {
             if (p != null) {
              String name=p.getId();
-             char[] chName=name.toCharArray();
+             String[] chName=name.split("_");
              //Обновляем начало отрезка, луча, прямой
-             if(s.equals(String.valueOf(chName[0]))){
+             if(s.equals(chName[0])){
                  //Обновляем координаты
                  p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
                  p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
@@ -610,7 +687,7 @@ class Model implements  Observable {
                      p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
                  }
              }
-             if(s.equals(String.valueOf(chName[1]))){
+             if(s.equals(chName[1])){
                  p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
                  p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
                  p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
@@ -644,10 +721,6 @@ class Model implements  Observable {
         }
         return bfMove;
     }
-
-
-
-
     /**
      * Метод arcVertexAdd(String arc).
      * Предназначен для создания нового объекта дуги, которая задается в виде
@@ -658,10 +731,11 @@ class Model implements  Observable {
      * @return - возвращает объект дугу
      */
     Arc arcVertexAdd(String arc){
-        char[] arcChar=arc.toCharArray();//преобразовать в массив символов
-        Circle o1=findCircle(String.valueOf(arcChar[0]));
-        Circle o2=findCircle(String.valueOf(arcChar[1]));
-        Circle o3=findCircle(String.valueOf(arcChar[2]));
+        String[] arcChar=arc.split("_");
+        //char[] arcChar=arc.toCharArray();//преобразовать в массив символов
+        Circle o1=findCircle(arcChar[0]);
+        Circle o2=findCircle(arcChar[1]);
+        Circle o3=findCircle(arcChar[2]);
         Arc arcNew=new Arc();
         arcNew.setId(String.valueOf(arcChar[1]));
         setColorGo(Color.DARKSLATEBLUE);
@@ -744,18 +818,18 @@ class Model implements  Observable {
     private void findArcUpdate(String s){
         for(VertexArc v: vertexArcs ) {
             if (v != null) {
-                char[] arcChar=v.getId().toCharArray();
+                String[] arcChar=v.getId().split("_");
                 if (v.getArc().getId().equals(s)) {
                     v.setCenterX(gridViews.revAccessX(verX));
                     v.setCenterY(gridViews.revAccessY(verY));
                     v.setStartAngle(v.getArc().getStartAngle());
                     v.setLengthAngle(v.getArc().getLength());
-                }else if(s.equals(String.valueOf(arcChar[0]))){
+                }else if(s.equals(arcChar[0])){
                     v.setCenterX(gridViews.revAccessX(v.getArc().getCenterX()));
                     v.setCenterY(gridViews.revAccessY(v.getArc().getCenterY()));
                     v.setStartAngle(v.getArc().getStartAngle());
                     v.setLengthAngle(v.getArc().getLength());
-                }else if(s.equals(String.valueOf(arcChar[2]))){
+                }else if(s.equals(arcChar[2])){
                     v.setCenterX(gridViews.revAccessX(v.getArc().getCenterX()));
                     v.setCenterY(gridViews.revAccessY(v.getArc().getCenterY()));
                     v.setStartAngle(v.getArc().getStartAngle());
@@ -921,10 +995,11 @@ class Model implements  Observable {
      * @param arc - объект арка дуги угла.
      */
     public void arcBindPoind(String s, Arc arc){
-        char[] arcChar=s.toCharArray();
-        Circle c1=findCircle(String.valueOf(arcChar[0]));
-        Circle c2=findCircle(String.valueOf(arcChar[1]));
-        Circle c3=findCircle(String.valueOf(arcChar[2]));
+        String[] arcChar=s.split("_");
+
+        Circle c1=findCircle(arcChar[0]);
+        Circle c2=findCircle(arcChar[1]);
+        Circle c3=findCircle(arcChar[2]);
         c2.centerXProperty().bindBidirectional(arc.centerXProperty());
         c2.centerYProperty().bindBidirectional(arc.centerYProperty());
         arc.centerXProperty().addListener((obj, oldValue, newValue)->{
@@ -1036,6 +1111,39 @@ class Model implements  Observable {
             b+=1;
         }
     }
+
+    private void selectCircle(Circle dot)
+    {
+        //Если выбран существющий объект
+        if (selected == dot) return;
+        //Создан новый объект, для старого поменять цвет
+        if (selected != null) selected.setFill(Color.DARKSLATEBLUE);
+        selected = dot;//и установить выбранный круг
+        //Если объект существует
+        if (selected != null)
+        {
+            selected.requestFocus(); //установить на него фокус
+            selected.setFill(Color.RED);//поменять цвет
+        }
+    }
+
+    /*
+    private void selectLine(Line dot)
+    {
+        //Если выбран существющий объект
+        if (selLine == dot) return;
+        //Создан новый объект, для старого поменять цвет
+        if (selLine != null) selLine.setStroke(Color.BLACK);
+        selLine = dot;//и установить выбранный круг
+        //Если объект существует
+        if (selLine != null)
+        {
+            selLine.requestFocus(); //установить на него фокус
+            selLine.setStroke(Color.RED);//поменять цвет
+        }
+    }
+
+     */
 
 }
 

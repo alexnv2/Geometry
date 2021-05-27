@@ -6,14 +6,14 @@ import lombok.Data;
 @Data
 public class PoindLine {
     private Line line;
-    private String id;
-    private double stX;
+    private String id;//имя линии по двум точкам (АВ)
+    private double stX;//координаты начал
     private double stY;
-    private double enX;
+    private double enX;//координаты конца
     private  double enY;
     private boolean bMove;// true- разрешено перемещение, false - линия расчетная, перемещение запрещено
     private boolean bSelect;//true - выделена на экране для группового удаления, false - по умолчанию
-    private int segment;//0-отрезок, 1-луч, 2 прямая,3 угол, 4 треугольник
+    private int segment;//0-отрезок, 1-луч, 2 прямая, 3 треугольник
     PoindLine(Line l, String i, double x0, double y0, double x1, double y1, boolean bm, boolean bs, int seg ){
         this.line=l;
         this.id=i;
