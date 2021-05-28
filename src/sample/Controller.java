@@ -7,10 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
@@ -76,6 +73,10 @@ public class  Controller extends View {
     private Circle poindLine1;//первая  точка луча, прямой, отрезка
     private Circle poindLine2;//вторая точка луча, прямой, отрезка
     private Arc arc;
+    @FXML
+    private CheckMenuItem menuShowPoindName;
+    @FXML
+    private CheckMenuItem menuShowLineName;
 
     //Ркжимы создания
     private boolean poindAdd=false;//true - создать точку
@@ -609,7 +610,53 @@ public class  Controller extends View {
         model.statusGo(leftStatus);
         segmentAdd =true;
     }
+    /**
+     * Метод menuShowPoindName()
+     * Предназначен для замены логической переменной, показывать большие буквы в именах точек.
+     * Пункт из меню "Настройки"
+     */
+    public void menuShowPoindName() {
+            visibleNamePoind(menuShowPoindName.isSelected());
+            model.setShowPoindName(menuShowPoindName.isSelected());
+        }
 
+    /**
+     * Метод visibleNamePoind(boolean bName).
+     * Предназначен для скрытия от показа или показа имен точек на доске
+     * @param bName -логическая переменная определяется в меню "Настроки->Показывать большие буквы в именах"
+     */
+    private void visibleNamePoind(boolean bName){
+        for (NamePoindLine pn: model.getNamePoindLines()){
+            if(pn!=null){
+                pn.getText().setVisible(bName);
+                pn.setVisiblePoind(bName);
+            }
+        }
+    }
+
+    /**
+     * Метод menuShowLineName().
+     * Предназначен скрытия от показа имен прямых, лучей, отрезков.
+     * Пункт из меню "Настройки"
+     */
+    public void menuShowLineName() {
+        visibleNameLine(menuShowLineName.isSelected());
+        model.setShowPoindName(menuShowLineName.isSelected());
+    }
+
+    /**
+     * Метод visibleNameLine(boolean bName).
+     * Предназначен скрытия от показа имен прямых, лучей, отрезков.
+     * @param bName - логическая переменная определяется в меню "Настроки->Показывать маленькие буквы в именах"
+     */
+    private void visibleNameLine(boolean bName){
+        for (NamePoindLine pn: model.getNamePoindLines()){
+            if(pn!=null){
+                pn.getText().setVisible(bName);
+                pn.setVisibleLine(bName);
+            }
+        }
+    }
     //Нажата кнопка меню "Признаки равнобедренного треугольника
     public void btnIsosceles(ActionEvent actionEvent) {
         model.webViewLeftString(webViewLeft, 1);
@@ -737,7 +784,6 @@ public class  Controller extends View {
         window.show();
 
     }
-
 
 
 

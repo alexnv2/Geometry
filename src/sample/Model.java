@@ -94,6 +94,10 @@ class Model implements  Observable {
     private double angleLength;//длина дуги гр.
 
     private boolean removeObject=false;//true - режим удаления
+    //Логические переменные из меню настроек
+    private boolean showPoindName=true;//по умолчанию, всегда показывать имена точек
+    private boolean showLineName=false;//по умолчанию, не показывать имена линий
+    private boolean showDate=false;//по умолчанию, не показывать данные объектов на доске
     //Коллекции
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
@@ -346,17 +350,17 @@ class Model implements  Observable {
    private void nameCircleAdd(Circle circle){
        Text textCircle=createNameShapes(circle.getId());//создать объект текст (имя точки)
        //Добавить в коллекцию NamePoindLine
-       namePoindLines.add(new NamePoindLine(textCircle,circle.getId(),-1,1,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY())));
+       namePoindLines.add(new NamePoindLine(textCircle,circle.getId(),-1,1,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName));
        textCircle.setText(circle.getId());//Имя для вывода на жоску
        textX=circle.getCenterX()-20;//место вывода Х при создании
        textY=circle.getCenterY()+20;//место вывода Y при создании
+       textCircle.setVisible(showPoindName);//показывать не показывать, зависит от меню "Настройка"
        TextGo(textCircle);//вывести на доску
        //Добавить в колекцию объектов на доске
        paneBoards.getChildren().add(textCircle);
        //Односторонняя связь точки с именем объекта для перемещения
        textBindCircle(circle,textCircle,-20,20);
    }
-
     /**
      * Метод findNameText(Circle circle).
      * Предназначен для поиска в коллекции NamePoindLine объекта Text связанного с именем точки.

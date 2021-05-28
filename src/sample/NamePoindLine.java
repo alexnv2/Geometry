@@ -14,14 +14,17 @@ public class NamePoindLine {
     private double dY;// в мировых координатах
     private double X;//координаты размещения имени мировые
     private double Y;
-
+    private boolean visiblePoind;//показывать имя или нет (по умолчанию true)
+    private boolean visibleLine;//показывать имя линий или нет(по умолчанию false)
     //Констуктор
-    NamePoindLine(Text text, String id, double dx, double dy, double x, double y){
+    NamePoindLine(Text text, String id, double dx, double dy, double x, double y, boolean visP, boolean viiL){
         this.text=text;
         this.id=id;
         this.dX=dx;
         this.dY=dy;
         this.X=x;
         this.Y=y;
+        this.visiblePoind=visP;
+        this.visibleLine=viiL;
     }
 }

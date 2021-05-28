@@ -51,6 +51,10 @@
 
         </items>
       </Menu>
+      <Menu mnemonicParsing="false" text="Настройки">
+        <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен" selected="true" onAction="#menuShowPoindName"></CheckMenuItem>
+        <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен" selected="false" onAction="#menuShowLineName"></CheckMenuItem>
+      </Menu>
       <Menu mnemonicParsing="false" text="Помощь">
         <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#onAbout" text="О программе" />
       </Menu>
