@@ -5,6 +5,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
@@ -47,7 +50,7 @@ class Model implements  Observable {
     private Arc arcGo;
     private Color ColorGo;
 
-    private double textX, textY;//координаты букв для передачи в View
+
     private String stringWebView;//text left
     private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
     private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
@@ -68,6 +71,8 @@ class Model implements  Observable {
     private double verLineStartY;//координата Y мировая для Line StartY
     private double verLineEndX;//координата X мировая для Line EndX
     private double verLineEndY;//координата Y мировая для Line EndY
+    private double textX;//координата Х для имен точек
+    private double textY;//координата Y для имен точек
 
     private Circle timeVer;//для временного хранения выбранных вершин
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
@@ -90,11 +95,11 @@ class Model implements  Observable {
 
     private boolean removeObject=false;//true - режим удаления
     //Коллекции
-  //  private LinkedList<String> col=new LinkedList<>();//колекция ID геометрических фигур
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
     private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
     private ArrayList<Double> arrDash=new ArrayList<>();//массив для создания вида строк
+    private LinkedList<NamePoindLine> namePoindLines=new LinkedList<>();//колекция для имен
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
@@ -125,7 +130,7 @@ class Model implements  Observable {
     /**
      * Метод notifyObservers(String message)
      * Уведомление слушателя, переопределяем функцию интерфейса.
-     * @param message
+     * @param message - сообщение  для слушателя
      */
     @Override
     public void notifyObservers(String message) {
@@ -147,7 +152,7 @@ class Model implements  Observable {
      * Предназначен для увелечения индекса в названии точки.
      */
     private String indexPoindAdd(){
-        String s="";
+        String s;
         if(indexPoindInt >0) {
             s = indexPoind + indexPoindInt;
         }else{
@@ -169,7 +174,7 @@ class Model implements  Observable {
      * Предназначен для увелечения индекса в названии прямых, отрезков, лучей.
      */
     private String indexLineAdd(){
-        String s="";
+        String s;
         if(indexLineInt >0) {
             s = indexLine + indexLineInt;
         }else{
@@ -270,6 +275,116 @@ class Model implements  Observable {
     }
 
     /**
+     * Метод createNameShapes().
+     * Предназначен для создания объекта хранения имени геометрической фигуру.
+     * Прявязка свойст мышки к объекту.
+     * @return - возвращает созданнай объект
+     */
+   Text createNameShapes(String name){
+       Text nameText=new Text();
+       nameText.setId(name);
+
+       //Привязка к событию мышки
+       nameText.setOnMouseDragged(e-> {
+           if(nameText.xProperty().isBound()){//проверить на связь
+               textUnBindCircle(nameText);//снять связь для перемещения
+           }
+           //Найти точку с которой связано имя
+           Circle circle=findCircle(nameText.getId());
+           //Максимальное растояние при перемещении от точки
+           double maxRadius=distance(e.getX(),e.getY(),circle.getCenterX(),circle.getCenterY());
+            if(maxRadius<80){
+               //Перемещаем имя точки
+               nameText.setX(e.getX());
+               nameText.setY(e.getY());
+           }
+           nameUpdateXY(nameText.getId());//обновляем данные колекции
+           //устанавливаем связь с точкой
+           textBindCircle(circle,nameText,(int)(nameText.getX()-circle.getCenterX()),(int)(nameText.getY()-circle.getCenterY()));
+       });
+       //Наведение мышки на объект
+       nameText.setOnMouseEntered(e-> {
+           nameText.setCursor(Cursor.HAND);
+         //  System.out.println("do "+nameText.getId());
+       });
+       //Уход мышки с объекта
+       nameText.setOnMouseExited(e-> {
+           nameText.setCursor(Cursor.DEFAULT);
+        });
+
+       return nameText;
+   }
+
+    /**
+     * Метод nameUpdateXY(String id).
+     * Предназначен для обновления мировых координат и растояния до точки при
+     * перемещении объекта Text. Вызывается из метода createNameShapes(String name).
+     * @param id - строка имя объекта Text.
+     */
+   private void nameUpdateXY(String id){
+       //Найти точку в колекции
+       Circle circle=findCircle(id);
+     //  System.out.println("do "+id);
+       for(NamePoindLine np: namePoindLines) {
+           if(np!=null) {
+               if(np.getId().equals(id)) {
+                   np.setDX(gridViews.revAccessX(np.getText().getX())-gridViews.revAccessX(circle.getCenterX()));
+                   np.setDY(gridViews.revAccessY(np.getText().getY())-gridViews.revAccessY(circle.getCenterY()));
+                   np.setX(gridViews.revAccessX(circle.getCenterX()));
+                   np.setY(gridViews.revAccessY(circle.getCenterY()));
+               }
+           }
+       }
+   }
+
+    /**
+     * Метод nameCircleAdd(Circle circle).
+     * Предназначен для добавления объекта Text связанного с именем точки.
+     * Вызывается из метода createPoindAdd() при добавлении точек.
+     * @param circle - объект точка.
+     */
+   private void nameCircleAdd(Circle circle){
+       Text textCircle=createNameShapes(circle.getId());//создать объект текст (имя точки)
+       //Добавить в коллекцию NamePoindLine
+       namePoindLines.add(new NamePoindLine(textCircle,circle.getId(),-1,1,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY())));
+       textCircle.setText(circle.getId());//Имя для вывода на жоску
+       textX=circle.getCenterX()-20;//место вывода Х при создании
+       textY=circle.getCenterY()+20;//место вывода Y при создании
+       TextGo(textCircle);//вывести на доску
+       //Добавить в колекцию объектов на доске
+       paneBoards.getChildren().add(textCircle);
+       //Односторонняя связь точки с именем объекта для перемещения
+       textBindCircle(circle,textCircle,-20,20);
+   }
+
+    /**
+     * Метод findNameText(Circle circle).
+     * Предназначен для поиска в коллекции NamePoindLine объекта Text связанного с именем точки.
+     * @param circle  - объект точка
+     * @return - объект Text
+     */
+   private Text findNameText(Circle circle){
+       for (NamePoindLine np: namePoindLines){
+           if(np!=null){
+               if(np.getId().equals(circle.getId())){
+                   return np.getText();
+               }
+           }
+       }
+       return null;
+   }
+   private void nameLineAdd(Line line){
+       Text nameLine=createNameShapes(line.getId());
+       //Добавить в коллекцию NamePoindLine
+
+   }
+
+   private void nameArc(Arc arc){
+       Text nameArc=createNameShapes(arc.getId());
+       //Добавить в коллекцию NamePoindLine
+
+   }
+    /**
      * Метод createPoindAdd()
      * Предназначен для создания точек и вывод на доску.
      * Для создания точки вызывается метод createPoind().
@@ -282,6 +397,8 @@ class Model implements  Observable {
         poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,true,false,0));
         //Передать в View для вывода на экран
         VertexGo(newPoind);
+        //Добавить имя на доску
+        nameCircleAdd(newPoind);
         //Добавить в правую часть доски
         setTxtShape("");
         txtAreaOutput();
@@ -297,12 +414,18 @@ class Model implements  Observable {
         Circle circle=new Circle();
         circle.setRadius(radiusPoind);
         circle.setFill(Color.LIGHTBLUE);
-        circle.setFill(Color.DARKSLATEBLUE);
+        circle.setStroke(Color.DARKSLATEBLUE);
         circle.setId(indexPoindAdd());//Индефикатор узла
+
         //Обработка событий
         //Перемещение с нажатой клавишей
         circle.setOnMouseDragged(e-> {
                 if(findPoindCircleMove(circle.getId())) {
+                    //Найти по точке имя к оллекции
+                    Text txt=findNameText(circle);
+                    if(!txt.xProperty().isBound()){//проверить на связь, если нет связать
+                        textBindCircle(circle,txt, (int)(txt.getX()-circle.getCenterX()),(int)(txt.getY()-circle.getCenterY()));//если нет, связать
+                    }
                     circle.setCenterX(e.getX());
                     circle.setCenterY(e.getY());
                     //добавить новые координаты в коллекцию PoindCircle
@@ -333,7 +456,12 @@ class Model implements  Observable {
         //Наведение на точку
         circle.setOnMouseEntered(e->{
             circle.setCursor(Cursor.HAND);
-            circle.setRadius(8);
+            circle.setRadius(12);
+            Stop[] stops = new Stop[] {
+                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
+            };
+            circle.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
+                    CycleMethod.NO_CYCLE,stops));
             //Установить статус "Точка + выбранная точка"
             setStringLeftStatus(STA_9+circle.getId());
             statusGo(Status);
@@ -367,9 +495,15 @@ class Model implements  Observable {
             if(p!=null){
                 if(p.getId().equals(c.getId())){
                     if(p.getIndex()==0){//индекс = 0 удаляем, иначе уменьшаем индекс и удаляем связанные фигуры
-                        paneBoards.getChildren().remove(p.getCircle());
-                        poindCircles.remove(p);
-                        removeObject=false;
+                        Text txt=findNameText(p.getCircle());//найти имя объекта
+                        if(txt.xProperty().isBound()){//проверить на связь
+                            textUnBindCircle(txt);//отменить связь
+                        }
+                        paneBoards.getChildren().remove(txt);//удаление имени с доски
+                        removeNameText(txt);//удаление имени объекта их коллекции
+                        paneBoards.getChildren().remove(p.getCircle());//удаление объекта с доски
+                        poindCircles.remove(p);//удаление объекта точка из коллекции
+                        removeObject=false;//сбросить статус удаления
                         //Вывод информации об объектах в правую часть доски
                         setTxtShape("");
                         txtAreaOutput();
@@ -386,6 +520,23 @@ class Model implements  Observable {
         return false;
     }
 
+    /**
+     * Метод removeNameText(Text txt).
+     * Предназначен для удаления имени точки. Вызывается из метода removePoindAdd(Circle c).
+     * @param txt -объект имя точки
+     * @return -true - успешное удаление
+     */
+    private boolean removeNameText(Text txt){
+        for(NamePoindLine pn: namePoindLines){
+            if(pn!=null){
+                if(txt.getId().equals(pn.getId())){
+                    namePoindLines.remove(pn);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Метод indexAdd(Circle circle)
      * Метод для увелечения счетчика, когда точка принадлежит разным геометрическим фигурам.
@@ -744,6 +895,7 @@ class Model implements  Observable {
         arcNew.setOpacity(0.5);//прозрачность
         ArcColorGo(arcNew);//задать цвет
         arcVertex(o1,o2,o3,arcNew);//расчитать арку угла для построения
+
         //добавить в коллекцию дуг
         vertexArcs.add(new VertexArc(arcNew,arc,gridViews.revAccessX(o2.getCenterX()),gridViews.revAccessY(o2.getCenterY()),arcRadius,
                 arcRadius,angleStart,angleLength,false));
@@ -758,6 +910,8 @@ class Model implements  Observable {
             setStringLeftStatus("");
             statusGo(Status);
         });
+
+
         return arcNew;
     }
 
@@ -767,7 +921,7 @@ class Model implements  Observable {
      * @param o1 -первая точка А
      * @param o2 - вторая точка В (центр угла)
      * @param o3 - третья точка С
-     * @param a1 - арка угла
+     * @param arc - арка угла
      * Устанавливает для класса View следующие переменные:
      * angleLength - длину дуги в градусах
      * arcRadius - радиус дуги
@@ -775,7 +929,7 @@ class Model implements  Observable {
      * verX и verY - координаты центра дуги
      * Вызывает метод ArcGo(a1) для построения и перемещения дуги
      */
-    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc a1){
+    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc arc){
         //Длина дуги в градусах
         double angleABC=angleTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
         angleLength=angleABC;
@@ -797,17 +951,17 @@ class Model implements  Observable {
             arcStart=arcStart-angleABC;
         }
         angleStart=arcStart;
-       // System.out.println("угол "+angleLength+" нач. угол "+angleStart+" ");
         //Запомнить текущие координаты мышки
         double stX=verX;
         double stY=verY;
         //Заменить для построения арки угла
         verX=o2.getCenterX();
         verY=o2.getCenterY();
-        ArcGo(a1);//перемещение дуги
+        ArcGo(arc);//перемещение дуги
         //Восстановить текущие координаты мышки
         verX=stX;
         verY=stY;
+
     }
     /**
      * Метод findArcUpdate(String s)
@@ -914,8 +1068,31 @@ class Model implements  Observable {
         l.startYProperty().bindBidirectional(c1.centerYProperty());
         l.endXProperty().bindBidirectional(c2.centerXProperty());
         l.endYProperty().bindBidirectional(c2.centerYProperty());
+
     }
 
+    /**
+     * Метод textBindCircle(Circle c, Text txt, int dx, int dy).
+     * Предназначен для связывания место расположения надписи с точкой.
+     * @param c - объект круг.
+     * @param txt - объект имя точки.
+     * @param dx - смещения имени от центра точки.
+     * @param dy - смещение имени от цертра точки.
+     */
+    private void textBindCircle(Circle c, Text txt, int dx, int dy){
+         txt.xProperty().bind(c.centerXProperty().add(dx));
+         txt.yProperty().bind(c.centerYProperty().add(dy));
+    }
+
+    /**
+     * Метод textUnBindCircle(Text txt).
+     * Предназначен для отключения связи имени точки с текстом.
+     * @param txt - объект имя точки.
+     */
+    private void textUnBindCircle(Text txt){
+        txt.xProperty().unbind();
+        txt.yProperty().unbind();
+    }
     /**
      * Метод lineUnBindCircles(Circle c1, Circle c2, Line l)
      * Метод отмены двунаправленного связывания точек начала и конца линии с самой линий.
@@ -1109,6 +1286,12 @@ class Model implements  Observable {
         for(VertexArc va:vertexArcs){
             System.out.println(b+" "+va);
             b+=1;
+        }
+        System.out.println("Коллекция имен");
+        int n=0;
+        for(NamePoindLine nm: namePoindLines){
+            System.out.println(n+" "+nm);
+            n+=1;
         }
     }
 

@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -41,14 +42,12 @@ class View implements Observer{
            // case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
             case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дугм для треугольников
             case "ArcColorGo"->this.ArcColor(model.getArcGo());//цвет дуги
-
-          /*
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
 
 
-            case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
+           // case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
 
-           */
+
         }
     }
     //Вывод в правую часть доски
@@ -111,5 +110,15 @@ class View implements Observer{
         arc.setRadiusY(model.getArcRadius());
         arc.setStartAngle(model.getAngleStart());
         arc.setLength(model.getAngleLength());
+    }
+
+    /**
+     * Метод TextGo(Text text).
+     * Предназначен для выводы имен точек, прямых, отрезков
+     * @param text - объект текст
+     */
+     private void TextGo(Text text){
+        text.setX(model.getTextX());
+        text.setY(model.getTextY());
     }
 }

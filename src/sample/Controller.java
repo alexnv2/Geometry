@@ -567,7 +567,6 @@ public class  Controller extends View {
         for (PoindLine pl : model.getPoindLines()){
             if(pl!=null){
                 //Обновляем отрезки
-                //if(pl.getSegment()==0) {
                     Line l = pl.getLine();
                     l.setStartX(gridViews.accessX(pl.getStX()));
                     l.setStartY(gridViews.accessY(pl.getStY()));
@@ -588,6 +587,7 @@ public class  Controller extends View {
 
             }
         }
+
     }
     //Нажата кнопка меню "Точка"
     public void menuPoindClick() {
