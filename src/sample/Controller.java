@@ -4,6 +4,7 @@ package sample;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
@@ -63,6 +65,8 @@ public class  Controller extends View {
     @FXML
     private Button btnDelete;
     @FXML
+    private Button btnMediana;
+    @FXML
     //Web браузер для вывода данных
     public WebView webViewLeft;//для размещения информации слева от доски
     @FXML
@@ -77,14 +81,20 @@ public class  Controller extends View {
     private CheckMenuItem menuShowPoindName;
     @FXML
     private CheckMenuItem menuShowLineName;
+    @FXML
+    private CheckMenuItem menuGrid;
+    @FXML
+    private CheckMenuItem menuCartesian;
 
-    //Ркжимы создания
+
+    //Режимы создания
     private boolean poindAdd=false;//true - создать точку
     private boolean segmentAdd =false;//true - создать отрезок
     private boolean rayAdd=false;//true - создание луча
     private boolean lineAdd=false;//true - создание прямой
     private boolean angleAdd=false;//true -создание угла
     private boolean treangleAdd=false;//true - создание треугольника
+    private boolean medianaAdd=false;//true - проведение медианы из квершину треугольника
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
     private int angleCol=0;//индекс счета углов
@@ -119,7 +129,9 @@ public class  Controller extends View {
             gridViews.setWr(Cartesian.getWidth() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            gridViews.gridCartesian();//Вывод сетки
+            if (model.isShowGrid()) {
+                gridViews.gridCartesian();//Вывод сетки
+            }
             updateShape();//обновить координаты геометрических фигур
         });
         //Изменение высоты окна
@@ -129,10 +141,15 @@ public class  Controller extends View {
             gridViews.setWb(-Cartesian.getHeight() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            gridViews.gridCartesian();//Вывод сетки
+            if (model.isShowGrid()) {
+                gridViews.gridCartesian();//Вывод сетки
+            }
             updateShape();//обновить координаты геометрических фигур
         });
-        gridViews.gridCartesian();//вывод на доску
+
+        if (model.isShowGrid()) {
+            gridViews.gridCartesian();//Вывод сетки
+        }
         //Настройки всплывающих подсказок
         tooltip.setShowDelay(Duration.millis(10.0));
         tooltip.setFont(Font.font(12));
@@ -223,9 +240,15 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_5);
         model.statusGo(leftStatus);
         treangleAdd = true;
-        //infoStatus="";//Для коллекции Col
+        infoStatus="";//Для коллекции TreangleName
         model.webViewLeftString(webViewLeft, 0);//Определения
       //  model.webViewLeftString(webViewLeft, 10);//Определения остроугольного треугольника
+    }
+
+    public void btnMedian() {
+        model.setStringLeftStatus(STA_18);
+        model.statusGo(leftStatus);
+        medianaAdd = true;
     }
 
     /**
@@ -340,7 +363,9 @@ public class  Controller extends View {
             gridViews.setWb(gridViews.getWb() - dy);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            gridViews.gridCartesian();//Вывод сетки
+            if (model.isShowGrid()) {
+                gridViews.gridCartesian();//Вывод сетки
+            }
             updateShape();
         }
         mouseEvent.consume();
@@ -361,7 +386,7 @@ public class  Controller extends View {
         }
         //Добавление точки на доске
         if (poindAdd) {
-            Circle newPoind=model.createPoindAdd();//создать точку
+            Circle newPoind=model.createPoindAdd(true);//создать точку
             paneShape.getChildren().add(newPoind);//добавить на доску
             poindAdd = false;//Режим добавления точки окончен
             //Вывод информации об объектах в правую часть доски
@@ -388,7 +413,7 @@ public class  Controller extends View {
         //Добавление угла первая  точка
         if (angleAdd ==true && poindAdd1==false) {
             if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-                poindLine1 = model.createPoindAdd();//создать новую вершину
+                poindLine1 = model.createPoindAdd(true);//создать новую вершину
                 infoStatus = infoStatus+poindLine1.getId()+"_";//добавить вершину в список
                 paneShape.getChildren().add(poindLine1);
                 model.indexAdd(poindLine1);//увеличить индекс
@@ -427,11 +452,16 @@ public class  Controller extends View {
         if(treangleAdd==true && poindAdd1==true){
             //Двунаправленная связь
             model.lineBindCircles(poindTreangle1,poindLine1,lineTriangle1);
+            Point2D v1=new Point2D(poindTreangle1.getCenterX(),poindTreangle1.getCenterY());
+            infoStatus=poindTreangle1.getId()+"_";
             //Заменить имя
             model.findNameId(poindTreangle1.getId(),poindLine1.getId(),lineTriangle1.getId());
+            Point2D v2=new Point2D(poindLine1.getCenterX(),poindLine1.getCenterY());
+            infoStatus=infoStatus+poindLine1.getId()+"_";
             addLineRayEnd();
             //Двунаправленная связь
             model.lineBindCircles(poindLine1,poindLine2,newLine);
+
             //Заменить имя
             model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
             newLine = model.createLineAdd(3);
@@ -440,7 +470,11 @@ public class  Controller extends View {
             model.SideGo(newLine);
             //Двунаправленная связь
             model.lineBindCircles(poindTreangle1,poindLine2,newLine);
-            paneShape.getChildren().add(newLine);
+            Point2D v3=new Point2D(poindLine2.getCenterX(),poindLine2.getCenterY());
+            infoStatus=infoStatus+poindLine2.getId();
+            Polygon t=model.treangleAdd(v1,v2,v3,infoStatus);
+
+            paneShape.getChildren().addAll(newLine,t);
             newLine.toBack();
             model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             //Заменить имя
@@ -486,6 +520,16 @@ public class  Controller extends View {
             model.setTxtShape("");
             model.txtAreaOutput();
         }
+
+        //Добавление медианы
+        if(medianaAdd){
+            poindLine1=model.getTimeVer();
+            model.medianaAdd(poindLine1);
+
+            medianaAdd=false;
+        }
+
+
         mouseEvent.consume();
         }//End onMousePressed()
 
@@ -497,7 +541,7 @@ public class  Controller extends View {
      */
     public void addLineRayStart(int Segment){
         if (model.isPoindOldAdd() == false) {//false - новая вершина true - взять имеющую
-            poindLine1 = model.createPoindAdd();//создать новую вершину
+            poindLine1 = model.createPoindAdd(true);//создать новую вершину
             paneShape.getChildren().add(poindLine1);
             model.indexAdd(poindLine1);//увеличить индекс
          } else {
@@ -524,7 +568,7 @@ public class  Controller extends View {
     //Метод окончания добавления фигур
     public void addLineRayEnd(){
         if (model.isPoindOldAdd() == false) {
-            poindLine2 = model.createPoindAdd();//создать новую
+            poindLine2 = model.createPoindAdd(true);//создать новую
             paneShape.getChildren().add(poindLine2);
             model.indexAdd(poindLine2);//увеличить индекс
         }else {
@@ -657,6 +701,29 @@ public class  Controller extends View {
             }
         }
     }
+
+    /**
+     * Метод menuCartesian().
+     * Предназначен для показа или скрытия координатных осей
+     */
+    public void menuCartesian() {
+        model.setShowCartesian(menuCartesian.isSelected());
+    }
+
+    /**
+     * Метод  menuGrid().
+     * Предназначен для показа или скрытия сетки
+     */
+    public void menuGrid() {
+        model.setShowGrid(menuGrid.isSelected());
+        if (model.isShowGrid()) {
+            gridViews.gridCartesian();//Вывод сетки
+        }else{
+            paneGrid.getChildren().clear();//Очистить экран и память
+
+        }
+    }
+
     //Нажата кнопка меню "Признаки равнобедренного треугольника
     public void btnIsosceles(ActionEvent actionEvent) {
         model.webViewLeftString(webViewLeft, 1);
@@ -688,7 +755,10 @@ public class  Controller extends View {
          tooltip.setText("Добавить треугольник");
          btnTreangle.setTooltip(tooltip);
     }
-
+    public void onMouseEnteredMediana() {
+        tooltip.setText("Добавить медиану");
+        btnMediana.setTooltip(tooltip);
+    }
     /**
      * Метод onMouseEnteredDelete()
      * Всплывающая подсказака при наведении на кнопку "Удалить"
@@ -784,6 +854,8 @@ public class  Controller extends View {
         window.show();
 
     }
+
+
 
 
 

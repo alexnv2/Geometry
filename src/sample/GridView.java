@@ -47,6 +47,7 @@ public class GridView extends WView{
             shapes0[i] = new Line(gridShowX(i), 0, gridShowX(i), getVb());
             shapes0[i].setStrokeWidth(1);
             shapes0[i].setStroke(Color.LIGHTBLUE);
+
             //Нулевая координата
             if(i==0) {
                 if (gridShowY(0) <= 0) {
@@ -139,6 +140,7 @@ public class GridView extends WView{
             }
             group.getChildren().add(shapes3[i]);
         }
+
         //Абсцисса и ордината
         Line l1=new Line(getVl(),gridShowY(0),getVr(),gridShowY(0));
         l1.setStroke(Color.BLACK);
@@ -153,7 +155,10 @@ public class GridView extends WView{
                 gridShowX(0)+4,getVt()+10);
         group.getChildren().addAll(l1,l2,p1,p2);
         paneGrid.getChildren().addAll(group,group2);
+
     }
+
+
     //Изменение мастштаба мирового окна
     public void onScrollView(double sc) {
         //double sc=scrollEvent.getDeltaY();//

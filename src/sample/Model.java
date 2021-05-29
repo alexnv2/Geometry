@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -8,10 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
@@ -98,12 +96,16 @@ class Model implements  Observable {
     private boolean showPoindName=true;//по умолчанию, всегда показывать имена точек
     private boolean showLineName=false;//по умолчанию, не показывать имена линий
     private boolean showDate=false;//по умолчанию, не показывать данные объектов на доске
+    private boolean showGrid=true;//по умолчанию, показывать сетку
+    private boolean showCartesian=true;//по умолчанию, показывать координатную ось
+
     //Коллекции
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
     private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
     private ArrayList<Double> arrDash=new ArrayList<>();//массив для создания вида строк
     private LinkedList<NamePoindLine> namePoindLines=new LinkedList<>();//колекция для имен
+    private LinkedList<TreangleName> treangleNames=new LinkedList<>();//колекция треугольников
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
@@ -394,11 +396,11 @@ class Model implements  Observable {
      * Для создания точки вызывается метод createPoind().
      * @return новая точка
      */
-    Circle createPoindAdd(){
+    Circle createPoindAdd(boolean bMove){
         Circle newPoind;//Объявить переменную
         newPoind = createPoind();//Создать точку
         //добавить в коллецию точек
-        poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,true,false,0));
+        poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,bMove,false,0));
         //Передать в View для вывода на экран
         VertexGo(newPoind);
         //Добавить имя на доску
@@ -433,7 +435,7 @@ class Model implements  Observable {
                     circle.setCenterX(e.getX());
                     circle.setCenterY(e.getY());
                     //добавить новые координаты в коллекцию PoindCircle
-                    findCirclesUpdateXY(circle.getId());
+                    findCirclesUpdateXY(circle.getId(),verX0,verY0);
                     //добавить новые координаты в коллекцию PoindLine
                     findLineUpdateXY(circle.getId());
                     //Добавить новые данные коллекцию VertexArc
@@ -693,6 +695,40 @@ class Model implements  Observable {
     }
 
     /**
+     * Метод midPoindAB(Point2D p1,Point2D p2).
+     * Предназначен для расчета координат середины между указанными точками
+     * @param p1 - координаты первой точки
+     * @param p2 - координаты второй точки
+     * @return - возвращает точку с координатами середины между указанными точками
+     */
+    private Point2D midPoindAB(Point2D p1,Point2D p2){
+         return p1.midpoint(p2);
+    }
+
+    /**
+     * Метод treangleAdd(Point2D v1, Point2D v2, Point2D v3)
+     * Предназначен для создания треугольников
+     * @param v1 - вершина А
+     * @param v2 - вершина В
+     * @param v3 - вершина С
+     */
+    public Polygon treangleAdd(Point2D v1, Point2D v2, Point2D v3, String nameTr){
+        Polygon treangle=new Polygon();
+        treangle.getPoints().addAll(v1.getX(),v1.getY(),v2.getX(),v2.getY(),v3.getX(),v3.getY());
+        treangle.setFill(Color.CHOCOLATE);
+        treangle.setOpacity(0.2);
+        String[] vertex=nameTr.split("_");
+        Circle c1=findCircle(vertex[0]);
+        Circle c2=findCircle(vertex[1]);
+        Circle c3=findCircle(vertex[2]);
+        polygonBindCircles(c1,c2,c3,treangle);
+        treangleNames.add(new TreangleName(treangle,nameTr));
+        return treangle;
+    }
+
+
+
+    /**
      * Метод VertexGo(Circle o).
      * Уведомляет класс отображения View, о том что точка готова к перемещению на доске
      * @param o - объект точка
@@ -784,13 +820,15 @@ class Model implements  Observable {
      * Предназначен для поиска объектов в коллекции PoindCircle по имени и
      * замены мировых координат
      * @param id - имя объекта
+     * @param x - мировые координаты точки
+     * @param y -мировые координаты точки
      */
-  public void findCirclesUpdateXY(String id){
+  public void findCirclesUpdateXY(String id, double x, double y){
       for(PoindCircle p: poindCircles) {
           if (p != null) {
               if (p.getId().equals(id)) {
-                  p.setX(verX0);//меняем координаты X
-                  p.setY(verY0);//меняем координаты Y
+                  p.setX(x);//меняем координаты X
+                  p.setY(y);//меняем координаты Y
               }
           }
       }
@@ -938,24 +976,20 @@ class Model implements  Observable {
         double angleABC=angleTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
         angleLength=angleABC;
         arcRadius=30;//радиус
-        //Начальный угол в градусах
-        double arcStart=angleTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
-        //System.out.println("Угол ВС "+arcStart);
+        //Начальный угол в
+        double arcStart=angleVector(o2.getCenterX(),o2.getCenterY(),o3.getCenterX(),o3.getCenterY());
         double str=areaTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
         double str1=areaTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
-        //System.out.println("str "+str+" str1 "+str1);
         if (str<0){
             arcStart=360-arcStart;
-         //   System.out.println("str<0 "+arcStart);
-        }else {
+               }else {
             arcStart=arcStart;
-         //   System.out.println("иначе минус "+arcStart);
         }
         if(str1>0){
             arcStart=arcStart-angleABC;
         }
         angleStart=arcStart;
-        //Запомнить текущие координаты мышки
+         //Запомнить текущие координаты мышки
         double stX=verX;
         double stY=verY;
         //Заменить для построения арки угла
@@ -965,7 +999,6 @@ class Model implements  Observable {
         //Восстановить текущие координаты мышки
         verX=stX;
         verY=stY;
-
     }
     /**
      * Метод findArcUpdate(String s)
@@ -1030,6 +1063,21 @@ class Model implements  Observable {
         double bc=distance(x2,y2,x3,y3);
         double angle=round(toDegrees(acos((pow(ab,2)+pow(bc,2)-pow(ac,2))/(2*ab*bc)))*10);
         return angle/10;
+    }
+
+    /**
+     * Метод angleVector(double X, double Y, double X1, double Y1).
+     * Предназначен для определения угла направления векторами.
+     * @param X -координата  начала вектора
+     * @param Y - координата  начала вектора
+     * @param X1 -координата конца вектора
+     * @param Y1 координата   конца вектора
+     * @return - возвращает угол налона вектора
+     */
+    private double angleVector(double X, double Y, double X1, double Y1) {
+        Point2D p1=new Point2D(100,0);
+        Point2D p2=new Point2D(X1-X, Y1-Y);
+        return p1.angle(p2);
     }
 
     /**
@@ -1139,7 +1187,26 @@ class Model implements  Observable {
             ray.setEndY(rayLineY(cStart, cEnd));
         });
     }
-
+    private void polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle) {
+        c1.centerXProperty().addListener((obj, oldVaue, newValue)->{
+           treangle.getPoints().set(0,c1.getCenterX());
+       });
+        c1.centerYProperty().addListener((obj, oldVaue, newValue)->{
+            treangle.getPoints().set(1,c1.getCenterY());
+        });
+        c2.centerXProperty().addListener((obj, oldVaue, newValue)->{
+            treangle.getPoints().set(2,c2.getCenterX());
+        });
+        c2.centerYProperty().addListener((obj, oldVaue, newValue)->{
+            treangle.getPoints().set(3,c2.getCenterY());
+        });
+        c3.centerXProperty().addListener((obj, oldVaue, newValue)->{
+            treangle.getPoints().set(4,c3.getCenterX());
+        });
+        c3.centerYProperty().addListener((obj, oldVaue, newValue)->{
+            treangle.getPoints().set(5,c3.getCenterY());
+        });
+    }
     /**
      * Метод rayUnBindCircles(Circle cStart, Circle cEnd, Line ray)
      * Метод отмены двунаправленного связывания точки начала луча и начала линии,
@@ -1297,6 +1364,12 @@ class Model implements  Observable {
             System.out.println(n+" "+nm);
             n+=1;
         }
+        System.out.println("Коллекция треугольников");
+        int tс=0;
+        for(TreangleName tr: treangleNames){
+            System.out.println(t+" "+tr);
+            tс+=1;
+        }
     }
 
     private void selectCircle(Circle dot)
@@ -1313,6 +1386,169 @@ class Model implements  Observable {
             selected.setFill(Color.RED);//поменять цвет
         }
     }
+
+    /**
+     * Метод medianaAdd(Circle poindLine1).
+     * Предназначен для добавления медиан в треугольнике
+     * @param c - вершина из воторой будет построена медиана.
+     */
+    public void medianaAdd(Circle c) {
+    //найти вершины треугольника
+    for(TreangleName tn: treangleNames){
+        if (tn!=null){
+            String[] vertex=tn.getID().split("_");
+            if(c.getId().equals(vertex[0])){
+                Circle c1=findCircle(vertex[1]);
+                Circle c2=findCircle(vertex[2]);
+                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                Point2D mc=midPoindAB(p1,p2);
+                Line newMediana=createLineAdd(4);
+                Circle medianaPoind=createPoindAdd(false);
+                verX=mc.getX();
+                verY=mc.getY();
+                VertexGo(medianaPoind);
+               // System.out.println(medianaPoind);
+                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                verX1=c.getCenterX();
+                verY1=c.getCenterY();
+                SideGo(newMediana);
+                findLinesUpdateXY(newMediana.getId());
+                paneBoards.getChildren().addAll(newMediana,medianaPoind);
+                newMediana.toBack();
+                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+                String n=vertex[1]+"_"+vertex[2];
+                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+            }else if(c.getId().equals(vertex[1])){
+                Circle c1=findCircle(vertex[0]);
+                Circle c2=findCircle(vertex[2]);
+                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                Point2D mc=midPoindAB(p1,p2);
+                Line newMediana=createLineAdd(4);
+                Circle medianaPoind=createPoindAdd(false);
+                verX=mc.getX();
+                verY=mc.getY();
+                VertexGo(medianaPoind);
+               // System.out.println(medianaPoind);
+                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                verX1=c.getCenterX();
+                verY1=c.getCenterY();
+                SideGo(newMediana);
+                findLinesUpdateXY(newMediana.getId());
+                paneBoards.getChildren().addAll(newMediana,medianaPoind);
+                newMediana.toBack();
+                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+                String n=vertex[0]+"_"+vertex[2];
+                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+
+            }else if(c.getId().equals(vertex[2])){
+                Circle c1=findCircle(vertex[0]);
+                Circle c2=findCircle(vertex[1]);
+                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                Point2D mc=midPoindAB(p1,p2);
+                Line newMediana=createLineAdd(4);
+                Circle medianaPoind=createPoindAdd(false);
+                verX=mc.getX();
+                verY=mc.getY();
+                VertexGo(medianaPoind);
+               // System.out.println(medianaPoind);
+                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                verX1=c.getCenterX();
+                verY1=c.getCenterY();
+                SideGo(newMediana);
+                findLinesUpdateXY(newMediana.getId());
+                paneBoards.getChildren().addAll(newMediana,medianaPoind);
+                newMediana.toBack();
+                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+                String n=vertex[0]+"_"+vertex[1];
+                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+            }
+        }
+    }
+    }
+
+    /**
+     * Метод findNameSide(StringBuilder n)
+     * Предназначен для поиска противолежащей стороны треугольника от заданной вершины.
+     * @param n - срока стороны вида В_С
+     * @return - линию
+     */
+    private Line findNameSide(String n) {
+        for(PoindLine p: poindLines){
+            if(p!=null){
+                if(n.equals(p.getId())){
+                    return p.getLine();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Метод medianaBindCircles(Circle c)
+     * Предназначен для связывания вершины треугольника с медианой
+     * @param c - имя точки для связи
+     * @param lm - имя медианы
+     */
+    private void medianaBindCircles(Circle c,Circle c1, Circle c2, Circle md, Line lm) {
+        c.centerXProperty().bindBidirectional(lm.startXProperty());
+        c.centerYProperty().bindBidirectional(lm.startYProperty());
+
+        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
+            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
+            md.setCenterX(p3.getX());
+            lm.setEndX(p3.getX());
+            md.setCenterY(p3.getY());
+            lm.setEndY(p3.getY());
+            findMedianaUpdateXY(md,lm);
+          });
+        c1.centerYProperty().addListener((obj, oldValue,newValue)->{
+            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
+            md.setCenterX(p3.getX());
+            lm.setEndX(p3.getX());
+            md.setCenterY(p3.getY());
+            lm.setEndY(p3.getY());
+            findMedianaUpdateXY(md,lm);
+         });
+        c2.centerXProperty().addListener((obj, oldValue, newValue)->{
+            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
+            md.setCenterX(p3.getX());
+            lm.setEndX(p3.getX());
+            md.setCenterY(p3.getY());
+            lm.setEndY(p3.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+        c2.centerYProperty().addListener((obj, oldValue,newValue)->{
+            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
+            md.setCenterX(p3.getX());
+            lm.setEndX(p3.getX());
+            md.setCenterY(p3.getY());
+            lm.setEndY(p3.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+    }
+
+    private void findMedianaUpdateXY(Circle md, Line lm) {
+        for (PoindCircle p: poindCircles){
+            if(p!=null){
+                if(p.getCircle().getId().equals(md.getId())){
+                    p.setX(gridViews.revAccessX(md.getCenterX()));
+                    p.setY(gridViews.revAccessY(md.getCenterY()));
+                }
+            }
+        }
+        for (PoindLine pl: poindLines){
+            if(pl!=null){
+                if(pl.getLine().getId().equals(lm.getId())){
+                    pl.setEnX(gridViews.revAccessX(lm.getEndX()));
+                    pl.setEnY(gridViews.revAccessY(lm.getEndY()));
+                }
+            }
+        }
+    }
+
 
     /*
     private void selectLine(Line dot)
