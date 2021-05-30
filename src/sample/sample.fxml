@@ -72,7 +72,7 @@
     <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnMediana" mnemonicParsing="false" text="Медиана" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana"/>
     <Button mnemonicParsing="false" text="Высота" />
-    <Button mnemonicParsing="false" text="Биссектриса" />
+    <Button fx:id="btnBisector" mnemonicParsing="false" text="Биссектриса" onAction="#btnBisector" onMouseEntered="#onMouseEnteredBisector"/>
     <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" />
   </HBox>

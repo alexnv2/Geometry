@@ -21,6 +21,9 @@ public final class StringStatus {
     public static final String STA_19="Данную точку запрещено выбирать, так как она является расчетной. Выберите другую точку.";
     public static final String STA_20="Медиана ";
     public static final String STA_21="Треугольник ";
+    public static final String STA_22="Укажите на доске вершину треугольника, из которой надо построить биссектрису.";
+    public static final String STA_23="Биссектриса ";
+
 
 
 

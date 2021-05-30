@@ -256,7 +256,7 @@ class Model implements  Observable {
                String s1 = p.getId();
                double s2 = p.getX();
                double s3 = p.getY();
-               txtShape = txtShape + "Точка: " + s1 + " (" + s2 + "," + s3 + ")\n";
+               txtShape = txtShape + "Точка: " + s1 + " (" + s2 + ", " + s3 + ")\n";
 
            }
        }
@@ -274,6 +274,8 @@ class Model implements  Observable {
                    case 3 -> { double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
                        txtShape = txtShape + STA_17+ nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";}
                    case 4 -> txtShape=txtShape+STA_20 + nameSplitRemove(p.getId()) + "\n";
+                   case 5 -> txtShape=txtShape+STA_23 + nameSplitRemove(p.getId()) + "\n";
+
                }
             }
         }
@@ -512,7 +514,7 @@ class Model implements  Observable {
     /**
      * Метод findPoindAddMove(Circle c).
      * Предназначен для проверки на возможность выбрать точку для геометрической фигуры.
-     * Если точка расчетная, выбрать запрещено по условия связывания.
+     * Если точка расчетная, то её выбрать запрещено по условия связывания.
      * @return - логическое значение bMove
      */
     private boolean findPoindAddMove(Circle c) {
@@ -656,19 +658,19 @@ class Model implements  Observable {
              for (PoindLine p: poindLines) {
 
                  if (p.getLine().getId().equals(newLine.getId())) {
-                     if (p.getSegment() == 0) {
-                         //Найти и вывести имя отрезка
-                         setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
-                         statusGo(Status);
-                     }else if(p.getSegment()==1){
-                         setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
-                         statusGo(Status);
-                     }else if(p.getSegment()==2){
-                         setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
-                         statusGo(Status);
-                     }else if(p.getSegment()==3){
-                         setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
-                         statusGo(Status);
+                     switch (p.getSegment()) {
+                         case 0 -> { setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
+                         case 1 -> {setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
+                         case 2 -> { setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
+                         case 3 ->{setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
+                         case 4 ->{setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
+                         case 5 ->{setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
+                             statusGo(Status);}
                      }
                  }
              }
@@ -772,6 +774,15 @@ class Model implements  Observable {
         Circle c3=findCircle(vertex[2]);
         polygonBindCircles(c1,c2,c3,treangle);
         treangleNames.add(new TreangleName(treangle,nameTr));
+        //привязать событие мыши
+        treangle.setOnMouseEntered(e->{
+            stringLeftStatus=STA_21+ nameSplitRemove(nameTr);
+            statusGo(Status);
+        });
+        treangle.setOnMouseExited(e->{
+            stringLeftStatus=" ";
+            statusGo(Status);
+        });
         return treangle;
     }
 
@@ -1459,31 +1470,21 @@ class Model implements  Observable {
             if(c.getId().equals(vertex[0])){
                 Circle c1=findCircle(vertex[1]);
                 Circle c2=findCircle(vertex[2]);
+                String name=vertex[0]+"_"+vertex[2];
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
-                Line newMediana=createLineAdd(4);
-                Circle medianaPoind=createPoindAdd(false);
-                verX=mc.getX();
-                verY=mc.getY();
-                VertexGo(medianaPoind);
-               // System.out.println(medianaPoind);
-                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                verX1=c.getCenterX();
-                verY1=c.getCenterY();
-                SideGo(newMediana);
-                findLinesUpdateXY(newMediana.getId());
-                paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                newMediana.toBack();
-                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-                String n=vertex[1]+"_"+vertex[2];
-                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+                createMedianaBisectorHeight(c,c1,c2,mc,4);
+
+
             }else if(c.getId().equals(vertex[1])){
                 Circle c1=findCircle(vertex[0]);
                 Circle c2=findCircle(vertex[2]);
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
+                createMedianaBisectorHeight(c,c1,c2,mc,4);
+                /*
                 Line newMediana=createLineAdd(4);
                 Circle medianaPoind=createPoindAdd(false);
                 verX=mc.getX();
@@ -1496,10 +1497,12 @@ class Model implements  Observable {
                 SideGo(newMediana);
                 findLinesUpdateXY(newMediana.getId());
                 paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                newMediana.toBack();
+                newMediana.toFront();
                 findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-                String n=vertex[0]+"_"+vertex[2];
+              //  String n=vertex[0]+"_"+vertex[2];
                 medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+
+                 */
 
             }else if(c.getId().equals(vertex[2])){
                 Circle c1=findCircle(vertex[0]);
@@ -1507,6 +1510,8 @@ class Model implements  Observable {
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
+                createMedianaBisectorHeight(c,c1,c2,mc,4);
+                /*
                 Line newMediana=createLineAdd(4);
                 Circle medianaPoind=createPoindAdd(false);
                 verX=mc.getX();
@@ -1519,14 +1524,111 @@ class Model implements  Observable {
                 SideGo(newMediana);
                 findLinesUpdateXY(newMediana.getId());
                 paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                newMediana.toBack();
+                newMediana.toFront();
                 findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-                String n=vertex[0]+"_"+vertex[1];
+              //  String n=vertex[0]+"_"+vertex[1];
                 medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+
+                 */
             }
         }
     }
     }
+
+    private void createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i) {
+        Line newMediana=createLineAdd(i);
+        Circle medianaPoind=createPoindAdd(false);
+        verX=mc.getX();
+        verY=mc.getY();
+        VertexGo(medianaPoind);
+        findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+        verX1=c.getCenterX();
+        verY1=c.getCenterY();
+        SideGo(newMediana);
+        findLinesUpdateXY(newMediana.getId());
+        paneBoards.getChildren().addAll(newMediana,medianaPoind);
+        newMediana.toFront();
+        findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+        switch (i){
+            case 4-> medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+            case 5->bisectorBindCircles(c,c1,c2,medianaPoind,newMediana);
+        }
+
+    }
+
+    private void bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm) {
+        c.centerXProperty().bindBidirectional(lm.startXProperty());
+        c.centerYProperty().bindBidirectional(lm.startYProperty());
+
+        c.centerXProperty().addListener((obj,oldValue,newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+        c.centerXProperty().addListener((obj,oldValue,newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+
+        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+        c1.centerYProperty().addListener((obj, oldValue,newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+        c2.centerXProperty().addListener((obj, oldValue, newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+        c2.centerYProperty().addListener((obj, oldValue,newValue)->{
+            Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+            Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+            Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+            Point2D mc=bisectorPoind(p1,p3,p2);
+            md.setCenterX(mc.getX());
+            lm.setEndX(mc.getX());
+            md.setCenterY(mc.getY());
+            lm.setEndY(mc.getY());
+            findMedianaUpdateXY(md,lm);
+        });
+    }
+
 
     /**
      * Метод findNameSide(StringBuilder n)
@@ -1614,6 +1716,122 @@ class Model implements  Observable {
         }
     }
 
+    //Точка пересечения бессекрисы со стороной
+    private void bisector(double x1,double y1, double x2, double y2, double x3, double y3) {
+        double ab = distance(x1, y1, x2, y2);
+        double ac = distance(x3, y3, x2, y2);
+        double ra = ab / ac;
+        setVerX((x1 + ra * x3) / (1 + ra));
+        setVerY((y1 + ra * y3) / (1 + ra));
+    }
+
+
+    private Point2D bisectorPoind(Point2D pA, Point2D pB, Point2D pC){
+        double ra=pA.distance(pB)/pC.distance(pB);
+        double dX=(pA.getX() + ra * pC.getX()) / (1 + ra);
+        double dY=(pA.getY() + ra * pC.getY()) / (1 + ra);
+        Point2D pD=new Point2D(dX,dY);
+        return pD;
+
+    }
+
+    /**
+     * Метод bisectorAdd(Circle poindLine1).
+     * Предназначен для построения биссектрисы из заданной точки треугольника.
+     * @param c - объект точка из которой надо построить биссектрису
+     */
+    public void bisectorAdd(Circle c) {
+        for(TreangleName tn: treangleNames){
+            if (tn!=null){
+                String[] vertex=tn.getID().split("_");
+                if(c.getId().equals(vertex[0])){
+                    Circle c1=findCircle(vertex[1]);
+                    Circle c2=findCircle(vertex[2]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    Point2D mc=bisectorPoind(p1,p3,p2);
+                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    /*
+
+
+                    Line newMediana=createLineAdd(4);
+                    Circle bisectorPoind=createPoindAdd(false);
+                    verX=mc.getX();
+                    verY=mc.getY();
+                    VertexGo(bisectorPoind);
+                    // System.out.println(medianaPoind);
+                    findCirclesUpdateXY(bisectorPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                    verX1=c.getCenterX();
+                    verY1=c.getCenterY();
+                    SideGo(newMediana);
+                    findLinesUpdateXY(newMediana.getId());
+                    paneBoards.getChildren().addAll(newMediana,bisectorPoind);
+                    newMediana.toFront();
+                    findNameId(c.getId(),bisectorPoind.getId(),newMediana.getId());
+                    String n=vertex[1]+"_"+vertex[2];
+                    //medianaBindCircles(c,c1,c2,bisectorPoind,newMediana);
+
+                     */
+                }else if(c.getId().equals(vertex[1])){
+                    Circle c1=findCircle(vertex[0]);
+                    Circle c2=findCircle(vertex[2]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    Point2D mc=bisectorPoind(p1,p3,p2);
+                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    /*
+                    Line newMediana=createLineAdd(4);
+                    Circle medianaPoind=createPoindAdd(false);
+                    verX=mc.getX();
+                    verY=mc.getY();
+                    VertexGo(medianaPoind);
+                    // System.out.println(medianaPoind);
+                    findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                    verX1=c.getCenterX();
+                    verY1=c.getCenterY();
+                    SideGo(newMediana);
+                    findLinesUpdateXY(newMediana.getId());
+                    paneBoards.getChildren().addAll(newMediana,medianaPoind);
+                    newMediana.toFront();
+                    findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+                    String n=vertex[0]+"_"+vertex[2];
+                   // medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+
+                     */
+
+                }else if(c.getId().equals(vertex[2])){
+                    Circle c1=findCircle(vertex[0]);
+                    Circle c2=findCircle(vertex[1]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    Point2D mc=bisectorPoind(p1,p3,p2);
+                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    /*
+                    Line newMediana=createLineAdd(4);
+                    Circle medianaPoind=createPoindAdd(false);
+                    verX=mc.getX();
+                    verY=mc.getY();
+                    VertexGo(medianaPoind);
+                    // System.out.println(medianaPoind);
+                    findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+                    verX1=c.getCenterX();
+                    verY1=c.getCenterY();
+                    SideGo(newMediana);
+                    findLinesUpdateXY(newMediana.getId());
+                    paneBoards.getChildren().addAll(newMediana,medianaPoind);
+                    newMediana.toFront();
+                    findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+                    String n=vertex[0]+"_"+vertex[1];
+                   // medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
+
+                     */
+                }
+            }
+        }
+    }
 
     /*
     private void selectLine(Line dot)

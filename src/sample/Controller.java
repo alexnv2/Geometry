@@ -67,6 +67,7 @@ public class  Controller extends View {
     @FXML
     private Button btnMediana;
     @FXML
+    private Button btnBisector;
     //Web браузер для вывода данных
     public WebView webViewLeft;//для размещения информации слева от доски
     @FXML
@@ -94,7 +95,8 @@ public class  Controller extends View {
     private boolean lineAdd=false;//true - создание прямой
     private boolean angleAdd=false;//true -создание угла
     private boolean treangleAdd=false;//true - создание треугольника
-    private boolean medianaAdd=false;//true - проведение медианы из квершину треугольника
+    private boolean medianaAdd=false;//true - проведение медианы из вершины треугольника
+    private boolean  bisectorAdd=false;//true - проведение биссектрисы из вершины треугольника
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
     private int angleCol=0;//индекс счета углов
@@ -249,6 +251,12 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_18);
         model.statusGo(leftStatus);
         medianaAdd = true;
+    }
+
+    public void btnBisector() {
+        model.setStringLeftStatus(STA_22);
+        model.statusGo(leftStatus);
+        bisectorAdd = true;
     }
 
     /**
@@ -432,7 +440,7 @@ public class  Controller extends View {
                 System.out.println(infoStatus);
                 arc=model.arcVertexAdd(infoStatus);
                 paneShape.getChildren().add(arc);//рисуем арку дуги
-                arc.toBack();//перемещать узел вниз только после добавления на стол
+                arc.toFront();//перемещать узел вверх только после добавления на стол
                 //Связываем арку с углом
                 model.arcBindPoind(infoStatus,arc);
                 angleAdd= false;//окончание режима добавления
@@ -472,9 +480,10 @@ public class  Controller extends View {
             model.lineBindCircles(poindTreangle1,poindLine2,newLine);
             Point2D v3=new Point2D(poindLine2.getCenterX(),poindLine2.getCenterY());
             infoStatus=infoStatus+poindLine2.getId();
+            //Добавить многоугольник в форме треугольника
             Polygon t=model.treangleAdd(v1,v2,v3,infoStatus);
-
             paneShape.getChildren().addAll(newLine,t);
+            t.toBack();
             newLine.toBack();
             model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             //Заменить имя
@@ -529,7 +538,15 @@ public class  Controller extends View {
             model.setTxtShape("");
             model.txtAreaOutput();
         }
+        //Добавление биссектрисы
+        if(bisectorAdd){
+            poindLine1=model.getTimeVer();
+            model.bisectorAdd(poindLine1);
+            bisectorAdd=false;
+            model.setTxtShape("");
+            model.txtAreaOutput();
 
+        }
 
         mouseEvent.consume();
         }//End onMousePressed()
@@ -759,6 +776,10 @@ public class  Controller extends View {
     public void onMouseEnteredMediana() {
         tooltip.setText("Добавить медиану");
         btnMediana.setTooltip(tooltip);
+    }
+    public void onMouseEnteredBisector() {
+        tooltip.setText("Добавить биссектрису");
+        btnBisector.setTooltip(tooltip);
     }
     /**
      * Метод onMouseEnteredDelete()
