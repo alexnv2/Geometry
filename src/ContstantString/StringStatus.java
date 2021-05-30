@@ -18,7 +18,9 @@ public final class StringStatus {
     public static final String STA_16="Угол ";
     public static final String STA_17="Сторона ";
     public static final String STA_18="Укажите на доске вершину треугольника, из которой надо построить медиану.";
-
+    public static final String STA_19="Данную точку запрещено выбирать, так как она является расчетной. Выберите другую точку.";
+    public static final String STA_20="Медиана ";
+    public static final String STA_21="Треугольник ";
 
 
 

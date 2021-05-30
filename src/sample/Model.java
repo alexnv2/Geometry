@@ -230,7 +230,13 @@ class Model implements  Observable {
         webViewGo(o);//на вывод
     }
 
-    StringBuilder nameSplit(String s){
+    /**
+     * Метод nameSplitRemove(String s).
+     * Предназначен для удаления символа разделителя в именах назаний точек, прямых и т.д.
+     * @param s - строка вида А_В (отрезок АВ).
+     * @return - возвращает строку АВ.
+     */
+    StringBuilder nameSplitRemove(String s){
         String[] name=s.split("_");
         StringBuilder sb=new StringBuilder();
         for (String n: name){
@@ -251,32 +257,40 @@ class Model implements  Observable {
                double s2 = p.getX();
                double s3 = p.getY();
                txtShape = txtShape + "Точка: " + s1 + " (" + s2 + "," + s3 + ")\n";
+
            }
        }
+       txtShape=txtShape+"--------------------------------"+"\n";//добавить разделитель
        //Информация об отрезках, лучах и прямых
        for (PoindLine p : poindLines) {
            if (p.getLine() != null) {
                int l = p.getSegment();
-               if (l == 0) {
-                   double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
-                   txtShape = txtShape + STA_10+ nameSplit(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
-               }
-                else if (l == 1) {
-                    txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplit(p.getId()) + "\n";
-                }else if (l == 2) {
-                    txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplit(p.getId()) + "\n";
-                }else if(l==3){
-                   double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
-                   txtShape = txtShape + STA_17+ nameSplit(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
+               switch (l){
+                   case 0 ->{double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                       txtShape = txtShape + STA_10+ nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
+                   }
+                   case 1 -> txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
+                   case 2 -> txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
+                   case 3 -> { double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                       txtShape = txtShape + STA_17+ nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";}
+                   case 4 -> txtShape=txtShape+STA_20 + nameSplitRemove(p.getId()) + "\n";
                }
             }
         }
+       txtShape=txtShape+"--------------------------------"+"\n";//добавить разделитель
        //Информация об углах
         for( VertexArc v: vertexArcs){
             if(v!=null) {
-                txtShape = txtShape + "Угол " + nameSplit(v.getId()) +"= "+v.getLengthAngle()+ " гр. \n";
+                txtShape = txtShape + "Угол " + nameSplitRemove(v.getId()) +"= "+v.getLengthAngle()+ " гр. \n";
                 }
             }
+       txtShape=txtShape+"-------------------------------- "+"\n";//добавить разделитель
+        //Информация об треугольниках
+       for (TreangleName t: treangleNames){
+           if(t!=null){
+               txtShape=txtShape+STA_21+ nameSplitRemove(t.getID())+" \n";
+           }
+       }
        textAreaGo();
     }
 
@@ -451,13 +465,18 @@ class Model implements  Observable {
          //Нажатие клавиши
         circle.setOnMousePressed(e->{
                 selectCircle(circle);
-                //circle.setFill(Color.RED);
-                poindOldAdd = true;//взять эту точку для отрезка
-                timeVer = circle;//сохранить выбранную точку для построения
-                //Вызвать метод для увелечения счетчика index в колекции PoindCircles
-            if(removeObject==true) { //Режим  для  удаления
-                boolean remove=removePoindAdd(circle);
-            }
+                //Проверить разрешено ли взять эту точку. Если расчетная то запрещено
+                if(findPoindAddMove(circle)) {
+                    poindOldAdd = true;//взять эту точку для отрезка
+                    timeVer = circle;//сохранить выбранную точку для построения
+                    //Вызвать метод для увелечения счетчика index в колекции PoindCircles
+                    if (removeObject == true) { //Режим  для  удаления
+                        boolean remove = removePoindAdd(circle);
+                    }
+                }else{
+                    stringLeftStatus=STA_19;
+                    statusGo(Status);
+                }
         });
         //Наведение на точку
         circle.setOnMouseEntered(e->{
@@ -488,6 +507,23 @@ class Model implements  Observable {
             statusGo(Status);
         });
         return circle;//завершено создание новой точки
+    }
+
+    /**
+     * Метод findPoindAddMove(Circle c).
+     * Предназначен для проверки на возможность выбрать точку для геометрической фигуры.
+     * Если точка расчетная, выбрать запрещено по условия связывания.
+     * @return - логическое значение bMove
+     */
+    private boolean findPoindAddMove(Circle c) {
+        for (PoindCircle p: poindCircles){
+            if(p!=null){
+                if(p.getId().equals(c.getId())){
+                    return p.isBMove();
+                }
+            }
+        }
+        return false;//всегда запрещено
     }
 
     /**
@@ -582,8 +618,12 @@ class Model implements  Observable {
    }
 
 
-
-//Создание  отрезка
+    /**
+     * Метод createLine(int seg).
+     * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрисс, высот.
+     * @param seg - определяет для коллекции, к какому объекту будет принадлежать линия.
+     * @return - возвращает новый объект Line.
+     */
      Line createLine(int seg){
         Line newLine=new Line();
         if(seg==0 || seg==3) {//Отрезок или треугольник
@@ -618,16 +658,16 @@ class Model implements  Observable {
                  if (p.getLine().getId().equals(newLine.getId())) {
                      if (p.getSegment() == 0) {
                          //Найти и вывести имя отрезка
-                         setStringLeftStatus(STA_10 + nameSplit(p.getId()));
+                         setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
                          statusGo(Status);
                      }else if(p.getSegment()==1){
-                         setStringLeftStatus(STA_11 + nameSplit(p.getId()));
+                         setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
                          statusGo(Status);
                      }else if(p.getSegment()==2){
-                         setStringLeftStatus(STA_12 + nameSplit(p.getId()));
+                         setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
                          statusGo(Status);
                      }else if(p.getSegment()==3){
-                         setStringLeftStatus(STA_17 + nameSplit(p.getId()));
+                         setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
                          statusGo(Status);
                      }
                  }
@@ -644,8 +684,12 @@ class Model implements  Observable {
      }
 
 
-
-    //Добавление линии на доску
+    /**
+     * Метод createLineAdd(int segment).
+     * Предназначен для сооздания линий. Вызывает метод createLine(segment). Добовляет линию на доску и в коллекцию.
+     * @param segment - определяет тип линии в коллекции
+     * @return -возращает лбъект Line.
+     */
      Line createLineAdd(int segment){
          Line newLine;
          newLine = createLine(segment);//добавить линию
@@ -662,7 +706,12 @@ class Model implements  Observable {
          return newLine;
       }
 
-     //Присоеденить вторую точку к линии, когда линия проходит близко к точке
+    /**
+     * Метод lineAddPoind(Line nl, boolean poindAdd2).
+     * Предназначен для приклеивания конца линии к близ лежащим линия.
+     * @param nl - объект линия.
+     * @param poindAdd2 - режим построения втрой точки для линии.
+     */
     public void lineAddPoind(Line nl, boolean poindAdd2){
         Circle pCl;
         for(PoindCircle c: poindCircles){
@@ -969,11 +1018,14 @@ class Model implements  Observable {
      * arcRadius - радиус дуги
      * angleStart - начальный угол в градусах
      * verX и verY - координаты центра дуги
-     * Вызывает метод ArcGo(a1) для построения и перемещения дуги
+     * Вызывает метод ArcGo(arc) для построения и перемещения дуги
      */
     public void arcVertex(Circle o1, Circle o2, Circle o3, Arc arc){
         //Длина дуги в градусах
-        double angleABC=angleTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
+        Point2D pA=new Point2D(o1.getCenterX(), o1.getCenterY());
+        Point2D pB=new Point2D(o2.getCenterX(), o2.getCenterY());
+        Point2D pC=new Point2D(o3.getCenterX(), o3.getCenterY());
+        double angleABC=angleTriangle(pB,pA ,pC );//размер угла в градусах
         angleLength=angleABC;
         arcRadius=30;//радиус
         //Начальный угол в
@@ -1029,6 +1081,8 @@ class Model implements  Observable {
             }
         }
     }
+
+
     //Прямой угол вместо дуги
     public void rectangle90(Circle o1,Circle o2, Circle o3, Circle o4, Line l1, Line l2){
         double tx=o2.getCenterX()-o1.getCenterX();
@@ -1047,27 +1101,20 @@ class Model implements  Observable {
     }
 
     /**
-     * Метод angleTriangle(double x1, double y1, double x2, double y2, double x3, double y3).
+     * Метод angleTriangle(Point2D p1, Point2D p2, Point2D p3).
      * Предназначен для расчета угла по координатам вершин.
-     * @param x1  - координаты х1 первой вершины
-     * @param y1 - координаты y1 первой вершины
-     * @param x2 - координаты х2 тророй вершины
-     * @param y2 - координаты y2 второй вершины
-     * @param x3 - координаты х3 третьей вершины
-     * @param y3 - координаты y3 третьей вершины
-     * @return угол в градусах c точностью до десятых градуса.
+     * @param  p1 - координаты центральной  вершины
+     * @param  p2 - координаты первой боковой вершины
+     * @param  p3 - координаты втрой боковой вершины
+     *  @return угол в градусах c точностью до десятых градуса.
      */
-     private double angleTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
-        double ab=distance(x1,y1,x2,y2);
-        double ac=distance(x1,y1,x3,y3);
-        double bc=distance(x2,y2,x3,y3);
-        double angle=round(toDegrees(acos((pow(ab,2)+pow(bc,2)-pow(ac,2))/(2*ab*bc)))*10);
-        return angle/10;
+    private double angleTriangle(Point2D p1, Point2D p2, Point2D p3){
+        return Math.round(p1.angle(p2,p3));
     }
 
     /**
      * Метод angleVector(double X, double Y, double X1, double Y1).
-     * Предназначен для определения угла направления векторами.
+     * Предназначен для определения угла наклона вектора.
      * @param X -координата  начала вектора
      * @param Y - координата  начала вектора
      * @param X1 -координата конца вектора
@@ -1187,6 +1234,17 @@ class Model implements  Observable {
             ray.setEndY(rayLineY(cStart, cEnd));
         });
     }
+
+
+    /**
+     * Метод polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle).
+     * Предназначен для однонаправленного связывания точек треугольника с вершинами
+     * многоугольника.
+     * @param c1  - вершина треугольника
+     * @param c2 - вершина треугольника
+     * @param c3 - вершина треугольника
+     * @param treangle - многоугольник в форме треугольника
+     */
     private void polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle) {
         c1.centerXProperty().addListener((obj, oldVaue, newValue)->{
            treangle.getPoints().set(0,c1.getCenterX());
@@ -1287,7 +1345,7 @@ class Model implements  Observable {
     /**
      * Метод circlesBindLine(Circle cStart, Circle cEnd, Line line)
      * Метод однонаправленного связывания двух точек на прямой с прямой и расчетом начала и конца прямой.
-     * Для расчета начала и оконяания прямой вызываются методы:
+     * Для расчета начала и конца прямой вызываются методы:
      * rayLineX() и rayLineY()
      * @param cStart - первая точка на прямой
      * @param cEnd - вторая точка на прямой
@@ -1337,6 +1395,7 @@ class Model implements  Observable {
     double rayLineY(Circle c1, Circle c2){
         return c1.getCenterY()+(c2.getCenterY()-c1.getCenterY())*3;
     }
+
 
     //Тестовый метод для вывода информации по коолекциям
     public void ColTest(){
@@ -1390,7 +1449,7 @@ class Model implements  Observable {
     /**
      * Метод medianaAdd(Circle poindLine1).
      * Предназначен для добавления медиан в треугольнике
-     * @param c - вершина из воторой будет построена медиана.
+     * @param c - вершина из которой будет построена медиана.
      */
     public void medianaAdd(Circle c) {
     //найти вершины треугольника
@@ -1530,6 +1589,12 @@ class Model implements  Observable {
         });
     }
 
+    /**
+     * Метод findMedianaUpdateXY(Circle md, Line lm).
+     * Предназначен для обновления мировых координат точки и линии окончения медианы в коллекциях.
+     * @param md - объект точка медианы.
+     * @param lm  - объект линия мединады.
+     */
     private void findMedianaUpdateXY(Circle md, Line lm) {
         for (PoindCircle p: poindCircles){
             if(p!=null){

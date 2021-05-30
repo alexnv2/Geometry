@@ -525,8 +525,9 @@ public class  Controller extends View {
         if(medianaAdd){
             poindLine1=model.getTimeVer();
             model.medianaAdd(poindLine1);
-
             medianaAdd=false;
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
 
 
