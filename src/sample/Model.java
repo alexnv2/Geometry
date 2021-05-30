@@ -1362,8 +1362,7 @@ class Model implements  Observable {
      * @param cEnd - вторая точка на прямой
      * @param line - прямая
      */
-    //Связывание прямой с точками
-    public void circlesBindLine(Circle cStart, Circle cEnd, Line line) {
+     public void circlesBindLine(Circle cStart, Circle cEnd, Line line) {
         //Точка на прямой
         cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> {
             line.setEndX(rayLineX(cStart, cEnd));
@@ -1474,9 +1473,8 @@ class Model implements  Observable {
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
+                //посторить медиану
                 createMedianaBisectorHeight(c,c1,c2,mc,4);
-
-
             }else if(c.getId().equals(vertex[1])){
                 Circle c1=findCircle(vertex[0]);
                 Circle c2=findCircle(vertex[2]);
@@ -1484,26 +1482,6 @@ class Model implements  Observable {
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
                 createMedianaBisectorHeight(c,c1,c2,mc,4);
-                /*
-                Line newMediana=createLineAdd(4);
-                Circle medianaPoind=createPoindAdd(false);
-                verX=mc.getX();
-                verY=mc.getY();
-                VertexGo(medianaPoind);
-               // System.out.println(medianaPoind);
-                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                verX1=c.getCenterX();
-                verY1=c.getCenterY();
-                SideGo(newMediana);
-                findLinesUpdateXY(newMediana.getId());
-                paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                newMediana.toFront();
-                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-              //  String n=vertex[0]+"_"+vertex[2];
-                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-
-                 */
-
             }else if(c.getId().equals(vertex[2])){
                 Circle c1=findCircle(vertex[0]);
                 Circle c2=findCircle(vertex[1]);
@@ -1511,30 +1489,21 @@ class Model implements  Observable {
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
                 createMedianaBisectorHeight(c,c1,c2,mc,4);
-                /*
-                Line newMediana=createLineAdd(4);
-                Circle medianaPoind=createPoindAdd(false);
-                verX=mc.getX();
-                verY=mc.getY();
-                VertexGo(medianaPoind);
-               // System.out.println(medianaPoind);
-                findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                verX1=c.getCenterX();
-                verY1=c.getCenterY();
-                SideGo(newMediana);
-                findLinesUpdateXY(newMediana.getId());
-                paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                newMediana.toFront();
-                findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-              //  String n=vertex[0]+"_"+vertex[1];
-                medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-
-                 */
             }
         }
     }
     }
 
+    /**
+     * Метод createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i).
+     * Предназначен для построения отрезка медианы, биссектрисы, высоты  и точки на противолежещей стороне от вершины,
+     * из которой проводится медиана
+     * @param c - объект вершина из которой проводится медиана, биссектриса и высота.
+     * @param c1 - обект боковая вершина угла.
+     * @param c2 - объект боковая вершина угла.
+     * @param mc - объект точка расчетная для медианы, биссектрисы и высоты.
+     * @param i - номер объекта в коллекции PoindCircle (4- медиана, 5 - биссектриса, 6 - высота)
+     */
     private void createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i) {
         Line newMediana=createLineAdd(i);
         Circle medianaPoind=createPoindAdd(false);
@@ -1549,13 +1518,23 @@ class Model implements  Observable {
         paneBoards.getChildren().addAll(newMediana,medianaPoind);
         newMediana.toFront();
         findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+        //Связывание созданных отрезков и точки с вершинами треугольника
         switch (i){
             case 4-> medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-            case 5->bisectorBindCircles(c,c1,c2,medianaPoind,newMediana);
+            case 5-> bisectorBindCircles(c,c1,c2,medianaPoind,newMediana);
         }
 
     }
 
+    /**
+     * Метод bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm).
+     * Предназначен для связывания биссектрисы с вершинами треугольника.
+     * @param c - объект вершина треугольника
+     * @param c1 - объект вершина треугольника
+     * @param c2 - объект вершина треугольника
+     * @param md - объект точка пересечения биссектрисы со сторой треугольника
+     * @param lm - отрезок биссектриса
+     */
     private void bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm) {
         c.centerXProperty().bindBidirectional(lm.startXProperty());
         c.centerYProperty().bindBidirectional(lm.startYProperty());
@@ -1629,24 +1608,6 @@ class Model implements  Observable {
         });
     }
 
-
-    /**
-     * Метод findNameSide(StringBuilder n)
-     * Предназначен для поиска противолежащей стороны треугольника от заданной вершины.
-     * @param n - срока стороны вида В_С
-     * @return - линию
-     */
-    private Line findNameSide(String n) {
-        for(PoindLine p: poindLines){
-            if(p!=null){
-                if(n.equals(p.getId())){
-                    return p.getLine();
-                }
-            }
-        }
-        return null;
-    }
-
     /**
      * Метод medianaBindCircles(Circle c)
      * Предназначен для связывания вершины треугольника с медианой
@@ -1716,16 +1677,15 @@ class Model implements  Observable {
         }
     }
 
-    //Точка пересечения бессекрисы со стороной
-    private void bisector(double x1,double y1, double x2, double y2, double x3, double y3) {
-        double ab = distance(x1, y1, x2, y2);
-        double ac = distance(x3, y3, x2, y2);
-        double ra = ab / ac;
-        setVerX((x1 + ra * x3) / (1 + ra));
-        setVerY((y1 + ra * y3) / (1 + ra));
-    }
 
-
+    /**
+     * Метод bisectorPoind(Point2D pA, Point2D pB, Point2D pC).
+     * Предназначен для определения координат пересечения биссектрисы со стороной треугольника.
+     * @param pA  -  вершина треугольника.
+     * @param pB - вершина треугольника из которой проведена биссектриса.
+     * @param pC - вершина треугольника.
+     * @return - возвращает координаты точки пересечения.
+     */
     private Point2D bisectorPoind(Point2D pA, Point2D pB, Point2D pC){
         double ra=pA.distance(pB)/pC.distance(pB);
         double dX=(pA.getX() + ra * pC.getX()) / (1 + ra);
@@ -1752,27 +1712,6 @@ class Model implements  Observable {
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
                     createMedianaBisectorHeight(c,c1,c2,mc,5);
-                    /*
-
-
-                    Line newMediana=createLineAdd(4);
-                    Circle bisectorPoind=createPoindAdd(false);
-                    verX=mc.getX();
-                    verY=mc.getY();
-                    VertexGo(bisectorPoind);
-                    // System.out.println(medianaPoind);
-                    findCirclesUpdateXY(bisectorPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                    verX1=c.getCenterX();
-                    verY1=c.getCenterY();
-                    SideGo(newMediana);
-                    findLinesUpdateXY(newMediana.getId());
-                    paneBoards.getChildren().addAll(newMediana,bisectorPoind);
-                    newMediana.toFront();
-                    findNameId(c.getId(),bisectorPoind.getId(),newMediana.getId());
-                    String n=vertex[1]+"_"+vertex[2];
-                    //medianaBindCircles(c,c1,c2,bisectorPoind,newMediana);
-
-                     */
                 }else if(c.getId().equals(vertex[1])){
                     Circle c1=findCircle(vertex[0]);
                     Circle c2=findCircle(vertex[2]);
@@ -1781,26 +1720,6 @@ class Model implements  Observable {
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
                     createMedianaBisectorHeight(c,c1,c2,mc,5);
-                    /*
-                    Line newMediana=createLineAdd(4);
-                    Circle medianaPoind=createPoindAdd(false);
-                    verX=mc.getX();
-                    verY=mc.getY();
-                    VertexGo(medianaPoind);
-                    // System.out.println(medianaPoind);
-                    findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                    verX1=c.getCenterX();
-                    verY1=c.getCenterY();
-                    SideGo(newMediana);
-                    findLinesUpdateXY(newMediana.getId());
-                    paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                    newMediana.toFront();
-                    findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-                    String n=vertex[0]+"_"+vertex[2];
-                   // medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-
-                     */
-
                 }else if(c.getId().equals(vertex[2])){
                     Circle c1=findCircle(vertex[0]);
                     Circle c2=findCircle(vertex[1]);
@@ -1809,25 +1728,6 @@ class Model implements  Observable {
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
                     createMedianaBisectorHeight(c,c1,c2,mc,5);
-                    /*
-                    Line newMediana=createLineAdd(4);
-                    Circle medianaPoind=createPoindAdd(false);
-                    verX=mc.getX();
-                    verY=mc.getY();
-                    VertexGo(medianaPoind);
-                    // System.out.println(medianaPoind);
-                    findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
-                    verX1=c.getCenterX();
-                    verY1=c.getCenterY();
-                    SideGo(newMediana);
-                    findLinesUpdateXY(newMediana.getId());
-                    paneBoards.getChildren().addAll(newMediana,medianaPoind);
-                    newMediana.toFront();
-                    findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
-                    String n=vertex[0]+"_"+vertex[1];
-                   // medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-
-                     */
                 }
             }
         }

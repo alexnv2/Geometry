@@ -11,12 +11,10 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 /**
- * Класс View расширяет интерфейс Observer
- * Базовый класс, предназначен для информации на экран
+ * Класс View расширяет интерфейс Observer.
+ * Базовый класс, предназначен отображения информации на экране.
  */
-//Первый класс для вывода на экран
 class View implements Observer{
-
     //Объявляем класс Model
     Model model=new Model();
     //Объявляем класс сетки с методами перемещения координатной сетки и масштабирования
@@ -27,7 +25,7 @@ class View implements Observer{
         //Регистрация слушателя в классе Model
         model.registerObserver(this);
      }
-     //Переопределить метод из класса интерфейса
+     //Переопределить метод из класса интерфейса Observer.
     @Override
     //Какую информацию надо вывести
     public  void  notification(String message){
@@ -43,11 +41,6 @@ class View implements Observer{
             case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дугм для треугольников
             case "ArcColorGo"->this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
-
-
-           // case "ToolTip"->this.toolTipGo(model.getOToolTip());//Подсказка
-
-
         }
     }
     //Вывод в правую часть доски

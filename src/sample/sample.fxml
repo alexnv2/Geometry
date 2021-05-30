@@ -33,7 +33,7 @@
             <MenuItem fx:id="menuTreadPod" mnemonicParsing="false" onAction="#onClickTreadPod" text="Третий признак подобия треугольников" />
           </Menu>
           <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem mnemonicParsing="false" onAction="#btnIsosceles" text="Свойство равнобедренного треугольника" />
+          <MenuItem mnemonicParsing="false" onAction="#menuIsosceles" text="Свойство равнобедренного треугольника" />
           <MenuItem mnemonicParsing="false" text="Признак равнобедренного треугольника" />
           <MenuItem mnemonicParsing="false" text="Paste" />
           <MenuItem mnemonicParsing="false" text="Delete" />

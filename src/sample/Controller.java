@@ -38,7 +38,8 @@ import static ContstantString.StringStatus.*;
  * Вызывает методы из класса модели для обработки событий
  * @author A. Nosov
  * @version 1.0
- * @see View
+ * @see sample.View
+ * @see sample.Model
  */
 
 public class  Controller extends View {
@@ -169,9 +170,9 @@ public class  Controller extends View {
 
 
     /**
-     * Метод btnPoindClick()
-     * Cобытие нажатия кнопки "Добавить точку"
-     * Устанавливает режим добавления точки
+     * Метод btnPoindClick().
+     * Cобытие нажатия кнопки "Добавить точку".
+     * Устанавливает режим добавления точки.
      */
     public void btnPoindClick() {
         //Установить статус
@@ -181,9 +182,9 @@ public class  Controller extends View {
 
     }
     /**
-     * Метод btnSegmentClick()
-     * Метод для события нажатия кнопки "Добавить отрезок
-     * Устанавливает режим добавления отрезка
+     * Метод btnSegmentClick().
+     * Метод для события нажатия кнопки "Добавить отрезок.
+     * Устанавливает режим добавления отрезка.
      */
      public void btnSegmentClick() {
         //Установить статус
@@ -194,9 +195,9 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод btnRay()
-     * Метод для события нажатия кнопки "Добавить луч"
-     * Устанавливает режим добавления луча
+     * Метод btnRay().
+     * Метод для события нажатия кнопки "Добавить луч".
+     * Устанавливает режим добавления луча.
      */
      public void btnRay() {
         //Установить статус
@@ -207,9 +208,9 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод btLine()
-     * Метод для события нажатия кнопки "Добавить прямую"
-     * Устанавливает режим добавления прямой
+     * Метод btLine().
+     * Метод для события нажатия кнопки "Добавить прямую".
+     * Устанавливает режим добавления прямой.
      */
     public void btnLine() {
         //Установить статус
@@ -220,9 +221,9 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод btnAngle()
-     * Метод для события нажатия кнопки "Добавить угол"
-     * Устанавливает режим добавления угла
+     * Метод btnAngle().
+     * Метод для события нажатия кнопки "Добавить угол".
+     * Устанавливает режим добавления угла.
      */
     public void btnAngle() {
         //Установить статус
@@ -233,9 +234,9 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод btnTreangle()
-     * Метод на события нажатия кнопки "Добавить треугольник"
-     * Устанавливает режим добавления треугольника
+     * Метод btnTreangle().
+     * Метод на события нажатия кнопки "Добавить треугольник".
+     * Устанавливает режим добавления треугольника.
      */
     public void btnTreangle() {
         //Установить статус
@@ -247,12 +248,20 @@ public class  Controller extends View {
       //  model.webViewLeftString(webViewLeft, 10);//Определения остроугольного треугольника
     }
 
+    /**
+     * Метод btnMedian().
+     * Предназанчен для установления режима добавить медиану. Нажата кнопка "Добавить медиану"
+     */
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
         model.statusGo(leftStatus);
         medianaAdd = true;
     }
 
+    /**
+     * Метод btnBisector().
+     * Предназначе для установления режима добавить биссектрису. Нажата кнопка "Добавить биссектрису".
+     */
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
         model.statusGo(leftStatus);
@@ -261,7 +270,7 @@ public class  Controller extends View {
 
     /**
      * Метод btnDelete()
-     * Метод запускает режим удаления выбранных объектов.
+     * Нажата копка "Удалить геометрическую фигуру." Метод запускает режим удаления выбранных объектов.
      * Признак для удаления флаг bSelect=true вовсех колеекциях
      */
     public void btnDelete() {
@@ -583,7 +592,6 @@ public class  Controller extends View {
      * Метод окончания построения геометрической фигуры.
      * Закравает режим добавления фигур.
      */
-    //Метод окончания добавления фигур
     public void addLineRayEnd(){
         if (model.isPoindOldAdd() == false) {
             poindLine2 = model.createPoindAdd(true);//создать новую
@@ -598,8 +606,6 @@ public class  Controller extends View {
         poindAdd2 = false;//закрыть 2 точку
         model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
      }
-
-
 
     /**
      * Метод onScroll(ScrollEvent scrollEvent)
@@ -655,27 +661,19 @@ public class  Controller extends View {
     //Нажата кнопка меню "Точка"
     public void menuPoindClick() {
         //Вывод информации о геометрических фигурах
-        //Сюда добавить код
-        //Установка режима добавления точек
-        //Установить статус
-        model.setStringLeftStatus(STA_6);
-        model.statusGo(leftStatus);
-        poindAdd=true;//Установить режим добавления
+
+
     }
     //Нажата кнопка меню "Отрезок"
     public void menuLineClick() {
         //Вывод информации об отрезах
-        //Сюда добавить код
-        //Установка режима добавления отрезков
-        //Установить статус
-        model.setStringLeftStatus(STA_7);
-        model.statusGo(leftStatus);
-        segmentAdd =true;
+
+
     }
     /**
      * Метод menuShowPoindName()
      * Предназначен для замены логической переменной, показывать большие буквы в именах точек.
-     * Пункт из меню "Настройки"
+     * Пункт из меню "Настройки - Показывать большие буквы."
      */
     public void menuShowPoindName() {
             visibleNamePoind(menuShowPoindName.isSelected());
@@ -695,11 +693,10 @@ public class  Controller extends View {
             }
         }
     }
-
     /**
      * Метод menuShowLineName().
      * Предназначен скрытия от показа имен прямых, лучей, отрезков.
-     * Пункт из меню "Настройки"
+     * Пункт из меню "Настройки - Показывать маленькие буквы".
      */
     public void menuShowLineName() {
         visibleNameLine(menuShowLineName.isSelected());
@@ -708,8 +705,8 @@ public class  Controller extends View {
 
     /**
      * Метод visibleNameLine(boolean bName).
-     * Предназначен скрытия от показа имен прямых, лучей, отрезков.
-     * @param bName - логическая переменная определяется в меню "Настроки->Показывать маленькие буквы в именах"
+     * Предназначен для показа и скрытия меленьких букв. Вызывается из пункта меню "Настройки-Показывать маленькие буквы".
+     * @param bName - логическая переменная (true - показывать, false - не показывать)
      */
     private void visibleNameLine(boolean bName){
         for (NamePoindLine pn: model.getNamePoindLines()){
@@ -722,7 +719,7 @@ public class  Controller extends View {
 
     /**
      * Метод menuCartesian().
-     * Предназначен для показа или скрытия координатных осей
+     * Пункт меню "Настройки-Показывать координатные оси".
      */
     public void menuCartesian() {
         model.setShowCartesian(menuCartesian.isSelected());
@@ -730,7 +727,7 @@ public class  Controller extends View {
 
     /**
      * Метод  menuGrid().
-     * Предназначен для показа или скрытия сетки
+     * Пункт меню "Настройки - Показывать сетку".
      */
     public void menuGrid() {
         model.setShowGrid(menuGrid.isSelected());
@@ -738,45 +735,81 @@ public class  Controller extends View {
             gridViews.gridCartesian();//Вывод сетки
         }else{
             paneGrid.getChildren().clear();//Очистить экран и память
-
         }
     }
 
-    //Нажата кнопка меню "Признаки равнобедренного треугольника
-    public void btnIsosceles(ActionEvent actionEvent) {
+    /**
+     * Метод menuIsosceles().
+     * Нажат пункт меню "Теоремы-Признак равнобедренного треугольника".
+     */
+    public void menuIsosceles() {
         model.webViewLeftString(webViewLeft, 1);
     }
 
 
+    /**
+     * Метод onMouseEnteredPoind().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить точку".
+     */
     //Всплывающие подсказки при наведении на кнопку "Точка"
     public void onMouseEnteredPoind() {
         tooltip.setText("Добавить точку");
         btnPoind.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMoseEnteredSegment().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить отрезок".
+     */
     //Всплывающее окно при наведении на кнопку "Отрезок"
     public void onMoseEnteredSegment() {
         tooltip.setText("Добавить отрезок");
         btnSegment.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMouseEnteredRay().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить луч".
+     */
     //Всплывающее окно при наведении на кнопку "Луч"
     public void onMouseEnteredRay() {
         tooltip.setText("Добавить луч");
         btnRay.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMouseEnteredLine().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить прямую".
+     */
     //Всплывающее окно при наведении на кнопку "Прямая"
     public void onMouseEnteredLine() {
         tooltip.setText("Добавить прямую");
         btnLine.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMouseEnteredTreangle().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить треугольник".
+     */
     //Всплывающее окно при наведении на кнопку "Треугольник"
     public void onMouseEnteredTreangle() {
          tooltip.setText("Добавить треугольник");
          btnTreangle.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMouseEnteredMediana().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить медиану".
+     */
     public void onMouseEnteredMediana() {
         tooltip.setText("Добавить медиану");
         btnMediana.setTooltip(tooltip);
     }
+
+    /**
+     * Метод onMouseEnteredBisector().
+     * Всплывающая подсказака при наведении мышки на кнопку "Добавить биссектрису".
+     */
     public void onMouseEnteredBisector() {
         tooltip.setText("Добавить биссектрису");
         btnBisector.setTooltip(tooltip);
