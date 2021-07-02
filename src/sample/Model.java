@@ -85,6 +85,9 @@ class Model implements  Observable {
     private int inDash=2;//индекс определяет внешний вид прямой (0-4 вида)
 
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
+    private boolean poindAdd=false;//true- режим добавления точки
+    private boolean poindLineAdd=false;
+    private boolean lineAdd=false;
     private double radiusPoind=5;//радиус точки
 
     private double arcRadius;//радиус дуги
@@ -109,6 +112,8 @@ class Model implements  Observable {
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
+    private boolean poindMove=false;
+    private double t;//для параметрической прямой, когда точка принадлежит прямой
 
     public void setWindShow(int w){
         WIND_SHOW=w;
@@ -416,7 +421,7 @@ class Model implements  Observable {
         Circle newPoind;//Объявить переменную
         newPoind = createPoind();//Создать точку
         //добавить в коллецию точек
-        poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,bMove,false,0));
+        poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,bMove,false,0, null,0.0, false));
         //Передать в View для вывода на экран
         VertexGo(newPoind);
         //Добавить имя на доску
@@ -424,8 +429,68 @@ class Model implements  Observable {
         //Добавить в правую часть доски
         setTxtShape("");
         txtAreaOutput();
+        //Привязать создаваемую точку к любой линии геометрических фигур.
+        if(poindAdd && poindLineAdd){
+            double tX=(newPoind.getCenterX()-line.getStartX())/(line.getEndX()-line.getStartX());
+            double tY=(newPoind.getCenterY()-line.getStartY())/(line.getEndY()-line.getStartY());
+            double t=(tX+tY)/2;
+            System.out.println("tx= "+tX+" ty= "+tY);
+            for(PoindCircle p: poindCircles){
+                if(p!=null){
+                    if(p.getCircle().getId().equals(newPoind.getId())){
+                        p.setLine(line);
+                        p.setT(t);
+                        p.setBLine(true);
+                        circlesBindOnLine(newPoind,line,t);
+                    }
+                }
+            }
+        }
+
         return newPoind;//возвращает точку
     }
+
+    private void circlesBindOnLine(Circle newPoind, Line line, double t) {
+        line.startXProperty().addListener((obj, oldValue, newValue)->{
+
+            if(t>0 && t<1) {
+                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
+                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
+                newPoind.setCenterX(x);
+                newPoind.setCenterY(y);
+            }
+        });
+        line.endXProperty().addListener((obj, oldValue, newValue)->{
+
+            if(t>0 && t<1) {
+                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
+                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
+                newPoind.setCenterX(x);
+                newPoind.setCenterY(y);
+            }
+        });
+
+        line.startYProperty().addListener((obj, oldValue, newValue)->{
+
+            if(t>0 && t<1) {
+                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
+                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
+                newPoind.setCenterX(x);
+                newPoind.setCenterY(y);
+            }
+        });
+        line.endYProperty().addListener((obj, oldValue, newValue)->{
+
+            if(t>0 && t<1) {
+                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
+                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
+
+                newPoind.setCenterX(x);
+                newPoind.setCenterY(y);
+            }
+        });
+    }
+
     /**
      * Метод createPoind()
      * Предназначен для создания точек в виде кругов, а также привязке событий к данным точкам.
@@ -443,13 +508,55 @@ class Model implements  Observable {
         //Перемещение с нажатой клавишей
         circle.setOnMouseDragged(e-> {
                 if(findPoindCircleMove(circle.getId())) {
-                    //Найти по точке имя к оллекции
+                    //Найти по точке имя в коллекции
                     Text txt=findNameText(circle);
                     if(!txt.xProperty().isBound()){//проверить на связь, если нет связать
                         textBindCircle(circle,txt, (int)(txt.getX()-circle.getCenterX()),(int)(txt.getY()-circle.getCenterY()));//если нет, связать
                     }
-                    circle.setCenterX(e.getX());
-                    circle.setCenterY(e.getY());
+                    //Найти точку в коллеции, определить принадлежит ли она линии
+                    for(PoindCircle p: poindCircles){
+                        if(p!=null){
+                            if(p.getId().equals(circle.getId())){
+                                if(p.isBLine()) {
+                                    poindMove = p.isBLine();
+                                    line = p.getLine();
+                                    t = p.getT();
+
+                                }else{
+                                    poindMove=false;
+                                }
+
+                            }
+                        }
+                    }
+                    //Точка принадлежит прямой
+                    if(poindMove){
+                          double tX=(e.getX()-circle.getCenterX())/(line.getEndX()-line.getStartX());
+                          double tY=(e.getY()-circle.getCenterY())/(line.getEndY()-line.getStartY());
+                          double t=abs((tX+tY)/2);
+                          if(t>0 && t<1 ) {
+                              double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
+                              double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
+                              circle.setCenterX(x);
+                              circle.setCenterY(y);
+                            //  verX=x;
+                            //  verY=y;
+                            //  verX0=gridViews.revAccessX(x);
+                            //  verY0=gridViews.revAccessY(y);
+                              for (PoindCircle p: poindCircles){
+                                  if(p!=null){
+                                      if(p.getId().equals(circle.getId())){
+                                          p.setT(t);
+                                     //     p.setX(gridViews.revAccessX(circle.getCenterX()));
+                                     //     p.setY(gridViews.revAccessY(circle.getCenterY()));
+                                      }
+                                  }
+                              }
+                          }
+                    }else {//не принадлежит прямой
+                        circle.setCenterX(e.getX());
+                        circle.setCenterY(e.getY());
+                    }
                     //добавить новые координаты в коллекцию PoindCircle
                     findCirclesUpdateXY(circle.getId(),verX0,verY0);
                     //добавить новые координаты в коллекцию PoindLine
@@ -466,7 +573,7 @@ class Model implements  Observable {
         });
          //Нажатие клавиши
         circle.setOnMousePressed(e->{
-                selectCircle(circle);
+            selectCircle(circle);
                 //Проверить разрешено ли взять эту точку. Если расчетная то запрещено
                 if(findPoindAddMove(circle)) {
                     poindOldAdd = true;//взять эту точку для отрезка
@@ -496,7 +603,8 @@ class Model implements  Observable {
         //Отпускание кнопки
         circle.setOnMouseReleased(e->{
            // circle.setFill(Color.DARKSLATEBLUE);
-            poindOldAdd=false;//запрет брать точку для отрезков, прямых, лучей
+           // poindOldAdd=false;//запрет брать точку для отрезков, прямых, лучей
+
 
          });
         //Уход с точкм
@@ -508,6 +616,10 @@ class Model implements  Observable {
             setStringLeftStatus("");
             statusGo(Status);
         });
+        circle.setOnMouseClicked(e->{
+
+        });
+
         return circle;//завершено создание новой точки
     }
 
@@ -646,17 +758,14 @@ class Model implements  Observable {
         newLine.setId(indexLineAdd());//Индефикатор узла
         newLine.setStroke(Color.DARKSLATEBLUE);//Color
         newLine.setStrokeWidth(2);//Толщина
-
+/*
          //Прявязка событий мышки
-         newLine.setOnMousePressed(e->{
-            // System.out.println("poind");
-         });
          //Наведение на отрезок
          newLine.setOnMouseEntered(e->{
              newLine.setCursor(Cursor.HAND);
-             //Установить статус
+             poindAdd=true;
+              //Установить статус
              for (PoindLine p: poindLines) {
-
                  if (p.getLine().getId().equals(newLine.getId())) {
                      switch (p.getSegment()) {
                          case 0 -> { setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
@@ -676,16 +785,72 @@ class Model implements  Observable {
              }
              newLine.setStrokeWidth(3);
          });
+         //уход с линии
          newLine.setOnMouseExited(e->{
+             poindAdd=false;
+            // System.out.println("При уходе с линии "+poindAdd);
              //Установить статус
              setStringLeftStatus("");
              statusGo(Status);
              newLine.setStrokeWidth(2);
          });
+         //нажата левая кнопка
+         newLine.setOnMousePressed(e->{
+
+
+         });
+
+ */
+
+
          return newLine;
      }
 
+    /**
+     * Метод mouseLine().
+     * Предназначен для привязки событий мышки к объекту Line.
+     */
+    public void mouseLine(Line newLine){
+        //Наведение на отрезок
+        newLine.setOnMouseEntered(e->{
+            newLine.setCursor(Cursor.HAND);
+            poindAdd=true;
+            //Установить статус
+            for (PoindLine p: poindLines) {
+                if (p.getLine().getId().equals(newLine.getId())) {
+                    switch (p.getSegment()) {
+                        case 0 -> { setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 1 -> {setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 2 -> { setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 3 ->{setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 4 ->{setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 5 ->{setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                    }
+                }
+            }
+            newLine.setStrokeWidth(3);
+        });
+        //уход с линии
+        newLine.setOnMouseExited(e->{
+            poindAdd=false;
+            // System.out.println("При уходе с линии "+poindAdd);
+            //Установить статус
+            setStringLeftStatus("");
+            statusGo(Status);
+            newLine.setStrokeWidth(2);
+        });
+        //нажата левая кнопка
+        newLine.setOnMousePressed(e->{
 
+
+        });
+    }
     /**
      * Метод createLineAdd(int segment).
      * Предназначен для сооздания линий. Вызывает метод createLine(segment). Добовляет линию на доску и в коллекцию.
@@ -693,8 +858,8 @@ class Model implements  Observable {
      * @return -возращает лбъект Line.
      */
      Line createLineAdd(int segment){
-         Line newLine;
-         newLine = createLine(segment);//добавить линию
+         Line newLine = createLine(segment);//добавить линию
+
          //Вид линии
          switch (inDash){
              case 0->Collections.<Double>addAll(arrDash,2.0);
@@ -1461,7 +1626,8 @@ class Model implements  Observable {
      * Предназначен для добавления медиан в треугольнике
      * @param c - вершина из которой будет построена медиана.
      */
-    public void medianaAdd(Circle c) {
+    public Line medianaAdd(Circle c) {
+        Line newMediana=null;
     //найти вершины треугольника
     for(TreangleName tn: treangleNames){
         if (tn!=null){
@@ -1470,28 +1636,32 @@ class Model implements  Observable {
                 Circle c1=findCircle(vertex[1]);
                 Circle c2=findCircle(vertex[2]);
                 String name=vertex[0]+"_"+vertex[2];
+              //  long startTime=System.nanoTime();
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
+              //  long time=System.nanoTime()-startTime;
+              //  System.out.println("Time "+time);
                 //посторить медиану
-                createMedianaBisectorHeight(c,c1,c2,mc,4);
+               newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
             }else if(c.getId().equals(vertex[1])){
                 Circle c1=findCircle(vertex[0]);
                 Circle c2=findCircle(vertex[2]);
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
-                createMedianaBisectorHeight(c,c1,c2,mc,4);
+                newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
             }else if(c.getId().equals(vertex[2])){
                 Circle c1=findCircle(vertex[0]);
                 Circle c2=findCircle(vertex[1]);
                 Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
                 Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                 Point2D mc=midPoindAB(p1,p2);
-                createMedianaBisectorHeight(c,c1,c2,mc,4);
+                newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
             }
         }
     }
+    return newMediana;
     }
 
     /**
@@ -1504,7 +1674,7 @@ class Model implements  Observable {
      * @param mc - объект точка расчетная для медианы, биссектрисы и высоты.
      * @param i - номер объекта в коллекции PoindCircle (4- медиана, 5 - биссектриса, 6 - высота)
      */
-    private void createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i) {
+    private Line createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i) {
         Line newMediana=createLineAdd(i);
         Circle medianaPoind=createPoindAdd(false);
         verX=mc.getX();
@@ -1523,7 +1693,7 @@ class Model implements  Observable {
             case 4-> medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
             case 5-> bisectorBindCircles(c,c1,c2,medianaPoind,newMediana);
         }
-
+    return newMediana;
     }
 
     /**
@@ -1700,7 +1870,8 @@ class Model implements  Observable {
      * Предназначен для построения биссектрисы из заданной точки треугольника.
      * @param c - объект точка из которой надо построить биссектрису
      */
-    public void bisectorAdd(Circle c) {
+    public Line bisectorAdd(Circle c) {
+        Line newBisector=null;
         for(TreangleName tn: treangleNames){
             if (tn!=null){
                 String[] vertex=tn.getID().split("_");
@@ -1711,7 +1882,7 @@ class Model implements  Observable {
                     Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
-                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
                 }else if(c.getId().equals(vertex[1])){
                     Circle c1=findCircle(vertex[0]);
                     Circle c2=findCircle(vertex[2]);
@@ -1719,7 +1890,7 @@ class Model implements  Observable {
                     Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
-                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
                 }else if(c.getId().equals(vertex[2])){
                     Circle c1=findCircle(vertex[0]);
                     Circle c2=findCircle(vertex[1]);
@@ -1727,10 +1898,11 @@ class Model implements  Observable {
                     Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
                     Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
                     Point2D mc=bisectorPoind(p1,p3,p2);
-                    createMedianaBisectorHeight(c,c1,c2,mc,5);
+                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
                 }
             }
         }
+        return newBisector;
     }
 
     /*

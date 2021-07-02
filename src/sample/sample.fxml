@@ -11,12 +11,10 @@
     <menus>
       <Menu mnemonicParsing="false" text="Фигуры">
         <items>
-          <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка" />
-          <MenuItem mnemonicParsing="false" text="Прямая" />
-          <MenuItem mnemonicParsing="false" onAction="#menuLineClick" text="Отрезок" />
+          <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />
+          <MenuItem mnemonicParsing="false" onAction="#menuLineClick" text="Луч и угол" />
           <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem mnemonicParsing="false" text="Луч" />
-          <MenuItem mnemonicParsing="false" text="Треугольник" />
+          <MenuItem fx:id="menuTreangle" mnemonicParsing="false" text="Треугольник"  onAction="#menuTriangle"/>
           <MenuItem mnemonicParsing="false" text="Окружность" />
         </items>
       </Menu>
@@ -44,10 +42,10 @@
       </Menu>
       <Menu mnemonicParsing="false" text="Аксиомы и следствия">
         <items>
-          <MenuItem mnemonicParsing="false" text="Аксиомы взаимного расположения точек, прямых и плоскостей" />
-          <MenuItem mnemonicParsing="false" text="Аксиомы наложения и равенства" />
-          <MenuItem mnemonicParsing="false" text="Аксиомы измерения отрезков" />
-          <MenuItem mnemonicParsing="false" text="Аксиома параллельных" />
+          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy1Click" text="Аксиомы взаимного расположения точек, прямых и плоскостей" />
+          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства" />
+          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков" />
+          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy4Click" text="Аксиома параллельных" />
 
         </items>
       </Menu>
