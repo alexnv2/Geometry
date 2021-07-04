@@ -16,8 +16,9 @@ public class NamePoindLine {
     private double Y;
     private boolean visiblePoind;//показывать имя или нет (по умолчанию true)
     private boolean visibleLine;//показывать имя линий или нет(по умолчанию false)
+    private String type;//poind - имя тчки line -имя линии
     //Констуктор
-    NamePoindLine(Text text, String id, double dx, double dy, double x, double y, boolean visP, boolean viiL){
+    NamePoindLine(Text text, String id, double dx, double dy, double x, double y, boolean visP, boolean viiL,String type){
         this.text=text;
         this.id=id;
         this.dX=dx;
@@ -26,5 +27,6 @@ public class NamePoindLine {
         this.Y=y;
         this.visiblePoind=visP;
         this.visibleLine=viiL;
+        this.type=type;
     }
 }

@@ -12,7 +12,8 @@
       <Menu mnemonicParsing="false" text="Фигуры">
         <items>
           <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />
-          <MenuItem mnemonicParsing="false" onAction="#menuLineClick" text="Луч и угол" />
+          <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол" />
+          <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы" />
           <SeparatorMenuItem mnemonicParsing="false" />
           <MenuItem fx:id="menuTreangle" mnemonicParsing="false" text="Треугольник"  onAction="#menuTriangle"/>
           <MenuItem mnemonicParsing="false" text="Окружность" />

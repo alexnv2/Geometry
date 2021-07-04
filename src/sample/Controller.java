@@ -528,6 +528,8 @@ public class  Controller extends View {
             model.rayBindCircles(poindLine1,poindLine2,newLine );
             //Заменить имя
             model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            //Добавить имя на доску
+            model.nameLineAdd(newLine);
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
@@ -547,6 +549,8 @@ public class  Controller extends View {
             model.circlesBindLine(poindLine1, poindLine2, newLine);
             //Заменить имя
             model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            //Добавить имя
+            model.nameLineAdd(newLine);
             lineAdd=false;
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
@@ -678,33 +682,78 @@ public class  Controller extends View {
 
             }
         }
+        /*
+        //Обновление имен
+        for (NamePoindLine n: model.getNamePoindLines()){
+            if(n!=null){
+                Text t=n.getText();
+                t.setX(gridViews.accessX(n.getX()));
+                t.setY(gridViews.accessY(n.getY()));
+            }
+        }
+
+         */
 
     }
-    //Нажата кнопка меню "Точка"
+    /**
+     * Метод  menuPoindClick().
+     * Предназначен для вывода определения точки, прямой, отрезка.
+     * Вызывается из пункта меню Фигуры->Точка, прямая, отрезок.
+     */
     public void menuPoindClick() {
         model.webHTML(webViewLeft,"line.html");//Вывод в web файла html
 
     }
-    //Нажата кнопка меню "Отрезок"
-    public void menuLineClick() {
-        //Вывод информации об отрезах
 
-
+    /**
+     * Метод  menuRayClick().
+     * Предназначен для выводв определений луча и угла
+     * Вызывается из пункта меню Фигуры->Луч и угол
+     */
+    public void menuRayClick() {
+        model.webHTML(webViewLeft,"rayandangle.html");//Вывод в web файла html
+    }
+    /**
+     * Метод  menuAngleClick().
+     * Предназначен для выводв определений смежных и вертикальных углов
+     * Вызывается из пункта меню Фигуры->Смежные и вертикальные углы
+     */
+    public void menuAngleClick() {
+        model.webHTML(webViewLeft,"angle.html");//Вывод в web файла html
     }
 
-    //Аксиомы принадлежности
+    /**
+     * Метод  menuAcsiomy1Click().
+     * Предназначен для вывода аксиом принадлежности из пункта
+     * меню Аксиомы и следствие->Аксиомы принадлежности
+     */
     public void menuAcsiomy1Click() {
         model.webHTML(webViewLeft,"acsiomy_1.html");//Вывод в web файла html
     }
-//Аксиомы равенства и наложения
+
+    /**
+     * Метод menuAcsiomy2Click().
+     * Предназначен для вывода аксиом принадлежности из пункта
+     * меню Аксиомы и следствие->Аксиомы павенства и наложения
+     */
     public void menuAcsiomy2Click() {
         model.webHTML(webViewLeft,"acsiomy_2.html");//Вывод в web файла html
     }
-    // Аксиомы измерения
+
+    /**
+     * Метод menuAcsiomy3Click().
+     * Предназначен для вывода аксиом принадлежности из пункта
+     * меню Аксиомы и следствие->Аксиомы измерения
+     */
     public void menuAcsiomy3Click() {
         model.webHTML(webViewLeft,"acsiomy_3.html");//Вывод в web файла html
     }
-    //Аксиома параллельности
+
+    /**
+     * Метод menuAcsiomy4Click().
+     * Предназначен для вывода аксиом принадлежности из пункта
+     * меню Аксиомы и следствие->Аксиомы параллельности.
+     */
     public void menuAcsiomy4Click() {
         model.webHTML(webViewLeft,"acsiomy_4.html");//Вывод в web файла html
     }
@@ -728,8 +777,10 @@ public class  Controller extends View {
     private void visibleNamePoind(boolean bName){
         for (NamePoindLine pn: model.getNamePoindLines()){
             if(pn!=null){
-                pn.getText().setVisible(bName);
-                pn.setVisiblePoind(bName);
+             if(pn.getType().equals("poind")) {
+                 pn.getText().setVisible(bName);
+                 pn.setVisiblePoind(bName);
+             }
             }
         }
     }
@@ -740,7 +791,7 @@ public class  Controller extends View {
      */
     public void menuShowLineName() {
         visibleNameLine(menuShowLineName.isSelected());
-        model.setShowPoindName(menuShowLineName.isSelected());
+        model.setShowLineName(menuShowLineName.isSelected());
     }
 
     /**
@@ -751,8 +802,10 @@ public class  Controller extends View {
     private void visibleNameLine(boolean bName){
         for (NamePoindLine pn: model.getNamePoindLines()){
             if(pn!=null){
-                pn.getText().setVisible(bName);
-                pn.setVisibleLine(bName);
+                if(pn.getType().equals("line")) {
+                    pn.getText().setVisible(bName);
+                    pn.setVisibleLine(bName);
+                }
             }
         }
     }
