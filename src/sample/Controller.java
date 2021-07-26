@@ -259,7 +259,7 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод btnBisector().
+     * Метод btnBisector()
      * Предназначе для установления режима добавить биссектрису. Нажата кнопка "Добавить биссектрису".
      */
     public void btnBisector() {
@@ -395,7 +395,7 @@ public class  Controller extends View {
      * для создания геометрических фигур.
      * @param mouseEvent
      */
-    public void onMousePressed(MouseEvent mouseEvent) {
+    public void  onMousePressed(MouseEvent mouseEvent) {
         // Фиксируем точку нажатия кнопки мыши для перемещения сетки и координатных осей
         if(mouseEvent.getTarget()==paneShape) {
             gridViews.setVPx(mouseEvent.getX());
@@ -682,18 +682,6 @@ public class  Controller extends View {
 
             }
         }
-        /*
-        //Обновление имен
-        for (NamePoindLine n: model.getNamePoindLines()){
-            if(n!=null){
-                Text t=n.getText();
-                t.setX(gridViews.accessX(n.getX()));
-                t.setY(gridViews.accessY(n.getY()));
-            }
-        }
-
-         */
-
     }
     /**
      * Метод  menuPoindClick().
@@ -701,7 +689,23 @@ public class  Controller extends View {
      * Вызывается из пункта меню Фигуры->Точка, прямая, отрезок.
      */
     public void menuPoindClick() {
-        model.webHTML(webViewLeft,"line.html");//Вывод в web файла html
+        model.webHTML(webViewLeft,"line.html");//Вывод в web файла
+
+        //Создать точки
+        for (int i=0;i<5;i++) {
+         final double max = 500.;
+         double x;
+         double y;
+         x=Math.random()*max;
+         y=Math.random()*max;
+         model.setVerX(Math.round(x));
+         model.setVerY(Math.round(y));
+         model.setVerX0(gridViews.revAccessX(Math.round(x)));
+         model.setVerY0(gridViews.revAccessY(Math.round(y)));
+         Circle newPoind = model.createPoindAdd(true);//создать точку
+         paneShape.getChildren().add(newPoind);//добавить на доску
+        }
+
 
     }
 

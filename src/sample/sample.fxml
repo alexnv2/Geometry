@@ -8,58 +8,54 @@
 
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <MenuBar VBox.vgrow="NEVER">
-    <menus>
-      <Menu mnemonicParsing="false" text="Фигуры">
-        <items>
-          <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />
-          <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол" />
-          <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы" />
-          <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem fx:id="menuTreangle" mnemonicParsing="false" text="Треугольник"  onAction="#menuTriangle"/>
-          <MenuItem mnemonicParsing="false" text="Окружность" />
-        </items>
+    <Menu mnemonicParsing="false" text="Фигуры">
+      <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы"/>
+      <SeparatorMenuItem mnemonicParsing="false"/>
+      <MenuItem fx:id="menuTreangle" mnemonicParsing="false" text="Треугольник" onAction="#menuTriangle"/>
+      <MenuItem mnemonicParsing="false" text="Окружность"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Теоремы">
+      <Menu mnemonicParsing="false" text="Признаки равенства">
+        <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#onClickEquil"
+                  text="Первый признак равенства треугольников"/>
+        <MenuItem fx:id="menuSecondTr" mnemonicParsing="false" onAction="#onClickSecond"
+                  text="Второй признак равенства треугольников "/>
+        <MenuItem fx:id="menuTread" mnemonicParsing="false" onAction="#onClickTread"
+                  text="Третий признак равенства треугольников"/>
       </Menu>
-      <Menu mnemonicParsing="false" text="Теоремы">
-        <items>
-          <Menu mnemonicParsing="false" text="Признаки равенства">
-            <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#onClickEquil" text="Первый признак равенства треугольников" />
-            <MenuItem fx:id="menuSecondTr" mnemonicParsing="false" onAction="#onClickSecond" text="Второй признак равенства треугольников " />
-            <MenuItem fx:id="menuTread" mnemonicParsing="false" onAction="#onClickTread" text="Третий признак равенства треугольников" />
-          </Menu>
-          <Menu mnemonicParsing="false" text="Признаки подобия">
-            <MenuItem fx:id="menuEqualTrPod" mnemonicParsing="false" onAction="#onClickEquilPod" text="Первый признак подобия треугольников" />
-            <MenuItem fx:id="menuSecondTrPod" mnemonicParsing="false" onAction="#onClickSecondPod" text="Второй признак подобия треугольников " />
-            <MenuItem fx:id="menuTreadPod" mnemonicParsing="false" onAction="#onClickTreadPod" text="Третий признак подобия треугольников" />
-          </Menu>
-          <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem mnemonicParsing="false" onAction="#menuIsosceles" text="Свойство равнобедренного треугольника" />
-          <MenuItem mnemonicParsing="false" text="Признак равнобедренного треугольника" />
-          <MenuItem mnemonicParsing="false" text="Paste" />
-          <MenuItem mnemonicParsing="false" text="Delete" />
-          <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem mnemonicParsing="false" text="Select All" />
-          <MenuItem mnemonicParsing="false" text="Unselect All" />
-        </items>
-      </Menu>
-      <Menu mnemonicParsing="false" text="Аксиомы и следствия">
-        <items>
-          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy1Click" text="Аксиомы взаимного расположения точек, прямых и плоскостей" />
-          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства" />
-          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков" />
-          <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy4Click" text="Аксиома параллельных" />
 
-        </items>
-      </Menu>
-      <Menu mnemonicParsing="false" text="Настройки">
-        <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен" selected="true" onAction="#menuShowPoindName"></CheckMenuItem>
-        <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен" selected="false" onAction="#menuShowLineName"></CheckMenuItem>
-        <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку" selected="true" onAction="#menuGrid"/>
-        <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось" onAction="#menuCartesian"/>
-      </Menu>
-      <Menu mnemonicParsing="false" text="Помощь">
-        <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#onAbout" text="О программе" />
-      </Menu>
-    </menus>
+      <SeparatorMenuItem mnemonicParsing="false"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuIsosceles" text="Свойство равнобедренного треугольника"/>
+      <MenuItem mnemonicParsing="false" text="Признак равнобедренного треугольника"/>
+      <MenuItem mnemonicParsing="false" text="Paste"/>
+      <MenuItem mnemonicParsing="false" text="Delete"/>
+      <SeparatorMenuItem mnemonicParsing="false"/>
+      <MenuItem mnemonicParsing="false" text="Select All"/>
+      <MenuItem mnemonicParsing="false" text="Unselect All"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Аксиомы и следствия">
+      <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy1Click"
+                text="Аксиомы взаимного расположения точек, прямых и плоскостей"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy4Click" text="Аксиома параллельных"/>
+
+    </Menu>
+    <Menu mnemonicParsing="false" text="Настройки">
+      <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен"
+                     selected="true" onAction="#menuShowPoindName"></CheckMenuItem>
+      <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен"
+                     selected="false" onAction="#menuShowLineName"></CheckMenuItem>
+      <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
+                     onAction="#menuGrid"/>
+      <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось"
+                     onAction="#menuCartesian"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Помощь">
+      <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#onAbout" text="О программе"/>
+    </Menu>
   </MenuBar>
   <HBox prefHeight="25.0" prefWidth="900.0">
     <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER" />

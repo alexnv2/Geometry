@@ -10,6 +10,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
@@ -21,7 +22,8 @@ import java.util.LinkedList;
 
 import static ContstantString.StringStatus.*;
 import static ContstantString.StringWeb.*;
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.sqrt;
 
 
 /**
@@ -76,13 +78,15 @@ class Model implements  Observable {
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
     private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
     private String verSegmentAngle;//имя угла
-
+    //Индексы
     private String indexPoind="A";//Индекс для точек
     private int indexPoindInt =0;
     private String indexLine="a";//Индекс для прямых, отрезков, лучей
     private int indexLineInt=0;
-
-    private int inDash=2;//индекс определяет внешний вид прямой (0-4 вида)
+    private char indexAngle='\u03b1';//Индекс для углов, начмеается с альфа
+    private int indexAngleInt=0;
+    //Вид линий
+    private int inDash=0;//индекс определяет внешний вид прямой (0-4 вида)
 
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
     private boolean poindAdd=false;//true- режим добавления точки
@@ -127,8 +131,6 @@ class Model implements  Observable {
      */
     Model(){
      }
-
-
     /**
      * Метод registerObserver(Observer o)
      * Метод регистрации слушателя, ереопределяем функцию интерфейса
@@ -149,13 +151,17 @@ class Model implements  Observable {
             observer.notification(message);
           }
     }
-    //для вывода файла html в web
+
+    /**
+     * Метод WebHTML()
+     * Передназначен для вывода справочной информации в левую часть доски.
+     * @param o - ссылка на объект WebView
+     * @param file - имя файла  html.
+     */
     public  void webHTML(WebView o,String file){
-      String pathFile= new File("").getAbsolutePath();
-        leftHTML= "file:"+pathFile+"\\src\\Web\\"+file;
-       // setStringLeftStatus(leftHTML);
-       // statusGo(Status);
-      webGo(o);
+      String pathFile= new File("").getAbsolutePath();//получить полный путь к файлу
+      leftHTML= "file:"+pathFile+"\\src\\Web\\"+file;//установить ссылку
+      webGo(o);//передать уведомление о выводе в левую часть доски
     }
 
     /**
@@ -166,6 +172,7 @@ class Model implements  Observable {
         String s;
         if(indexPoindInt >0) {
             s = indexPoind + indexPoindInt;
+            System.out.println(s);
         }else{
             s=indexPoind;
         }
@@ -198,6 +205,28 @@ class Model implements  Observable {
         }else {
             chars[0]+=1;
             indexLine=String.valueOf(chars[0]);
+        }
+        return s;
+    }
+
+    /**
+     * Метод indexAngledAdd()
+     * Предназначен для задания имени угла греческим алфавитом
+     * @return - имя
+     */
+    private String indexAngledAdd() {
+        String s;
+        if (indexAngleInt > 0) {
+            s = String.valueOf(indexAngle) + String.valueOf(indexAngleInt);
+            indexAngle++;
+        } else {
+            s = String.valueOf(indexAngle);
+            indexAngle++;
+        }
+        if (indexAngle == '\u03ca') {
+            indexAngle = '\u03b1';
+            indexAngleInt ++;
+            System.out.println(indexAngleInt);
         }
         return s;
     }
@@ -310,6 +339,7 @@ class Model implements  Observable {
    Text createNameShapes(String name){
        Text nameText=new Text();//создать новый объект
        nameText.setId(name);//присвоить имя
+       nameText.setFont(new Font("Alexander",22));
 
        //Привязка к событию мышки
        nameText.setOnMouseDragged(e-> {//перемещение
@@ -437,22 +467,18 @@ class Model implements  Observable {
     /**
      * Метод nameLineAdd(Line line).
      * Предназначен для добавления имен к прямой и лучам.
+     * Вызывается из контролера onMousePressed() при добавлении луча и прямой.
      * @param line - объект линия
      */
    public void nameLineAdd(Line line){
        //Создать текстовый объект
        Text nameLine=createNameShapes(line.getId());
       //Вызвать метод расчета координат перпендикуляра к середине линнии
-       nameLineRatchet(line);
-       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName,"line"));
-       nameLine.setText(line.getId());//Имя для вывода на доску
-       nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
-       TextGo(nameLine);//вывести на доску
+       nameLineRatchet(line,nameLine);
        //Связать линию с именем
        nameBindLines(line, nameLine);
        //Добавить в колекцию объектов на доске
        paneBoards.getChildren().add(nameLine);
-
    }
 
     /**
@@ -460,7 +486,7 @@ class Model implements  Observable {
      * Предназначен для расчета координат места расположения имени линии
      * @param line - объект линия
      */
-   private void nameLineRatchet(Line line){
+   private void nameLineRatchet(Line line, Text nameLine){
        //Найти точки на линии
        String[] sVer=findID(line).split("_");
        //Найти середину линии
@@ -475,6 +501,10 @@ class Model implements  Observable {
        double dlina = sqrt((pow((aX - bX), 2)) + (pow((aY - bY), 2)));
        textX=cX-15*((aY-bY)/ dlina);//место вывода Х при создании
        textY=cY+15*((aX-bX)/ dlina);//место вывода Y при создании
+       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName,"line"));
+       nameLine.setText(line.getId());//Имя для вывода на доску
+       nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
+       TextGo(nameLine);//вывести на доску
    }
 
     /**
@@ -486,28 +516,18 @@ class Model implements  Observable {
      */
    private void nameBindLines(Line line, Text nameLine){
        line.startXProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line);
-           namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName,"line"));
-           nameLine.setText(line.getId());//Имя для вывода на доску
-           nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
-           TextGo(nameLine);//вывести на доску
+           nameLineRatchet(line,nameLine);
+       });
+       line.startYProperty().addListener((obj, oldValue, newValue)->{
+           nameLineRatchet(line,nameLine);
        });
        line.endYProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line);
-           namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName,"line"));
-           nameLine.setText(line.getId());//Имя для вывода на доску
-           nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
-           TextGo(nameLine);//вывести на доску
+           nameLineRatchet(line, nameLine);
+        });
+       line.endXProperty().addListener((obj, oldValue, newValue)->{
+           nameLineRatchet(line, nameLine);
        });
    }
-/*
-   private void nameArc(Arc arc){
-       Text nameArc=createNameShapes(arc.getId());
-       //Добавить в коллекцию NamePoindLine
-
-   }
-
- */
     /**
      * Метод createPoindAdd()
      * Предназначен для создания точек и вывод на доску.
@@ -838,7 +858,6 @@ class Model implements  Observable {
       return -1;//точка не найдена
    }
 
-
     /**
      * Метод createLine(int seg).
      * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрисс, высот.
@@ -895,7 +914,6 @@ class Model implements  Observable {
          //уход с линии
          newLine.setOnMouseExited(e->{
              poindAdd=false;
-            // System.out.println("При уходе с линии "+poindAdd);
              //Установить статус
              setStringLeftStatus("");
              statusGo(Status);
@@ -903,13 +921,7 @@ class Model implements  Observable {
          });
          //нажата левая кнопка
          newLine.setOnMousePressed(e->{
-
-
          });
-
-
-
-
          return newLine;
      }
 
@@ -1090,9 +1102,15 @@ class Model implements  Observable {
         webView =o;
         notifyObservers("WebView");
     }
+
+    /**
+     * Метод  webGo()
+     * Предназначен для оправки сообщения в View, что надо вывести информацию в левую часть доски
+     * @param o - ссылка на объект
+     */
     void webGo(WebView o){
         webView =o;
-        notifyObservers("WebGo");
+        notifyObservers("WebGo");//Информация в левую часть готова для вывода.
 
     }
 
@@ -1275,7 +1293,6 @@ class Model implements  Observable {
      */
     Arc arcVertexAdd(String arc){
         String[] arcChar=arc.split("_");
-        //char[] arcChar=arc.toCharArray();//преобразовать в массив символов
         Circle o1=findCircle(arcChar[0]);
         Circle o2=findCircle(arcChar[1]);
         Circle o3=findCircle(arcChar[2]);
@@ -1287,9 +1304,9 @@ class Model implements  Observable {
         arcNew.setOpacity(0.5);//прозрачность
         ArcColorGo(arcNew);//задать цвет
         arcVertex(o1,o2,o3,arcNew);//расчитать арку угла для построения
-
+        String nameAngle=indexAngledAdd();
         //добавить в коллекцию дуг
-        vertexArcs.add(new VertexArc(arcNew,arc,gridViews.revAccessX(o2.getCenterX()),gridViews.revAccessY(o2.getCenterY()),arcRadius,
+        vertexArcs.add(new VertexArc(arcNew,arc,nameAngle,gridViews.revAccessX(o2.getCenterX()),gridViews.revAccessY(o2.getCenterY()),arcRadius,
                 arcRadius,angleStart,angleLength,false));
         //При наведении мышки на дугу, вывод статусной строки
         arcNew.setOnMouseEntered(e->{
