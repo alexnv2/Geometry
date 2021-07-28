@@ -105,7 +105,11 @@ class Model implements  Observable {
     private boolean showDate=false;//по умолчанию, не показывать данные объектов на доске
     private boolean showGrid=true;//по умолчанию, показывать сетку
     private boolean showCartesian=true;//по умолчанию, показывать координатную ось
-    private boolean showAngleName=true;//по умолчанию, не показывать имя углов
+    private boolean showAngleName=false;//по умолчанию, не показывать имя углов
+
+    private boolean poindMove=false;
+    private double t;//для параметрической прямой, когда точка принадлежит прямой
+
 
     //Коллекции
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
@@ -117,8 +121,6 @@ class Model implements  Observable {
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
-    private boolean poindMove=false;
-    private double t;//для параметрической прямой, когда точка принадлежит прямой
 
     public void setWindShow(int w){
         WIND_SHOW=w;
@@ -450,16 +452,29 @@ class Model implements  Observable {
        Text textAngle=createNameShapes(s);//создать объект текст (имя угла)
        //Добавить в коллекцию NamePoindLine
        textAngle.setText(s);//Имя для вывода на доску
-       double x=40*Math.cos(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
-       double y=40*Math.sin(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
-       textX=circle.getCenterX()+x;//место вывода Х при создании
-       textY=circle.getCenterY()-y;//место вывода Y при создании
-       namePoindLines.add(new NamePoindLine(textAngle,s,x,y,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName, showAngleName,"arc"));
-       textAngle.setVisible(showAngleName);//показывать не показывать, зависит от меню "Настройка"
-       TextGo(textAngle);//вывести на доску
+       Point2D arcXY=nameArcShow(circle, arc, textAngle);//расчитать место буквы
+       namePoindLines.add(new NamePoindLine(textAngle,circle.getId(),arcXY.getX(),arcXY.getY(),gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName, showAngleName,"arc"));
        //Добавить в коллекцию объектов на доске
        paneBoards.getChildren().add(textAngle);
+   }
 
+    /**
+     * Метод nameArcShow()
+     * Предназначен для расчета местоположения имени угла
+     * @param circle - объект вершина угла
+     * @param arc - объект угол
+     * @param textAngle - объект текст (имя угла)
+     * @return - смещение координат для имени от вершины угла
+     */
+   private Point2D nameArcShow(Circle circle,  Arc arc, Text textAngle){
+       double x=15*Math.cos(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
+       double y=15*Math.sin(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
+       Point2D arcXY=new Point2D(x,y);
+       textX=circle.getCenterX()+x;//место вывода Х при создании
+       textY=circle.getCenterY()-y;//место вывода Y при создании
+       textAngle.setVisible(showAngleName);//показывать не показывать, зависит от меню "Настройка"
+       TextGo(textAngle);//вывести на доску
+       return arcXY;
    }
     /**
      * Метод findNameText().
@@ -1480,7 +1495,6 @@ class Model implements  Observable {
      * @param y3 - координаты вершины y3
      * @return возвращает площадь треугольника.
      */
-    //Площадь треугольника
     private double areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
         return ((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1))/2;
     }
@@ -1635,32 +1649,63 @@ class Model implements  Observable {
         });
     }
     /**
-     * Метод arcBindPoind(String s, Arc ar)
+     * Метод arcBindPoind(String s, Arc a)
      * Метод двунаправленного связывания центра угла с точкой, а также однонаправленного связывания
-     * двух точек угла с расчетными размерами угла.
+     * двух точек угла с расчетными размерами угла. А также связывания имени угла.
      * Для расчета размеров угла вызывается метод из класса Model arcVertex(Circle1, Circle2, Circle3, Arc)
      * @param s - строка содержащая название угла, типа АВС (А и С - боковые точки, В - центральная точка угла
      * @param arc - объект арка дуги угла.
      */
     public void arcBindPoind(String s, Arc arc){
         String[] arcChar=s.split("_");
-
         Circle c1=findCircle(arcChar[0]);
         Circle c2=findCircle(arcChar[1]);
         Circle c3=findCircle(arcChar[2]);
         c2.centerXProperty().bindBidirectional(arc.centerXProperty());
         c2.centerYProperty().bindBidirectional(arc.centerYProperty());
         arc.centerXProperty().addListener((obj, oldValue, newValue)->{
-            arcVertexGo(c1,c2,c3,arc,30);
-
+            arcVertexGo(c1,c2,c3,arc,30);//новый угол
+            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
+        });
+        arc.centerYProperty().addListener((obj, oldValue, newValue)->{
+            arcVertexGo(c1,c2,c3,arc,30);//новый угол
+            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
         });
         c1.centerXProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);
+            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
         });
         c3.centerXProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);
+            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
         });
     }
+
+    /**
+     * Метод findArcNameAngle()
+     * Предназначен для поиска имени угла по вершине. Вызывается из метода связывания угла.
+     * @param id - имя вершины
+     * @return - объект текст (имя угла)
+     */
+    private Text findArcNameAngle(String id) {
+        String nAngle;
+        for (VertexArc p: vertexArcs  ){
+            if(p!=null){
+                if(p.getArc().getId().equals(id)){
+                    nAngle=p.getNameAngle();
+                    for (NamePoindLine n: namePoindLines){
+                        if(n!=null){
+                            if(n.getText().getId().equals(nAngle)){
+                                return n.getText();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Метод arcUnBindPoind()
      * Метод отмены двунаправленного связывания центра угла с точкой, а также отмены однонаправленного связывания

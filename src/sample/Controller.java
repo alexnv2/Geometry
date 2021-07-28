@@ -84,7 +84,7 @@ public class  Controller extends View {
     private Line newLine;//отрезок
     private Circle poindLine1;//первая  точка луча, прямой, отрезка
     private Circle poindLine2;//вторая точка луча, прямой, отрезка
-    private Arc arc;//угол
+    private Arc arcAngle;//угол
     @FXML
     private CheckMenuItem menuShowPoindName;
     @FXML
@@ -93,6 +93,8 @@ public class  Controller extends View {
     private CheckMenuItem menuGrid;
     @FXML
     private CheckMenuItem menuCartesian;
+    @FXML
+    private  CheckMenuItem menuAngleName;
 
 
     //Режимы создания
@@ -461,11 +463,11 @@ public class  Controller extends View {
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
                 System.out.println(infoStatus);
-                arc=model.createVertexAdd(infoStatus);
-                paneShape.getChildren().add(arc);//рисуем арку дуги
-                arc.toFront();//перемещать узел вверх только после добавления на стол
+                arcAngle =model.createVertexAdd(infoStatus);
+                paneShape.getChildren().add(arcAngle);//рисуем арку дуги
+                arcAngle.toBack();//перемещать узел вниз только после добавления на стол
                 //Связываем арку с углом и именем
-                model.arcBindPoind(infoStatus,arc);
+                model.arcBindPoind(infoStatus, arcAngle);
                 angleAdd= false;//окончание режима добавления
                 poindAdd1=false;
                 angleCol=0;
@@ -775,51 +777,47 @@ public class  Controller extends View {
      * Пункт из меню "Настройки - Показывать большие буквы."
      */
     public void menuShowPoindName() {
-            visibleNamePoind(menuShowPoindName.isSelected());
-            model.setShowPoindName(menuShowPoindName.isSelected());
+            visibleName(menuShowPoindName.isSelected(),"poind");
+            model.setShowPoindName(menuShowPoindName.isSelected());//поменять логическую переменную
         }
 
-    /**
-     * Метод visibleNamePoind(boolean bName).
-     * Предназначен для скрытия от показа или показа имен точек на доске
-     * @param bName -логическая переменная определяется в меню "Настроки->Показывать большие буквы в именах"
-     */
-    private void visibleNamePoind(boolean bName){
-        for (NamePoindLine pn: model.getNamePoindLines()){
-            if(pn!=null){
-             if(pn.getType().equals("poind")) {
-                 pn.getText().setVisible(bName);
-                 pn.setVisiblePoind(bName);
-             }
-            }
-        }
-    }
+
     /**
      * Метод menuShowLineName().
      * Предназначен скрытия от показа имен прямых, лучей, отрезков.
      * Пункт из меню "Настройки - Показывать маленькие буквы".
      */
     public void menuShowLineName() {
-        visibleNameLine(menuShowLineName.isSelected());
-        model.setShowLineName(menuShowLineName.isSelected());
+        visibleName(menuShowLineName.isSelected(),"line");
+        model.setShowLineName(menuShowLineName.isSelected()); //поменять логическую переменную
     }
-
     /**
-     * Метод visibleNameLine(boolean bName).
-     * Предназначен для показа и скрытия меленьких букв. Вызывается из пункта меню "Настройки-Показывать маленькие буквы".
-     * @param bName - логическая переменная (true - показывать, false - не показывать)
+     * Метод menuAngleName()
+     * Предназначен для показа и скрытия имен углов
+     * Пункт из меню "Настройки - Показывать имена углов".
      */
-    private void visibleNameLine(boolean bName){
+    public void menuAngleName() {
+        visibleName(menuAngleName.isSelected(),"arc");
+        model.setShowAngleName(menuAngleName.isSelected());//поменять логическую переменную
+    }
+    /**
+     * Метод visibleNameLine(boolean bName, String name).
+     * Предназначен для показа и скрытия имен.
+     * @param bName - логическая переменная (true - показывать, false - не показывать)
+     * @param name - какие имена (line, poind, arc)
+     */
+    private void visibleName(boolean bName, String name){
         for (NamePoindLine pn: model.getNamePoindLines()){
             if(pn!=null){
-                if(pn.getType().equals("line")) {
+                if(pn.getType().equals(name)) {
                     pn.getText().setVisible(bName);
                     pn.setVisibleLine(bName);
                 }
             }
         }
     }
-    public void menuTriangle() {
+
+   public void menuTriangle() {
         model.webViewLeftString(webViewLeft, 0);//Определения
     }
 
@@ -832,7 +830,7 @@ public class  Controller extends View {
     }
 
     /**
-     * Метод  menuGrid().
+     * Метод menuGrid().
      * Пункт меню "Настройки - Показывать сетку".
      */
     public void menuGrid() {

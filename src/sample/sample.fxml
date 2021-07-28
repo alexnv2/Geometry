@@ -52,6 +52,7 @@
                      onAction="#menuGrid"/>
       <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось"
                      onAction="#menuCartesian"/>
+      <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" text="Показывать имена углов" onAction="#menuAngleName" />
     </Menu>
     <Menu mnemonicParsing="false" text="Помощь">
       <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#onAbout" text="О программе"/>
