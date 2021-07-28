@@ -28,8 +28,8 @@ import static java.lang.StrictMath.sqrt;
 
 /**
  * Класс Model расширение интерфейса Observable
- * Класс Модели, получает запросы на отработку событий от котроллера и
- * выставляет переменные и отправляет сообщения классу отобраюения (View),
+ * Класс Модели, получает запросы на отработку событий от контроллера и
+ * выставляет переменные и отправляет сообщения классу отображения (View),
  * который выводит эти данные на экран.
  */
 @Data
@@ -56,7 +56,7 @@ class Model implements  Observable {
     private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
     private String txtShape="";//хранит строку о геометрической фигуре на доске
 
-    private double verX;//координата экрана Х  от мышки
+    private double verX;//координата экрана Х от мышки
     private double verY;//координата экрана Y от мышки
     private double verX1;//координата StartX для отрезков
     private double verY1;//Координата StartY для отрезков
@@ -83,7 +83,7 @@ class Model implements  Observable {
     private int indexPoindInt =0;
     private String indexLine="a";//Индекс для прямых, отрезков, лучей
     private int indexLineInt=0;
-    private char indexAngle='\u03b1';//Индекс для углов, начмеается с альфа
+    private char indexAngle='\u03b1';//Индекс для углов, начинается с альфа
     private int indexAngleInt=0;
     //Вид линий
     private int inDash=0;//индекс определяет внешний вид прямой (0-4 вида)
@@ -105,14 +105,15 @@ class Model implements  Observable {
     private boolean showDate=false;//по умолчанию, не показывать данные объектов на доске
     private boolean showGrid=true;//по умолчанию, показывать сетку
     private boolean showCartesian=true;//по умолчанию, показывать координатную ось
+    private boolean showAngleName=true;//по умолчанию, не показывать имя углов
 
     //Коллекции
     private LinkedList<PoindCircle> poindCircles=new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines=new LinkedList<>();//коллекция для линий по классу
     private LinkedList<VertexArc> vertexArcs=new LinkedList<>();//коллекция для арок углов
     private ArrayList<Double> arrDash=new ArrayList<>();//массив для создания вида строк
-    private LinkedList<NamePoindLine> namePoindLines=new LinkedList<>();//колекция для имен
-    private LinkedList<TreangleName> treangleNames=new LinkedList<>();//колекция треугольников
+    private LinkedList<NamePoindLine> namePoindLines=new LinkedList<>();//коллекция для имен
+    private LinkedList<TreangleName> treangleNames=new LinkedList<>();//коллекция треугольников
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers=new LinkedList<>();
@@ -133,7 +134,7 @@ class Model implements  Observable {
      }
     /**
      * Метод registerObserver(Observer o)
-     * Метод регистрации слушателя, ереопределяем функцию интерфейса
+     * Метод регистрации слушателя, переопределяем функцию интерфейса
      * @param o - объект слушатель, добавляем в коллекцию слушателей
      */
     @Override
@@ -143,7 +144,7 @@ class Model implements  Observable {
     /**
      * Метод notifyObservers(String message)
      * Уведомление слушателя, переопределяем функцию интерфейса.
-     * @param message - сообщение  для слушателя
+     * @param message - сообщение для слушателя
      */
     @Override
     public void notifyObservers(String message) {
@@ -154,9 +155,9 @@ class Model implements  Observable {
 
     /**
      * Метод WebHTML()
-     * Передназначен для вывода справочной информации в левую часть доски.
+     * Предназначен для вывода справочной информации в левую часть доски.
      * @param o - ссылка на объект WebView
-     * @param file - имя файла  html.
+     * @param file - имя файла html.
      */
     public  void webHTML(WebView o,String file){
       String pathFile= new File("").getAbsolutePath();//получить полный путь к файлу
@@ -217,7 +218,7 @@ class Model implements  Observable {
     private String indexAngledAdd() {
         String s;
         if (indexAngleInt > 0) {
-            s = String.valueOf(indexAngle) + String.valueOf(indexAngleInt);
+            s = indexAngle + String.valueOf(indexAngleInt);
             indexAngle++;
         } else {
             s = String.valueOf(indexAngle);
@@ -230,7 +231,7 @@ class Model implements  Observable {
         }
         return s;
     }
-    //Текст для отобоажения в левой части
+    //Текст для отображения в левой части
     public void webViewLeftString(WebView o, int c){
         String pathImages= new File(".").getAbsolutePath();
        // System.out.println(pathImages);
@@ -266,7 +267,7 @@ class Model implements  Observable {
 
     /**
      * Метод nameSplitRemove(String s).
-     * Предназначен для удаления символа разделителя в именах назаний точек, прямых и т.д.
+     * Предназначен для удаления символа разделителя в именах названий точек, прямых и т.д.
      * @param s - строка вида А_В (отрезок АВ).
      * @return - возвращает строку АВ.
      */
@@ -333,13 +334,13 @@ class Model implements  Observable {
     /**
      * Метод createNameShapes().
      * Предназначен для создания объекта хранения имени геометрической фигуру.
-     * Прявязка свойст мышки к объекту.
-     * @return - возвращает созданнай объект
+     * Привязка свойств мышки к объекту.
+     * @return - возвращает созданный объект
      */
    Text createNameShapes(String name){
        Text nameText=new Text();//создать новый объект
        nameText.setId(name);//присвоить имя
-       nameText.setFont(new Font("Alexander",22));
+       nameText.setFont(new Font("Alexander",12));
 
        //Привязка к событию мышки
        nameText.setOnMouseDragged(e-> {//перемещение
@@ -349,14 +350,14 @@ class Model implements  Observable {
                if(nameText.xProperty().isBound()){//проверить на связь
                    textUnBindCircle(nameText);//снять связь для перемещения
                }
-               //Максимальное растояние при перемещении от точки
+               //Максимальное расстояние при перемещении от точки
                double maxRadius = distance(e.getX(), e.getY(), circle.getCenterX(), circle.getCenterY());
                if (maxRadius < 80) {
                    //Перемещаем имя точки
                    nameText.setX(e.getX());
                    nameText.setY(e.getY());
                }
-               nameUpdateXY(nameText.getId());//обновляем данные колекции
+               nameUpdateXY(nameText.getId());//обновляем данные коллекции
                //устанавливаем связь с точкой
                textBindCircle(circle, nameText, (int) (nameText.getX() - circle.getCenterX()), (int) (nameText.getY() - circle.getCenterY()));
            }
@@ -366,7 +367,7 @@ class Model implements  Observable {
                //Перемещаем имя точки
                nameText.setX(e.getX());
                nameText.setY(e.getY());
-               nameUpdateXY(nameText.getId());//обновляем данные колекции
+               nameUpdateXY(nameText.getId());//обновляем данные коллекции
            }
        });
        //Наведение мышки на объект
@@ -384,12 +385,12 @@ class Model implements  Observable {
 
     /**
      * Метод nameUpdateXY(String id).
-     * Предназначен для обновления мировых координат и растояния до точки при
+     * Предназначен для обновления мировых координат и расстояния до точки при
      * перемещении объекта Text. Вызывается из метода createNameShapes(String name).
      * @param id - строка имя объекта Text.
      */
    private void nameUpdateXY(String id){
-       //Найти точку в колекции
+       //Найти точку в коллекции
        Circle circle = findCircle(id);
        if (circle != null) {
            for (NamePoindLine np : namePoindLines) {
@@ -418,7 +419,7 @@ class Model implements  Observable {
    }
 
     /**
-     * Метод nameCircleAdd(Circle circle).
+     * Метод nameCircleAdd().
      * Предназначен для добавления объекта Text связанного с именем точки.
      * Вызывается из метода createPoindAdd() при добавлении точек.
      * @param circle - объект точка.
@@ -426,19 +427,42 @@ class Model implements  Observable {
    private void nameCircleAdd(Circle circle){
        Text textCircle=createNameShapes(circle.getId());//создать объект текст (имя точки)
        //Добавить в коллекцию NamePoindLine
-       namePoindLines.add(new NamePoindLine(textCircle,circle.getId(),-1,1,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName,"poind"));
+       namePoindLines.add(new NamePoindLine(textCircle,circle.getId(),-1,1,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName, showAngleName,"poind"));
        textCircle.setText(circle.getId());//Имя для вывода на доску
        textX=circle.getCenterX()-20;//место вывода Х при создании
        textY=circle.getCenterY()+20;//место вывода Y при создании
        textCircle.setVisible(showPoindName);//показывать не показывать, зависит от меню "Настройка"
        TextGo(textCircle);//вывести на доску
-       //Добавить в колекцию объектов на доске
+       //Добавить в коллекцию объектов на доске
        paneBoards.getChildren().add(textCircle);
        //Односторонняя связь точки с именем объекта для перемещения
        textBindCircle(circle,textCircle,-20,20);
    }
+
     /**
-     * Метод findNameText(Circle circle).
+     * Метод nameArcAdd()
+     * Предназначен для добавления имени угла на доске.
+     * @param circle - объект вершина угла
+     * @param s - имя угла на греческом
+     * @param arc - объект угол
+     */
+   private void nameArcAdd(Circle circle, String s, Arc arc){
+       Text textAngle=createNameShapes(s);//создать объект текст (имя угла)
+       //Добавить в коллекцию NamePoindLine
+       textAngle.setText(s);//Имя для вывода на доску
+       double x=40*Math.cos(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
+       double y=40*Math.sin(Math.toRadians(arc.getStartAngle()+arc.getLength()/2));
+       textX=circle.getCenterX()+x;//место вывода Х при создании
+       textY=circle.getCenterY()-y;//место вывода Y при создании
+       namePoindLines.add(new NamePoindLine(textAngle,s,x,y,gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),showPoindName,showLineName, showAngleName,"arc"));
+       textAngle.setVisible(showAngleName);//показывать не показывать, зависит от меню "Настройка"
+       TextGo(textAngle);//вывести на доску
+       //Добавить в коллекцию объектов на доске
+       paneBoards.getChildren().add(textAngle);
+
+   }
+    /**
+     * Метод findNameText().
      * Предназначен для поиска в коллекции NamePoindLine объекта Text связанного с именем точки.
      * @param circle  - объект точка
      * @return - объект Text
@@ -465,7 +489,7 @@ class Model implements  Observable {
    }
 
     /**
-     * Метод nameLineAdd(Line line).
+     * Метод nameLineAdd().
      * Предназначен для добавления имен к прямой и лучам.
      * Вызывается из контролера onMousePressed() при добавлении луча и прямой.
      * @param line - объект линия
@@ -473,17 +497,17 @@ class Model implements  Observable {
    public void nameLineAdd(Line line){
        //Создать текстовый объект
        Text nameLine=createNameShapes(line.getId());
-      //Вызвать метод расчета координат перпендикуляра к середине линнии
+      //Вызвать метод расчета координат перпендикуляра к середине линии
        nameLineRatchet(line,nameLine);
        //Связать линию с именем
        nameBindLines(line, nameLine);
-       //Добавить в колекцию объектов на доске
+       //Добавить в коллекцию объектов на доске
        paneBoards.getChildren().add(nameLine);
    }
 
     /**
      * Метод nameLineRatchet().
-     * Предназначен для расчета координат места расположения имени линии
+     * Предназначен для расчета координат места названия линии.
      * @param line - объект линия
      */
    private void nameLineRatchet(Line line, Text nameLine){
@@ -501,7 +525,7 @@ class Model implements  Observable {
        double dlina = sqrt((pow((aX - bX), 2)) + (pow((aY - bY), 2)));
        textX=cX-15*((aY-bY)/ dlina);//место вывода Х при создании
        textY=cY+15*((aX-bX)/ dlina);//место вывода Y при создании
-       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName,"line"));
+       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName, showAngleName,"line"));
        nameLine.setText(line.getId());//Имя для вывода на доску
        nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
        TextGo(nameLine);//вывести на доску
@@ -509,10 +533,10 @@ class Model implements  Observable {
 
     /**
      * Метод nameBindLines().
-     * Предназначен для связывания имени линии с с началом и концом линии.
+     * Предназначен для связывания имени линии с началом и концом линии.
      * Для задания перемещения имени луча и прямой.
      * @param line  - объект линия.
-     * @param nameLine - обхект текст.
+     * @param nameLine - объект текст.
      */
    private void nameBindLines(Line line, Text nameLine){
        line.startXProperty().addListener((obj, oldValue, newValue)->{
@@ -524,9 +548,7 @@ class Model implements  Observable {
        line.endYProperty().addListener((obj, oldValue, newValue)->{
            nameLineRatchet(line, nameLine);
         });
-       line.endXProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line, nameLine);
-       });
+       line.endXProperty().addListener((obj, oldValue, newValue)-> nameLineRatchet(line, nameLine));
    }
     /**
      * Метод createPoindAdd()
@@ -537,7 +559,7 @@ class Model implements  Observable {
     Circle createPoindAdd(boolean bMove){
         Circle newPoind;//Объявить переменную
         newPoind = createPoind();//Создать точку
-        //добавить в коллецию точек
+        //добавить в коллекцию точек
         poindCircles.add(new PoindCircle(newPoind,newPoind.getId(),verX0,verY0,bMove,false,0, null,0.0, false));
         //Передать в View для вывода на экран
         VertexGo(newPoind);
@@ -622,7 +644,7 @@ class Model implements  Observable {
         circle.setRadius(radiusPoind);
         circle.setFill(Color.LIGHTBLUE);
         circle.setStroke(Color.DARKSLATEBLUE);
-        circle.setId(indexPoindAdd());//Индефикатор узла
+        circle.setId(indexPoindAdd());//Индификатор узла
 
         //Обработка событий
         //Перемещение с нажатой клавишей
@@ -633,7 +655,7 @@ class Model implements  Observable {
                     if(!txt.xProperty().isBound()){//проверить на связь, если нет связать
                         textBindCircle(circle,txt, (int)(txt.getX()-circle.getCenterX()),(int)(txt.getY()-circle.getCenterY()));//если нет, связать
                     }
-                    //Найти точку в коллеции, определить принадлежит ли она линии
+                    //Найти точку в коллекции, определить принадлежит ли она линии
                     /*
                     for(PoindCircle p: poindCircles){
                         if(p!=null){
@@ -701,12 +723,12 @@ class Model implements  Observable {
          //Нажатие клавиши
         circle.setOnMousePressed(e->{
             selectCircle(circle);
-                //Проверить разрешено ли взять эту точку. Если расчетная то запрещено
+                //Проверить разрешено ли взять эту точку. Если расчетная, то запрещено
                 if(findPoindAddMove(circle)) {
                     poindOldAdd = true;//взять эту точку для отрезка
                     timeVer = circle;//сохранить выбранную точку для построения
-                    //Вызвать метод для увелечения счетчика index в колекции PoindCircles
-                    if (removeObject == true) { //Режим  для  удаления
+                    //Вызвать метод для увелечения счетчика index в коллекции PoindCircles
+                    if (removeObject) { //Режим для удаления
                         boolean remove = removePoindAdd(circle);
                     }
                 }else{
@@ -729,12 +751,8 @@ class Model implements  Observable {
         });
         //Отпускание кнопки
         circle.setOnMouseReleased(e->{
-           // circle.setFill(Color.DARKSLATEBLUE);
-           // poindOldAdd=false;//запрет брать точку для отрезков, прямых, лучей
-
-
-         });
-        //Уход с точкм
+          });
+        //Уход с точки
         circle.setOnMouseExited(e->{
             circle.setCursor(Cursor.DEFAULT);
             circle.setRadius(5);
@@ -821,9 +839,9 @@ class Model implements  Observable {
         return false;
     }
     /**
-     * Метод indexAdd(Circle circle)
+     * Метод indexAdd(Circle c)
      * Метод для увелечения счетчика, когда точка принадлежит разным геометрическим фигурам.
-     * @param circle
+     * @param circle - объект точка
      */
     public void indexAdd(Circle circle) {
         for(PoindCircle c: poindCircles){
@@ -836,7 +854,7 @@ class Model implements  Observable {
     }
 
     /**
-     * Метод removeIndex(Circle circle)
+     * Метод removeIndex(Circle c)
      * Метод для уменьшения счетчика, вызывается перед удалением точки.
      * Точку можно удалить, если индекс равен 0.
      * @param circle
@@ -860,7 +878,7 @@ class Model implements  Observable {
 
     /**
      * Метод createLine(int seg).
-     * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрисс, высот.
+     * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрис, высот.
      * @param seg - определяет для коллекции, к какому объекту будет принадлежать линия.
      * @return - возвращает новый объект Line.
      */
@@ -881,11 +899,11 @@ class Model implements  Observable {
             newLine.setEndX(verX);
             newLine.setEndY(verY);
         }
-        newLine.setId(indexLineAdd());//Индефикатор узла
+        newLine.setId(indexLineAdd());//Идентификатор узла
         newLine.setStroke(Color.DARKSLATEBLUE);//Color
         newLine.setStrokeWidth(2);//Толщина
 
-         //Прявязка событий мышки
+         //Привязка событий мышки
          //Наведение на отрезок
          newLine.setOnMouseEntered(e->{
              newLine.setCursor(Cursor.HAND);
@@ -972,9 +990,9 @@ class Model implements  Observable {
     }
     /**
      * Метод createLineAdd(int segment).
-     * Предназначен для сооздания линий. Вызывает метод createLine(segment). Добовляет линию на доску и в коллекцию.
+     * Предназначен для создания линий. Вызывает метод createLine(segment). Добавляет линию на доску и в коллекцию.
      * @param segment - определяет тип линии в коллекции
-     * @return -возращает лбъект Line.
+     * @return -возвращает объект Line.
      */
      Line createLineAdd(int segment){
          Line newLine = createLine(segment);//добавить линию
@@ -994,9 +1012,9 @@ class Model implements  Observable {
 
     /**
      * Метод lineAddPoind(Line nl, boolean poindAdd2).
-     * Предназначен для приклеивания конца линии к близ лежащим линия.
+     * Предназначен для приклеивания конца линии к лежащим точкам.
      * @param nl - объект линия.
-     * @param poindAdd2 - режим построения втрой точки для линии.
+     * @param poindAdd2 - режим построения второй точки для линии.
      */
     public void lineAddPoind(Line nl, boolean poindAdd2){
         Circle pCl;
@@ -1017,8 +1035,8 @@ class Model implements  Observable {
     }
 
     /**
-     * Метод  distance(double x1, double y1, double x2, double y2).
-     * Предназнпчен для расчета растояния межде двумя вершинами, заданные коорднатами.
+     * Метод distance(double x1, double y1, double x2, double y2).
+     * Предназначен для расчета расстояния между двумя вершинами, заданные координатами.
      * @param x1 - координаты вершины x1
      * @param y1 - координаты вершины y1
      * @param x2 - координаты вершины x2
@@ -1104,7 +1122,7 @@ class Model implements  Observable {
     }
 
     /**
-     * Метод  webGo()
+     * Метод webGo()
      * Предназначен для оправки сообщения в View, что надо вывести информацию в левую часть доски
      * @param o - ссылка на объект
      */
@@ -1149,8 +1167,8 @@ class Model implements  Observable {
     }
     /**
      * Метод findCircle(String c)
-     * Предназначен для поска в коллекции точек объектов Circle по имени.
-     * Вызывается из метода createNameShapes() при создания объекта text, для перемещения.
+     * Предназначен для поиска в коллекции точек объектов Circle по имени.
+     * Вызывается из метода createNameShapes() при создании объекта text, для перемещения.
      * @param c - имя точки
      * @return объект Circle или null если не найден.
      */
@@ -1168,7 +1186,7 @@ class Model implements  Observable {
     /**
      * Метод findLine().
      * Предназначен для поиска линии в коллекции PoindLIne.
-     * Вызывается из метода createNameShapes() при создания объекта text, для перемещения.
+     * Вызывается из метода createNameShapes() при создании объекта text, для перемещения.
      * @param s - имя линии
      * @return - возвращает объект или null
      */
@@ -1242,7 +1260,7 @@ class Model implements  Observable {
                      p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
                      p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
                  }
-                 //Обновляем коорлинаты прямой
+                 //Обновляем координаты прямой
                  if(p.getSegment()==2) {
                      p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
                      p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
@@ -1254,7 +1272,7 @@ class Model implements  Observable {
                  p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
                  p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
              }
-             //Обновляем коорлинаты прямой
+             //Обновляем координаты прямой
                 if(p.getSegment()==2) {
                     p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
                     p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
@@ -1266,7 +1284,7 @@ class Model implements  Observable {
     }
     /**
      * Метод findPoindCircleMove(String id).
-     * Предназначен для поиска по колекции PoindCircle по имени точки разрешения на
+     * Предназначен для поиска по коллекции PoindCircle по имени точки разрешения на
      * перемещение точки по доске.
      * @param id  - имя точки
      * @return true- перемещение точки разрешено, false - точка расчетная, перемещение запрещено
@@ -1283,15 +1301,15 @@ class Model implements  Observable {
         return bfMove;
     }
     /**
-     * Метод arcVertexAdd(String arc).
+     * Метод createVertexAdd(String arc).
      * Предназначен для создания нового объекта дуги, которая задается в виде
      * трех вершин состоящих из точек. Для расчета параметров дуги и вывода на доску
-     * вызывается метод arcVertex(o1,o2,o3,arcNew). о1, о2, о3 - точки вершин из класса Circle.
+     * вызывается метод arcVertex(o1,o2,o3,arcNew), о1, о2, о3 - точки вершин из класса Circle.
      * arcNew - новая дуга.
-     * @param arc - срока для добавления дуги состоит из имен вершин, угол АВС
+     * @param arc - срока для добавления дуги, состоит из имен вершин, угол АВС
      * @return - возвращает объект дугу
      */
-    Arc arcVertexAdd(String arc){
+    Arc createVertexAdd(String arc){
         String[] arcChar=arc.split("_");
         Circle o1=findCircle(arcChar[0]);
         Circle o2=findCircle(arcChar[1]);
@@ -1303,8 +1321,9 @@ class Model implements  Observable {
         arcNew.setFill(Color.LIGHTBLUE);
         arcNew.setOpacity(0.5);//прозрачность
         ArcColorGo(arcNew);//задать цвет
-        arcVertex(o1,o2,o3,arcNew);//расчитать арку угла для построения
-        String nameAngle=indexAngledAdd();
+        arcVertexGo(o1,o2,o3,arcNew,30);//расчитать арку угла для построения
+        String nameAngle=indexAngledAdd();//увеличить индекс
+        nameArcAdd(o2,nameAngle, arcNew);//вывести имя угла
         //добавить в коллекцию дуг
         vertexArcs.add(new VertexArc(arcNew,arc,nameAngle,gridViews.revAccessX(o2.getCenterX()),gridViews.revAccessY(o2.getCenterY()),arcRadius,
                 arcRadius,angleStart,angleLength,false));
@@ -1331,21 +1350,20 @@ class Model implements  Observable {
      * @param o2 - вторая точка В (центр угла)
      * @param o3 - третья точка С
      * @param arc - арка угла
-     * Устанавливает для класса View следующие переменные:
+     * Устанавливает, для класса View, следующие переменные:
      * angleLength - длину дуги в градусах
      * arcRadius - радиус дуги
      * angleStart - начальный угол в градусах
      * verX и verY - координаты центра дуги
-     * Вызывает метод ArcGo(arc) для построения и перемещения дуги
      */
-    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc arc){
+    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc arc, double r){
         //Длина дуги в градусах
         Point2D pA=new Point2D(o1.getCenterX(), o1.getCenterY());
         Point2D pB=new Point2D(o2.getCenterX(), o2.getCenterY());
         Point2D pC=new Point2D(o3.getCenterX(), o3.getCenterY());
         double angleABC=angleTriangle(pB,pA ,pC );//размер угла в градусах
         angleLength=angleABC;
-        arcRadius=30;//радиус
+        arcRadius=r;//радиус
         //Начальный угол в
         double arcStart=angleVector(o2.getCenterX(),o2.getCenterY(),o3.getCenterX(),o3.getCenterY());
         double str=areaTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
@@ -1359,7 +1377,12 @@ class Model implements  Observable {
             arcStart=arcStart-angleABC;
         }
         angleStart=arcStart;
-         //Запомнить текущие координаты мышки
+
+    }
+
+    public void  arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc, double r){
+        arcVertex(o1,o2,o3,arc,r);
+        //Запомнить текущие координаты мышки
         double stX=verX;
         double stY=verY;
         //Заменить для построения арки угла
@@ -1369,11 +1392,12 @@ class Model implements  Observable {
         //Восстановить текущие координаты мышки
         verX=stX;
         verY=stY;
+        //nameArcAdd(o2,, arc);//вывести имя угла
     }
     /**
      * Метод findArcUpdate(String s)
      * Предназначен для поиска дуги по вершине угла и изменения в коллекции дуг
-     * мировых координат после премещения дуги.
+     * мировых координат после перемещения дуги.
      * @param s - вершина угла
      */
     private void findArcUpdate(String s){
@@ -1421,10 +1445,10 @@ class Model implements  Observable {
     /**
      * Метод angleTriangle(Point2D p1, Point2D p2, Point2D p3).
      * Предназначен для расчета угла по координатам вершин.
-     * @param  p1 - координаты центральной  вершины
+     * @param  p1 - координаты центральной вершины
      * @param  p2 - координаты первой боковой вершины
-     * @param  p3 - координаты втрой боковой вершины
-     *  @return угол в градусах c точностью до десятых градуса.
+     * @param  p3 - координаты второй боковой вершины
+     *  @return угол в градусах с точностью до десятых градуса.
      */
     private double angleTriangle(Point2D p1, Point2D p2, Point2D p3){
         return Math.round(p1.angle(p2,p3));
@@ -1433,11 +1457,11 @@ class Model implements  Observable {
     /**
      * Метод angleVector(double X, double Y, double X1, double Y1).
      * Предназначен для определения угла наклона вектора.
-     * @param X -координата  начала вектора
-     * @param Y - координата  начала вектора
+     * @param X -координата начала вектора
+     * @param Y - координата начала вектора
      * @param X1 -координата конца вектора
-     * @param Y1 координата   конца вектора
-     * @return - возвращает угол налона вектора
+     * @param Y1 координата конца вектора
+     * @return - возвращает угол наклона вектора
      */
     private double angleVector(double X, double Y, double X1, double Y1) {
         Point2D p1=new Point2D(100,0);
@@ -1447,7 +1471,7 @@ class Model implements  Observable {
 
     /**
      * Метод areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3).
-     * Предназанчен для расчета площади треугольника по координанам трех вершин
+     * Предназначен для расчета площади треугольника по координатам трех вершин
      * @param x1 - координаты вершины x1
      * @param y1 - координаты вершины y1
      * @param x2 - координаты вершины x2
@@ -1494,7 +1518,7 @@ class Model implements  Observable {
      * @param c - объект круг.
      * @param txt - объект имя точки.
      * @param dx - смещения имени от центра точки.
-     * @param dy - смещение имени от цертра точки.
+     * @param dy - смещение имени от центра точки.
      */
     private void textBindCircle(Circle c, Text txt, int dx, int dy){
          txt.xProperty().bind(c.centerXProperty().add(dx));
@@ -1514,7 +1538,7 @@ class Model implements  Observable {
      * Метод lineUnBindCircles(Circle c1, Circle c2, Line l)
      * Метод отмены двунаправленного связывания точек начала и конца линии с самой линий.
      * Используется при удалении отрезков и треугольников
-     * @param c1 - точка начала отрека
+     * @param c1 - точка начала отрезка
      * @param c2 - точка конца отрезка
      * @param l - линия между отрезками
      */
@@ -1528,11 +1552,11 @@ class Model implements  Observable {
     /**
      * Метод rayBindCircles(Circle cStart, Circle cEnd, Line ray)
      * Метод создания двунаправленного связывания точки начала луча и начала линии,
-     * а также однонаправленноного связывания второй точки на луче с окончанием линии.
+     * а также однонаправленного связывания второй точки на луче с окончанием линии.
      * @param cStart - точка начала луча
      * @param cEnd - вторая точка на луче
      * @param ray -прямая от начала луча через вторую точку
-     * Вызывает метод rayLineX(cStart, cEnd) и  rayLineY(cStart, cEnd) для расчета окончания прямой при построении.
+     * Вызывает метод rayLineX(cStart, cEnd) и rayLineY(cStart, cEnd) для расчета окончания прямой при построении.
      */
     public void rayBindCircles(Circle cStart, Circle cEnd, Line ray) {
         ray.startXProperty().bindBidirectional(cStart.centerXProperty());
@@ -1564,29 +1588,29 @@ class Model implements  Observable {
      * @param treangle - многоугольник в форме треугольника
      */
     private void polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle) {
-        c1.centerXProperty().addListener((obj, oldVaue, newValue)->{
+        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
            treangle.getPoints().set(0,c1.getCenterX());
        });
-        c1.centerYProperty().addListener((obj, oldVaue, newValue)->{
+        c1.centerYProperty().addListener((obj, oldValue, newValue)->{
             treangle.getPoints().set(1,c1.getCenterY());
         });
-        c2.centerXProperty().addListener((obj, oldVaue, newValue)->{
+        c2.centerXProperty().addListener((obj, oldValue, newValue)->{
             treangle.getPoints().set(2,c2.getCenterX());
         });
-        c2.centerYProperty().addListener((obj, oldVaue, newValue)->{
+        c2.centerYProperty().addListener((obj, oldValue, newValue)->{
             treangle.getPoints().set(3,c2.getCenterY());
         });
-        c3.centerXProperty().addListener((obj, oldVaue, newValue)->{
+        c3.centerXProperty().addListener((obj, oldValue, newValue)->{
             treangle.getPoints().set(4,c3.getCenterX());
         });
-        c3.centerYProperty().addListener((obj, oldVaue, newValue)->{
+        c3.centerYProperty().addListener((obj, oldValue, newValue)->{
             treangle.getPoints().set(5,c3.getCenterY());
         });
     }
     /**
      * Метод rayUnBindCircles(Circle cStart, Circle cEnd, Line ray)
      * Метод отмены двунаправленного связывания точки начала луча и начала линии,
-     * а также отмены однонаправленноного связывания второй точки на луче с окончанием линии.
+     * а также отмены однонаправленного связывания второй точки на луче с окончанием линии.
      * Вызывается перед удалением объекта.
      * @param cStart
      * @param cEnd
@@ -1611,11 +1635,11 @@ class Model implements  Observable {
         });
     }
     /**
-     * Метод  arcBindPoind(String s, Arc arc)
+     * Метод arcBindPoind(String s, Arc ar)
      * Метод двунаправленного связывания центра угла с точкой, а также однонаправленного связывания
      * двух точек угла с расчетными размерами угла.
      * Для расчета размеров угла вызывается метод из класса Model arcVertex(Circle1, Circle2, Circle3, Arc)
-     * @param s - строка содержащая назавание угла, типа АВС (А и С - боковые точки, В - центральная точка угла
+     * @param s - строка содержащая название угла, типа АВС (А и С - боковые точки, В - центральная точка угла
      * @param arc - объект арка дуги угла.
      */
     public void arcBindPoind(String s, Arc arc){
@@ -1627,20 +1651,21 @@ class Model implements  Observable {
         c2.centerXProperty().bindBidirectional(arc.centerXProperty());
         c2.centerYProperty().bindBidirectional(arc.centerYProperty());
         arc.centerXProperty().addListener((obj, oldValue, newValue)->{
-            arcVertex(c1,c2,c3,arc);
+            arcVertexGo(c1,c2,c3,arc,30);
+
         });
         c1.centerXProperty().addListener((obj, oldValue, newValue)->{
-            arcVertex(c1,c2,c3,arc);
+            arcVertexGo(c1,c2,c3,arc,30);
         });
         c3.centerXProperty().addListener((obj, oldValue, newValue)->{
-            arcVertex(c1,c2,c3,arc);
+            arcVertexGo(c1,c2,c3,arc,30);
         });
     }
     /**
-     * Метод  arcUnBindPoind(String s, Arc arc)
+     * Метод arcUnBindPoind()
      * Метод отмены двунаправленного связывания центра угла с точкой, а также отмены однонаправленного связывания
      * двух точек угла. Вызывается перед удалением арки угла.
-     * @param s - строка строка содержащая назавание угла, типа АВС (А и С - боковые точки, В - центральная точка угла.
+     * @param s - строка содержащая название угла, типа АВС (А и С - боковые точки, В - центральная точка угла.)
      * @param arc - объект арка угла.
      */
     public void arcUnBindPoind(String s, Arc arc){
@@ -1651,17 +1676,17 @@ class Model implements  Observable {
         c2.centerXProperty().unbindBidirectional(arc.centerXProperty());
         c2.centerYProperty().unbindBidirectional(arc.centerYProperty());
         arc.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            // model.arcVertex(c1,c2,c3,arc);
+            // model.arcVertexGo(c1,c2,c3,arc);
         });
         c1.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            //model.arcVertex(c1,c2,c3,arc);
+            //model.arcVertexGo(c1,c2,c3,arc);
         });
         c3.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            //model.arcVertex(c1,c2,c3,arc);
+            //model.arcVertexGo(c1,c2,c3,arc);
         });
     }
     /**
-     * Метод circlesBindLine(Circle cStart, Circle cEnd, Line line)
+     * Метод circlesBindLine(Circle cStart, Circle cEnd, Line l)
      * Метод однонаправленного связывания двух точек на прямой с прямой и расчетом начала и конца прямой.
      * Для расчета начала и конца прямой вызываются методы:
      * rayLineX() и rayLineY()
@@ -1714,7 +1739,7 @@ class Model implements  Observable {
     }
 
 
-    //Тестовый метод для вывода информации по коолекциям
+    //Тестовый метод для вывода информации по коллекциям
     public void ColTest(){
         System.out.println("Коллекция PoindCircle");
         int z=0;
@@ -1750,7 +1775,7 @@ class Model implements  Observable {
 
     private void selectCircle(Circle dot)
     {
-        //Если выбран существющий объект
+        //Если выбран существующий объект
         if (selected == dot) return;
         //Создан новый объект, для старого поменять цвет
         if (selected != null) selected.setFill(Color.DARKSLATEBLUE);
@@ -1784,7 +1809,7 @@ class Model implements  Observable {
                 Point2D mc=midPoindAB(p1,p2);
               //  long time=System.nanoTime()-startTime;
               //  System.out.println("Time "+time);
-                //посторить медиану
+                //построить медиану
                newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
             }else if(c.getId().equals(vertex[1])){
                 Circle c1=findCircle(vertex[0]);
@@ -1808,10 +1833,10 @@ class Model implements  Observable {
 
     /**
      * Метод createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i).
-     * Предназначен для построения отрезка медианы, биссектрисы, высоты  и точки на противолежещей стороне от вершины,
+     * Предназначен для построения отрезка медианы, биссектрисы, высоты и точки на противолежащей стороне от вершины,
      * из которой проводится медиана
      * @param c - объект вершина из которой проводится медиана, биссектриса и высота.
-     * @param c1 - обект боковая вершина угла.
+     * @param c1 - объект боковая вершина угла.
      * @param c2 - объект боковая вершина угла.
      * @param mc - объект точка расчетная для медианы, биссектрисы и высоты.
      * @param i - номер объекта в коллекции PoindCircle (4- медиана, 5 - биссектриса, 6 - высота)
@@ -1844,7 +1869,7 @@ class Model implements  Observable {
      * @param c - объект вершина треугольника
      * @param c1 - объект вершина треугольника
      * @param c2 - объект вершина треугольника
-     * @param md - объект точка пересечения биссектрисы со сторой треугольника
+     * @param md - объект точка пересечения биссектрисы со стороной треугольника
      * @param lm - отрезок биссектриса
      */
     private void bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm) {
@@ -1966,9 +1991,9 @@ class Model implements  Observable {
 
     /**
      * Метод findMedianaUpdateXY(Circle md, Line lm).
-     * Предназначен для обновления мировых координат точки и линии окончения медианы в коллекциях.
+     * Предназначен для обновления мировых координат точки и линии окончания медианы в коллекциях.
      * @param md - объект точка медианы.
-     * @param lm  - объект линия мединады.
+     * @param lm  - объект линия медианы.
      */
     private void findMedianaUpdateXY(Circle md, Line lm) {
         for (PoindCircle p: poindCircles){
@@ -1993,7 +2018,7 @@ class Model implements  Observable {
     /**
      * Метод bisectorPoind(Point2D pA, Point2D pB, Point2D pC).
      * Предназначен для определения координат пересечения биссектрисы со стороной треугольника.
-     * @param pA  -  вершина треугольника.
+     * @param pA  - вершина треугольника.
      * @param pB - вершина треугольника из которой проведена биссектриса.
      * @param pC - вершина треугольника.
      * @return - возвращает координаты точки пересечения.
@@ -2046,24 +2071,6 @@ class Model implements  Observable {
         }
         return newBisector;
     }
-
-    /*
-    private void selectLine(Line dot)
-    {
-        //Если выбран существющий объект
-        if (selLine == dot) return;
-        //Создан новый объект, для старого поменять цвет
-        if (selLine != null) selLine.setStroke(Color.BLACK);
-        selLine = dot;//и установить выбранный круг
-        //Если объект существует
-        if (selLine != null)
-        {
-            selLine.requestFocus(); //установить на него фокус
-            selLine.setStroke(Color.RED);//поменять цвет
-        }
-    }
-
-     */
 
 }
 

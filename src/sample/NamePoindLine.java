@@ -16,9 +16,10 @@ public class NamePoindLine {
     private double Y;
     private boolean visiblePoind;//показывать имя или нет (по умолчанию true)
     private boolean visibleLine;//показывать имя линий или нет(по умолчанию false)
-    private String type;//poind - имя тчки line -имя линии
+    private boolean visibleArc;//показывать имя угла или нет (по умолчанию false)
+    private String type;//poind - имя точки line -имя линии arc - имя угла
     //Констуктор
-    NamePoindLine(Text text, String id, double dx, double dy, double x, double y, boolean visP, boolean viiL,String type){
+    NamePoindLine(Text text, String id, double dx, double dy, double x, double y, boolean visP, boolean viiL, boolean visArc, String type){
         this.text=text;
         this.id=id;
         this.dX=dx;

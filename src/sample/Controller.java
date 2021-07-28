@@ -49,6 +49,12 @@ public class  Controller extends View {
     public Pane paneShape;//контейнер для геометрических фигур
     public StackPane Cartesian;//контейнер для декартовых координат
     public TextArea txtShape;//контейнер для правой части доски
+    public MenuItem menuTreangle;
+    public MenuItem menuSecondTr;
+    public MenuItem menuEqualTr;
+    public MenuItem menuTread;
+    public MenuItem menuAbout;
+    public Font x3;
     @FXML
     private Button btnTreangle;
     @FXML
@@ -455,10 +461,10 @@ public class  Controller extends View {
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
                 System.out.println(infoStatus);
-                arc=model.arcVertexAdd(infoStatus);
+                arc=model.createVertexAdd(infoStatus);
                 paneShape.getChildren().add(arc);//рисуем арку дуги
                 arc.toFront();//перемещать узел вверх только после добавления на стол
-                //Связываем арку с углом
+                //Связываем арку с углом и именем
                 model.arcBindPoind(infoStatus,arc);
                 angleAdd= false;//окончание режима добавления
                 poindAdd1=false;

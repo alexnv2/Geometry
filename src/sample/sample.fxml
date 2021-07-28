@@ -45,9 +45,9 @@
     </Menu>
     <Menu mnemonicParsing="false" text="Настройки">
       <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен"
-                     selected="true" onAction="#menuShowPoindName"></CheckMenuItem>
+                     selected="true" onAction="#menuShowPoindName"/>
       <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен"
-                     selected="false" onAction="#menuShowLineName"></CheckMenuItem>
+                     selected="false" onAction="#menuShowLineName"/>
       <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
                      onAction="#menuGrid"/>
       <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось"
@@ -71,24 +71,27 @@
     <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" />
   </HBox>
-  <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-    <items>
-      <AnchorPane>
-        <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
-      </AnchorPane>
-        <StackPane fx:id="Cartesian">
-        <Pane fx:id="paneGrid" />
-          <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
+  <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0"
+             VBox.vgrow="ALWAYS">
+    <AnchorPane>
+      <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0"
+               prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0"/>
+      <opaqueInsets>
+        <Insets/>
+      </opaqueInsets>
+    </AnchorPane>
+    <StackPane fx:id="Cartesian">
+      <Pane fx:id="paneGrid"/>
+      <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved"
+            onMousePressed="#onMousePressed" onScroll="#onScroll">
 
-          </Pane>
-        </StackPane>
-      <AnchorPane>
-        <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      </AnchorPane>
-    </items>
+      </Pane>
+    </StackPane>
+    <AnchorPane>
+      <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                AnchorPane.topAnchor="0.0"/>
+    </AnchorPane>
   </SplitPane>
   <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
     <padding>
