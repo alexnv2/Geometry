@@ -23,6 +23,8 @@ public final class StringStatus {
     public static final String STA_21="Треугольник ";
     public static final String STA_22="Укажите на доске вершину треугольника, из которой надо построить биссектрису.";
     public static final String STA_23="Биссектриса ";
+    public static final String STA_24="Укажите на доске вершину треугольника, из которой надо построить высоту.";
+    public static final String STA_25="Высота ";
 
 
 

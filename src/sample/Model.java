@@ -1591,7 +1591,6 @@ class Model implements  Observable {
         });
     }
 
-
     /**
      * Метод polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle).
      * Предназначен для однонаправленного связывания точек треугольника с вершинами
@@ -1833,48 +1832,7 @@ class Model implements  Observable {
         }
     }
 
-    /**
-     * Метод medianaAdd(Circle poindLine1).
-     * Предназначен для добавления медиан в треугольнике
-     * @param c - вершина из которой будет построена медиана.
-     */
-    public Line medianaAdd(Circle c) {
-        Line newMediana=null;
-    //найти вершины треугольника
-    for(TreangleName tn: treangleNames){
-        if (tn!=null){
-            String[] vertex=tn.getID().split("_");
-            if(c.getId().equals(vertex[0])){
-                Circle c1=findCircle(vertex[1]);
-                Circle c2=findCircle(vertex[2]);
-                String name=vertex[0]+"_"+vertex[2];
-              //  long startTime=System.nanoTime();
-                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                Point2D mc=midPoindAB(p1,p2);
-              //  long time=System.nanoTime()-startTime;
-              //  System.out.println("Time "+time);
-                //построить медиану
-               newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
-            }else if(c.getId().equals(vertex[1])){
-                Circle c1=findCircle(vertex[0]);
-                Circle c2=findCircle(vertex[2]);
-                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                Point2D mc=midPoindAB(p1,p2);
-                newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
-            }else if(c.getId().equals(vertex[2])){
-                Circle c1=findCircle(vertex[0]);
-                Circle c2=findCircle(vertex[1]);
-                Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                Point2D mc=midPoindAB(p1,p2);
-                newMediana=createMedianaBisectorHeight(c,c1,c2,mc,4);
-            }
-        }
-    }
-    return newMediana;
-    }
+
 
     /**
      * Метод createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i).
@@ -1887,37 +1845,39 @@ class Model implements  Observable {
      * @param i - номер объекта в коллекции PoindCircle (4- медиана, 5 - биссектриса, 6 - высота)
      */
     private Line createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i) {
-        Line newMediana=createLineAdd(i);
-        Circle medianaPoind=createPoindAdd(false);
+        Line newLineTreangle=createLineAdd(i);//создать новую линию
+        Circle newPoindTreangle=createPoindAdd(false);//создать новую расчетную точку
         verX=mc.getX();
         verY=mc.getY();
-        VertexGo(medianaPoind);
-        findCirclesUpdateXY(medianaPoind.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
+        VertexGo(newPoindTreangle);
+        findCirclesUpdateXY(newPoindTreangle.getId(),gridViews.revAccessX(verX),gridViews.revAccessY(verY));
         verX1=c.getCenterX();
         verY1=c.getCenterY();
-        SideGo(newMediana);
-        findLinesUpdateXY(newMediana.getId());
-        paneBoards.getChildren().addAll(newMediana,medianaPoind);
-        newMediana.toFront();
-        findNameId(c.getId(),medianaPoind.getId(),newMediana.getId());
+        SideGo(newLineTreangle);
+        findLinesUpdateXY(newLineTreangle.getId());
+        paneBoards.getChildren().addAll(newLineTreangle,newPoindTreangle);//добавить на доску
+        newLineTreangle.toFront();
+        findNameId(c.getId(),newPoindTreangle.getId(),newLineTreangle.getId());
         //Связывание созданных отрезков и точки с вершинами треугольника
         switch (i){
-            case 4-> medianaBindCircles(c,c1,c2,medianaPoind,newMediana);
-            case 5-> bisectorBindCircles(c,c1,c2,medianaPoind,newMediana);
+            case 4-> mbhBindCircles(c,c1,c2,newPoindTreangle, newLineTreangle,4);
+            case 5-> mbhBindCircles(c,c1,c2,newPoindTreangle, newLineTreangle,5);
+            case 6-> mbhBindCircles(c,c1,c2,newPoindTreangle, newLineTreangle,6);
         }
-    return newMediana;
+    return newLineTreangle;
     }
 
     /**
-     * Метод bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm).
-     * Предназначен для связывания биссектрисы с вершинами треугольника.
+     * Метод mbh(Circle c, Circle c1, Circle c2, Circle md, Line lm, int nl).
+     * Предназначен для связывания медианы, биссектрисы и высоты с вершинами треугольника.
      * @param c - объект вершина треугольника
      * @param c1 - объект вершина треугольника
      * @param c2 - объект вершина треугольника
      * @param md - объект точка пересечения биссектрисы со стороной треугольника
      * @param lm - отрезок биссектриса
+     * @param  nl - код точки (4- медиана, 5 - биссектриса, 6 - высота
      */
-    private void bisectorBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm) {
+    private void mbhBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm, int nl) {
         c.centerXProperty().bindBidirectional(lm.startXProperty());
         c.centerYProperty().bindBidirectional(lm.startYProperty());
 
@@ -1925,7 +1885,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1936,7 +1902,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1948,7 +1920,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1959,7 +1937,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1970,7 +1954,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1981,7 +1971,13 @@ class Model implements  Observable {
             Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
             Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
             Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-            Point2D mc=bisectorPoind(p1,p3,p2);
+            Point2D mc;
+            switch (nl){
+                case 4-> mc = midPoindAB(p1,p2);
+                case 5-> mc = bisectorPoind(p1,p3,p2);
+                case 6-> mc = heightPoind(p3,p2,p1);
+                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+            }
             md.setCenterX(mc.getX());
             lm.setEndX(mc.getX());
             md.setCenterY(mc.getY());
@@ -1990,51 +1986,7 @@ class Model implements  Observable {
         });
     }
 
-    /**
-     * Метод medianaBindCircles(Circle c)
-     * Предназначен для связывания вершины треугольника с медианой
-     * @param c - имя точки для связи
-     * @param lm - имя медианы
-     */
-    private void medianaBindCircles(Circle c,Circle c1, Circle c2, Circle md, Line lm) {
-        c.centerXProperty().bindBidirectional(lm.startXProperty());
-        c.centerYProperty().bindBidirectional(lm.startYProperty());
-
-        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
-            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
-            md.setCenterX(p3.getX());
-            lm.setEndX(p3.getX());
-            md.setCenterY(p3.getY());
-            lm.setEndY(p3.getY());
-            findMedianaUpdateXY(md,lm);
-          });
-        c1.centerYProperty().addListener((obj, oldValue,newValue)->{
-            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
-            md.setCenterX(p3.getX());
-            lm.setEndX(p3.getX());
-            md.setCenterY(p3.getY());
-            lm.setEndY(p3.getY());
-            findMedianaUpdateXY(md,lm);
-         });
-        c2.centerXProperty().addListener((obj, oldValue, newValue)->{
-            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
-            md.setCenterX(p3.getX());
-            lm.setEndX(p3.getX());
-            md.setCenterY(p3.getY());
-            lm.setEndY(p3.getY());
-            findMedianaUpdateXY(md,lm);
-        });
-        c2.centerYProperty().addListener((obj, oldValue,newValue)->{
-            Point2D p3=midPoindAB(new Point2D(c1.getCenterX(),c1.getCenterY()),new Point2D(c2.getCenterX(),c2.getCenterY()));
-            md.setCenterX(p3.getX());
-            lm.setEndX(p3.getX());
-            md.setCenterY(p3.getY());
-            lm.setEndY(p3.getY());
-            findMedianaUpdateXY(md,lm);
-        });
-    }
-
-    /**
+     /**
      * Метод findMedianaUpdateXY(Circle md, Line lm).
      * Предназначен для обновления мировых координат точки и линии окончания медианы в коллекциях.
      * @param md - объект точка медианы.
@@ -2059,7 +2011,63 @@ class Model implements  Observable {
         }
     }
 
-
+    /**
+     * Метод mbhLineAdd(Circle c)
+     * Предназначен для проведения медианы, биссектрисы и высоты треугольника.
+     * @param c - вершина треугольника, из которой надо провести высоту
+     * @param nl - код линии: 4-медиана 5-биссектриса 6- высота
+     * @return - объект медиана, биссектриса или высота.
+     */
+    public Line mbhLineAdd(Circle c, int nl){
+        Line newHeight=null;
+        Point2D mc;
+        for(TreangleName tn: treangleNames){
+            if (tn!=null){
+                String[] vertex=tn.getID().split("_");
+                if(c.getId().equals(vertex[0])){
+                    Circle c1=findCircle(vertex[1]);
+                    Circle c2=findCircle(vertex[2]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    switch (nl){
+                        case 4-> mc = midPoindAB(p1,p2);
+                        case 5-> mc = bisectorPoind(p1,p3,p2);
+                        case 6-> mc = heightPoind(p3,p2,p1);
+                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+                    }
+                    newHeight=createMedianaBisectorHeight(c,c1,c2,mc,nl);
+                }else if(c.getId().equals(vertex[1])){
+                    Circle c1=findCircle(vertex[0]);
+                    Circle c2=findCircle(vertex[2]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    switch (nl){
+                        case 4-> mc = midPoindAB(p1,p2);
+                        case 5-> mc = bisectorPoind(p1,p3,p2);
+                        case 6-> mc = heightPoind(p3,p2,p1);
+                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+                    }
+                    newHeight=createMedianaBisectorHeight(c,c1,c2,mc,nl);
+                }else if(c.getId().equals(vertex[2])){
+                    Circle c1=findCircle(vertex[0]);
+                    Circle c2=findCircle(vertex[1]);
+                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
+                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
+                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
+                    switch (nl){
+                        case 4-> mc = midPoindAB(p1,p2);
+                        case 5-> mc = bisectorPoind(p1,p3,p2);
+                        case 6-> mc = heightPoind(p3,p2,p1);
+                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+                    }
+                    newHeight=createMedianaBisectorHeight(c,c1,c2,mc,nl);
+                }
+            }
+        }
+        return  newHeight;
+    }
     /**
      * Метод bisectorPoind(Point2D pA, Point2D pB, Point2D pC).
      * Предназначен для определения координат пересечения биссектрисы со стороной треугольника.
@@ -2074,48 +2082,25 @@ class Model implements  Observable {
         double dY=(pA.getY() + ra * pC.getY()) / (1 + ra);
         Point2D pD=new Point2D(dX,dY);
         return pD;
-
     }
-
     /**
-     * Метод bisectorAdd(Circle poindLine1).
-     * Предназначен для построения биссектрисы из заданной точки треугольника.
-     * @param c - объект точка из которой надо построить биссектрису
+     * Метод heightPoind(Point2D p1, Point2D p2, Point2D p3)
+     * Предназначен для определения координаты точки пересечения высоты со стороной треугольника.
+     * Вызывается из метода heightAdd(Circle c) - добавить высоту.
+     * @param p1 - координаты вершины А
+     * @param p2 - координаты вершины В
+     * @param p3 - координаты вершины С
+     * @return - возвращает координаты точки пересечения высоты треугольника из вершины А к стороне ВС.
      */
-    public Line bisectorAdd(Circle c) {
-        Line newBisector=null;
-        for(TreangleName tn: treangleNames){
-            if (tn!=null){
-                String[] vertex=tn.getID().split("_");
-                if(c.getId().equals(vertex[0])){
-                    Circle c1=findCircle(vertex[1]);
-                    Circle c2=findCircle(vertex[2]);
-                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-                    Point2D mc=bisectorPoind(p1,p3,p2);
-                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
-                }else if(c.getId().equals(vertex[1])){
-                    Circle c1=findCircle(vertex[0]);
-                    Circle c2=findCircle(vertex[2]);
-                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-                    Point2D mc=bisectorPoind(p1,p3,p2);
-                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
-                }else if(c.getId().equals(vertex[2])){
-                    Circle c1=findCircle(vertex[0]);
-                    Circle c2=findCircle(vertex[1]);
-                    Point2D p1=new Point2D(c1.getCenterX(),c1.getCenterY());
-                    Point2D p2=new Point2D(c2.getCenterX(),c2.getCenterY());
-                    Point2D p3=new Point2D(c.getCenterX(),c.getCenterY());
-                    Point2D mc=bisectorPoind(p1,p3,p2);
-                    newBisector=createMedianaBisectorHeight(c,c1,c2,mc,5);
-                }
-            }
-        }
-        return newBisector;
+    private Point2D heightPoind(Point2D p1, Point2D p2, Point2D p3) {
+        double a1=p3.getY()-p2.getY();
+        double b1=p2.getX()-p3.getX();
+        double c1=p2.getX()*p3.getY()-p3.getX()*p2.getY();
+        double c2=-p1.getX()*(p3.getX()-p2.getX())+p1.getY()*(p2.getY()-p3.getY());
+        //Вычисление главного определителя
+        double o = -pow(a1, 2) - pow(b1, 2);
+        Point2D p4=new Point2D((-c1 * a1 - c2 * b1)/o, (a1 * c2 - b1 * c1)/o);
+        return p4;
     }
-
 }
 
