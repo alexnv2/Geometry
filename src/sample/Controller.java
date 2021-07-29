@@ -176,6 +176,12 @@ public class  Controller extends View {
         btnVertical.setStyle("-fx-background-image: url(/Images/vertical.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
         btnDelete.setStyle("-fx-background-image: url(/Images/delete.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
         btnLine.setStyle("-fx-background-image: url(/Images/line.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnRay.setStyle("-fx-background-image: url(/Images/ray.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnTreangle.setStyle("-fx-background-image: url(/Images/triangle.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+
 
     }
 
