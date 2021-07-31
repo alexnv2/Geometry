@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -306,7 +305,7 @@ public class  Controller extends View {
      * Используется при добавлении геометрических фигур на доску.
      * @param mouseEvent - координаты мыши
      */
-    public void onMouseMoved(@NotNull MouseEvent mouseEvent) {
+    public void onMouseMoved(MouseEvent mouseEvent) {
         model.setVerX(mouseEvent.getX());
         model.setVerY(mouseEvent.getY());
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));

@@ -221,11 +221,10 @@ class Model implements  Observable {
         String s;
         if (indexAngleInt > 0) {
             s = indexAngle + String.valueOf(indexAngleInt);
-            indexAngle++;
         } else {
             s = String.valueOf(indexAngle);
-            indexAngle++;
         }
+        indexAngle++;
         if (indexAngle == '\u03ca') {
             indexAngle = '\u03b1';
             indexAngleInt ++;
@@ -514,6 +513,7 @@ class Model implements  Observable {
        Text nameLine=createNameShapes(line.getId());
       //Вызвать метод расчета координат перпендикуляра к середине линии
        nameLineRatchet(line,nameLine);
+       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName, showAngleName,"line"));
        //Связать линию с именем
        nameBindLines(line, nameLine);
        //Добавить в коллекцию объектов на доске
@@ -540,7 +540,6 @@ class Model implements  Observable {
        double dlina = sqrt((pow((aX - bX), 2)) + (pow((aY - bY), 2)));
        textX=cX-15*((aY-bY)/ dlina);//место вывода Х при создании
        textY=cY+15*((aX-bX)/ dlina);//место вывода Y при создании
-       namePoindLines.add(new NamePoindLine(nameLine,line.getId(),0,0,gridViews.revAccessX(textX),gridViews.revAccessY(textY),showPoindName,showLineName, showAngleName,"line"));
        nameLine.setText(line.getId());//Имя для вывода на доску
        nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
        TextGo(nameLine);//вывести на доску
@@ -554,15 +553,9 @@ class Model implements  Observable {
      * @param nameLine - объект текст.
      */
    private void nameBindLines(Line line, Text nameLine){
-       line.startXProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line,nameLine);
-       });
-       line.startYProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line,nameLine);
-       });
-       line.endYProperty().addListener((obj, oldValue, newValue)->{
-           nameLineRatchet(line, nameLine);
-        });
+       line.startXProperty().addListener((obj, oldValue, newValue)-> nameLineRatchet(line,nameLine));
+       line.startYProperty().addListener((obj, oldValue, newValue)-> nameLineRatchet(line,nameLine));
+       line.endYProperty().addListener((obj, oldValue, newValue)-> nameLineRatchet(line, nameLine));
        line.endXProperty().addListener((obj, oldValue, newValue)-> nameLineRatchet(line, nameLine));
    }
     /**
@@ -1014,11 +1007,11 @@ class Model implements  Observable {
 
          //Вид линии
          switch (inDash){
-             case 0->Collections.<Double>addAll(arrDash,2.0);
-             case 1->Collections.<Double>addAll(arrDash,15.0, 5.0);
-             case 2->Collections.<Double>addAll(arrDash,5.0, 4.0, 5.0, 4.0, 5.0);
-             case 3->Collections.<Double>addAll(arrDash,2.0, 10.0);
-             case 4->Collections.<Double>addAll(arrDash,10.0,4.0,10.0);
+             case 0->Collections.addAll(arrDash,2.0);
+             case 1->Collections.addAll(arrDash,15.0, 5.0);
+             case 2->Collections.addAll(arrDash,5.0, 4.0, 5.0, 4.0, 5.0);
+             case 3->Collections.addAll(arrDash,2.0, 10.0);
+             case 4->Collections.addAll(arrDash,10.0,4.0,10.0);
          }
          newLine.getStrokeDashArray().addAll(arrDash);
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
@@ -1353,25 +1346,23 @@ class Model implements  Observable {
             setStringLeftStatus("");
             statusGo(Status);
         });
-
-
         return arcNew;
     }
 
     /**
-     * Метод arcVertex(Circle o1, Circle o2, Circle o3, Arc a1).
+     * Метод arcVertex(Circle o1, Circle o2, Circle o3, double r).
      * Предназначен для расчета угла по координатам трех точек. Построения дуги, перемещения дуги.
      * @param o1 -первая точка А
      * @param o2 - вторая точка В (центр угла)
      * @param o3 - третья точка С
-     * @param arc - арка угла
+     * @param r - радиус дуги
      * Устанавливает, для класса View, следующие переменные:
      * angleLength - длину дуги в градусах
      * arcRadius - радиус дуги
      * angleStart - начальный угол в градусах
      * verX и verY - координаты центра дуги
      */
-    public void arcVertex(Circle o1, Circle o2, Circle o3, Arc arc, double r){
+    public void arcVertex(Circle o1, Circle o2, Circle o3, double r){
         //Длина дуги в градусах
         Point2D pA=new Point2D(o1.getCenterX(), o1.getCenterY());
         Point2D pB=new Point2D(o2.getCenterX(), o2.getCenterY());
@@ -1392,11 +1383,10 @@ class Model implements  Observable {
             arcStart=arcStart-angleABC;
         }
         angleStart=arcStart;
-
     }
 
     public void  arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc, double r){
-        arcVertex(o1,o2,o3,arc,r);
+        arcVertex(o1,o2,o3,r);
         //Запомнить текущие координаты мышки
         double stX=verX;
         double stY=verY;
@@ -1810,10 +1800,10 @@ class Model implements  Observable {
             n+=1;
         }
         System.out.println("Коллекция треугольников");
-        int tс=0;
+        int tc=0;
         for(TreangleName tr: treangleNames){
-            System.out.println(t+" "+tr);
-            tс+=1;
+            System.out.println(tc+" "+tr);
+            tc+=1;
         }
     }
 
@@ -2080,8 +2070,7 @@ class Model implements  Observable {
         double ra=pA.distance(pB)/pC.distance(pB);
         double dX=(pA.getX() + ra * pC.getX()) / (1 + ra);
         double dY=(pA.getY() + ra * pC.getY()) / (1 + ra);
-        Point2D pD=new Point2D(dX,dY);
-        return pD;
+        return new Point2D(dX,dY);
     }
     /**
      * Метод heightPoind(Point2D p1, Point2D p2, Point2D p3)
@@ -2099,8 +2088,7 @@ class Model implements  Observable {
         double c2=-p1.getX()*(p3.getX()-p2.getX())+p1.getY()*(p2.getY()-p3.getY());
         //Вычисление главного определителя
         double o = -pow(a1, 2) - pow(b1, 2);
-        Point2D p4=new Point2D((-c1 * a1 - c2 * b1)/o, (a1 * c2 - b1 * c1)/o);
-        return p4;
+        return new Point2D((-c1 * a1 - c2 * b1)/o, (a1 * c2 - b1 * c1)/o);
     }
 }
 
