@@ -36,13 +36,14 @@ import static ContstantString.StringStatus.*;
  * Класс управления приложением (Controller), наследует класс View.
  * Реагирует на все события управления от мыши и клавиатуры.
  * Вызывает методы из класса модели для обработки событий
+ *
  * @author A. Nosov
  * @version 1.0
  * @see sample.View
  * @see sample.Model
  */
 
-public class  Controller extends View {
+public class Controller extends View {
 
     //Связать переменные с шаблоном FXML
     @FXML
@@ -95,31 +96,31 @@ public class  Controller extends View {
     @FXML
     private CheckMenuItem menuCartesian;
     @FXML
-    private  CheckMenuItem menuAngleName;
+    private CheckMenuItem menuAngleName;
 
 
     //Режимы создания
-    private boolean poindAdd=false;//true - создать точку
-    private boolean segmentAdd =false;//true - создать отрезок
-    private boolean rayAdd=false;//true - создание луча
-    private boolean lineAdd=false;//true - создание прямой
-    private boolean angleAdd=false;//true -создание угла
-    private boolean treangleAdd=false;//true - создание треугольника
-    private boolean medianaAdd=false;//true - проведение медианы из вершины треугольника
-    private boolean  bisectorAdd=false;//true - проведение биссектрисы из вершины треугольника
-    private boolean heightAdd=false;//true - проведение высоты из вершины треугольника
+    private boolean poindAdd = false;//true - создать точку
+    private boolean segmentAdd = false;//true - создать отрезок
+    private boolean rayAdd = false;//true - создание луча
+    private boolean lineAdd = false;//true - создание прямой
+    private boolean angleAdd = false;//true -создание угла
+    private boolean treangleAdd = false;//true - создание треугольника
+    private boolean medianaAdd = false;//true - проведение медианы из вершины треугольника
+    private boolean bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
+    private boolean heightAdd = false;//true - проведение высоты из вершины треугольника
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
-    private int angleCol=0;//индекс счета углов
+    private int angleCol = 0;//индекс счета углов
 
 
-    private boolean poindAdd1=false;//true - создание первой точки для отрезка
-    private boolean poindAdd2=false;//true - создание второй точки для отрезка
+    private boolean poindAdd1 = false;//true - создание первой точки для отрезка
+    private boolean poindAdd2 = false;//true - создание второй точки для отрезка
 
 
     private String infoStatus;//Вершины угла
     //Для всплывающих подсказок
-    private final Tooltip tooltip=new Tooltip()  ;
+    private final Tooltip tooltip = new Tooltip();
 
     /**
      * Метод инициализации для класса Controller
@@ -131,7 +132,7 @@ public class  Controller extends View {
         model.setTextArea(txtShape);//Передать ссылку фигуры
         model.setGridViews(gridViews);//Передать ссылку для пересчета координат класса модели.
         model.setPaneBoards(paneShape);//Передать ссылку на доску для класса модели.
-        model.webHTML(webViewLeft,"geometry.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "geometry.html");//Вывод в web файла html
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);
@@ -167,19 +168,19 @@ public class  Controller extends View {
         tooltip.setShowDelay(Duration.millis(10.0));
         tooltip.setFont(Font.font(12));
         tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
-                         "-fx-text-fill: black");
+                "-fx-text-fill: black");
         //Добавить изображение к кнопкам
-        btnPoind.setStyle("-fx-background-image: url(/Images/point.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnSegment.setStyle("-fx-background-image: url(/Images/point&line.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnAngle.setStyle("-fx-background-image: url(/Images/angle.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnVertical.setStyle("-fx-background-image: url(/Images/vertical.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnDelete.setStyle("-fx-background-image: url(/Images/delete.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnLine.setStyle("-fx-background-image: url(/Images/line.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnRay.setStyle("-fx-background-image: url(/Images/ray.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnTreangle.setStyle("-fx-background-image: url(/Images/triangle.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
-        btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" +"-fx-background-repeat: no-repeat;"+"-fx-background-position:center center");
+        btnPoind.setStyle("-fx-background-image: url(/Images/point.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnSegment.setStyle("-fx-background-image: url(/Images/point&line.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnAngle.setStyle("-fx-background-image: url(/Images/angle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnVertical.setStyle("-fx-background-image: url(/Images/vertical.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnDelete.setStyle("-fx-background-image: url(/Images/delete.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnLine.setStyle("-fx-background-image: url(/Images/line.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnRay.setStyle("-fx-background-image: url(/Images/ray.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnTreangle.setStyle("-fx-background-image: url(/Images/triangle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
 
 
     }
@@ -193,19 +194,20 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_1);
         model.statusGo(leftStatus);//Установить статус
-        poindAdd=true;//Установить режим добавления
+        poindAdd = true;//Установить режим добавления
 
     }
+
     /**
      * Метод btnSegmentClick().
      * Метод для события нажатия кнопки "Добавить отрезок".
      * Устанавливает режим добавления отрезка.
      */
-     public void btnSegmentClick() {
+    public void btnSegmentClick() {
         //Установить статус
         model.setStringLeftStatus(STA_2);
         model.statusGo(leftStatus);
-        segmentAdd =true;
+        segmentAdd = true;
     }
 
     /**
@@ -213,11 +215,11 @@ public class  Controller extends View {
      * Метод для события нажатия кнопки "Добавить луч".
      * Устанавливает режим добавления луча.
      */
-     public void btnRay() {
+    public void btnRay() {
         //Установить статус
         model.setStringLeftStatus(STA_3);
         model.statusGo(leftStatus);
-        rayAdd=true;//режим построения луча
+        rayAdd = true;//режим построения луча
     }
 
     /**
@@ -229,7 +231,7 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_4);
         model.statusGo(leftStatus);
-        lineAdd=true;//режим построения прямой
+        lineAdd = true;//режим построения прямой
     }
 
     /**
@@ -241,8 +243,8 @@ public class  Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.statusGo(leftStatus);
-        angleAdd=true;//режим построения угла
-        infoStatus="";//Имя для коллекции VertexArc
+        angleAdd = true;//режим построения угла
+        infoStatus = "";//Имя для коллекции VertexArc
     }
 
     /**
@@ -255,7 +257,7 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_5);
         model.statusGo(leftStatus);
         treangleAdd = true;
-        infoStatus="";//Для коллекции TreangleName
+        infoStatus = "";//Для коллекции TreangleName
     }
 
     /**
@@ -285,8 +287,9 @@ public class  Controller extends View {
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
         model.statusGo(leftStatus);
-        heightAdd=true;
+        heightAdd = true;
     }
+
     /**
      * Метод btnDelete()
      * Нажата копка "Удалить геометрическую фигуру." Метод запускает режим удаления выбранных объектов.
@@ -297,12 +300,14 @@ public class  Controller extends View {
         model.setStringLeftStatus(STA_15);
         model.statusGo(leftStatus);
         model.setRemoveObject(true);//установить режим удаления
-        }
+    }
+
     /**
      * Метод onMouseMoved()
      * Отслеживает события перемещения мышки по доске без нажатой кнопки
      * Выводит координаты мыши в статусной строке
      * Используется при добавлении геометрических фигур на доску.
+     *
      * @param mouseEvent - координаты мыши
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
@@ -310,31 +315,31 @@ public class  Controller extends View {
         model.setVerY(mouseEvent.getY());
         model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
         model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
-        rightStatus.setText("x "+mouseEvent.getX()+" y "+mouseEvent.getY()  +" Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
-       //Добавление треугольника
-        if(treangleAdd && newLine!=null && poindAdd2){
+        rightStatus.setText("x " + mouseEvent.getX() + " y " + mouseEvent.getY() + " Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
+        //Добавление треугольника
+        if (treangleAdd && newLine != null && poindAdd2) {
             model.SideGo(newLine);//проводим отрезок
             model.findLinesUpdateXY(newLine.getId());
-            if(angleCol==2){//2-для угла, треугольника
-                poindAdd1=true;
+            if (angleCol == 2) {//2-для угла, треугольника
+                poindAdd1 = true;
             }
         }
 
         //Создание отрезка
-        if (segmentAdd && newLine!=null && poindAdd2){
+        if (segmentAdd && newLine != null && poindAdd2) {
             model.SideGo(newLine);//проводим отрезок
             model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             poindAdd1 = true;//первая точка создана
         }
         //Вторая точка, если расстояние до неё меньше 15px, конец отрезка
         //переходит на точку. Щелчок мышкой, вторая точка выбрана заданная
-        model.lineAddPoind(newLine,poindAdd2);
+        model.lineAddPoind(newLine, poindAdd2);
 
         //Создание луча
-        if(rayAdd && newLine!=null && poindAdd2){
+        if (rayAdd && newLine != null && poindAdd2) {
             //Расчитать координаты окончания луча
-            double x=model.getRayEndX()+(model.getVerX()-model.getRayEndX())*3;
-            double y=model.getRayEndY()+(model.getVerY()-model.getRayEndY())*3;
+            double x = model.getRayEndX() + (model.getVerX() - model.getRayEndX()) * 3;
+            double y = model.getRayEndY() + (model.getVerY() - model.getRayEndY()) * 3;
             //Добавить координаты пересчета в коллекцию
             model.setRayStartX(x);
             model.setRayStartY(y);
@@ -350,12 +355,12 @@ public class  Controller extends View {
         }
 
         //Создание прямой
-        if (lineAdd && newLine!=null && poindAdd2){
+        if (lineAdd && newLine != null && poindAdd2) {
             //расчитать концов прямой по уравнению прямой
-            double x=poindLine1.getCenterX()+(model.getVerX()-poindLine1.getCenterX())*3;
-            double y=poindLine1.getCenterY()+(model.getVerY()-poindLine1.getCenterY())*3;
-            double x1=poindLine1.getCenterX()+(model.getVerX()-poindLine1.getCenterX())*-3;
-            double y1=poindLine1.getCenterY()+(model.getVerY()-poindLine1.getCenterY())*-3;
+            double x = poindLine1.getCenterX() + (model.getVerX() - poindLine1.getCenterX()) * 3;
+            double y = poindLine1.getCenterY() + (model.getVerY() - poindLine1.getCenterY()) * 3;
+            double x1 = poindLine1.getCenterX() + (model.getVerX() - poindLine1.getCenterX()) * -3;
+            double y1 = poindLine1.getCenterY() + (model.getVerY() - poindLine1.getCenterY()) * -3;
 
             //Добавить координаты пересчета в коллекцию
             model.setVerLineStartX(gridViews.revAccessX(x1));
@@ -363,7 +368,7 @@ public class  Controller extends View {
             model.setVerLineEndX(gridViews.revAccessX(x));
             model.setVerLineEndY(gridViews.revAccessY(y));
             model.findLinesUpdateXY(newLine.getId());
-           //задать координаты прямой
+            //задать координаты прямой
             model.setRayStartX(x1);
             model.setRayStartY(y1);
             model.setRayEndX(x);
@@ -373,10 +378,12 @@ public class  Controller extends View {
             poindAdd1 = true;//разрешение для постройки 2 точки
         }
     }
+
     /**
      * Метод onMouseDraggen()
      * Отслеживает события перемещения мышки с нажатой левой кнопкой
      * Используется для перемещения сетки и координатных осей по доске.
+     *
      * @param event - свойство мыши.
      */
     public void onMouseDraggen(MouseEvent event) {
@@ -387,7 +394,7 @@ public class  Controller extends View {
         model.setVerY0(gridViews.revAccessY(event.getY()));
 
         //Перемещение сетки
-        if(event.getTarget()==paneShape){
+        if (event.getTarget() == paneShape) {
             val dx = gridViews.getVPx() - event.getX();//Вычисляем смещение мышки по Х
             val dy = gridViews.getVPy() - event.getY();// по Y
             gridViews.setVPx(event.getX()); //Сохраняем текущие координаты мышки
@@ -412,18 +419,19 @@ public class  Controller extends View {
      * Отслеживает нажатие кнопки на доске
      * Используется для перемещения сетки и координатных осей, а также
      * для создания геометрических фигур.
+     *
      * @param event - событие мыши
      */
-    public void  onMousePressed(MouseEvent event) {
+    public void onMousePressed(MouseEvent event) {
         // Фиксируем точку нажатия кнопки мыши для перемещения сетки и координатных осей
-        if(event.getTarget()==paneShape) {
+        if (event.getTarget() == paneShape) {
             gridViews.setVPx(event.getX());
             gridViews.setVPy(event.getY());
         }
         //Добавление точки на доске
         if (poindAdd) {
             model.setPoindLineAdd(true);
-            Circle newPoind=model.createPoindAdd(true);//создать точку
+            Circle newPoind = model.createPoindAdd(true);//создать точку
             paneShape.getChildren().add(newPoind);//добавить на доску
             poindAdd = false;//Режим добавления точки окончен
             model.setPoindLineAdd(false);
@@ -438,15 +446,15 @@ public class  Controller extends View {
         }
         //Вторая точка для отрезка
         if (segmentAdd && poindAdd1) {
-              addLineRayEnd();
-              segmentAdd = false;//окончание режима добавления
-              //Связать точки с прямой
-              model.lineBindCircles(poindLine1,poindLine2,newLine );
-              //Заменить имя
-              model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
-              //Вывод информации об объектах в правую часть доски
-              model.setTxtShape("");
-              model.txtAreaOutput();
+            addLineRayEnd();
+            segmentAdd = false;//окончание режима добавления
+            //Связать точки с прямой
+            model.lineBindCircles(poindLine1, poindLine2, newLine);
+            //Заменить имя
+            model.findNameId(poindLine1.getId(), poindLine2.getId(), newLine.getId());
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
 
         //Добавление угла первая точка
@@ -454,15 +462,15 @@ public class  Controller extends View {
             //увеличить индекс
             if (!model.isPoindOldAdd()) {//false - новая вершина true - взять имеющую
                 poindLine1 = model.createPoindAdd(true);//создать новую вершину
-                infoStatus = infoStatus+poindLine1.getId()+"_";//добавить вершину в список
+                infoStatus = infoStatus + poindLine1.getId() + "_";//добавить вершину в список
                 paneShape.getChildren().add(poindLine1);
             } else {
-                infoStatus = infoStatus +model.getTimeVer().getId()+"_";//Вершина из временной переменной
-                poindLine1=model.getTimeVer();
+                infoStatus = infoStatus + model.getTimeVer().getId() + "_";//Вершина из временной переменной
+                poindLine1 = model.getTimeVer();
             }
             model.indexAdd(poindLine1);//увеличить индекс
-            angleCol+=1;//увеличиваем счетчик вершин
-            if (angleCol==3){
+            angleCol += 1;//увеличиваем счетчик вершин
+            if (angleCol == 3) {
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
                 System.out.println(infoStatus);
@@ -472,9 +480,9 @@ public class  Controller extends View {
                 arcAngle.toBack();//перемещать узел вниз только после добавления на стол
                 //Связываем арку с углом и именем
                 model.arcBindPoind(infoStatus, arcAngle);
-                angleAdd= false;//окончание режима добавления
-                poindAdd1=false;
-                angleCol=0;
+                angleAdd = false;//окончание режима добавления
+                poindAdd1 = false;
+                angleCol = 0;
                 //Вывод информации об объектах в правую часть доски
                 model.setTxtShape("");
                 model.txtAreaOutput();
@@ -483,46 +491,46 @@ public class  Controller extends View {
         //Построение треугольника
         if (treangleAdd && !poindAdd1) {
             addLineRayStart(3);//Создание первой точки и линии
-            angleCol+=1;//увеличиваем счетчик вершин
-         }
+            angleCol += 1;//увеличиваем счетчик вершин
+        }
         //Окончание построения треугольника
-        if(treangleAdd && poindAdd1){
+        if (treangleAdd && poindAdd1) {
             //Двунаправленная связь
-            model.lineBindCircles(poindTreangle1,poindLine1,lineTriangle1);
+            model.lineBindCircles(poindTreangle1, poindLine1, lineTriangle1);
             //Свойство мышки
             model.mouseLine(lineTriangle1);
-            Point2D v1=new Point2D(poindTreangle1.getCenterX(),poindTreangle1.getCenterY());
-            infoStatus=poindTreangle1.getId()+"_";
+            Point2D v1 = new Point2D(poindTreangle1.getCenterX(), poindTreangle1.getCenterY());
+            infoStatus = poindTreangle1.getId() + "_";
             //Заменить имя
-            model.findNameId(poindTreangle1.getId(),poindLine1.getId(),lineTriangle1.getId());
-            Point2D v2=new Point2D(poindLine1.getCenterX(),poindLine1.getCenterY());
-            infoStatus=infoStatus+poindLine1.getId()+"_";
+            model.findNameId(poindTreangle1.getId(), poindLine1.getId(), lineTriangle1.getId());
+            Point2D v2 = new Point2D(poindLine1.getCenterX(), poindLine1.getCenterY());
+            infoStatus = infoStatus + poindLine1.getId() + "_";
             addLineRayEnd();
             //Двунаправленная связь
-            model.lineBindCircles(poindLine1,poindLine2,newLine);
+            model.lineBindCircles(poindLine1, poindLine2, newLine);
             model.mouseLine(newLine);
             //Заменить имя
-            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            model.findNameId(poindLine1.getId(), poindLine2.getId(), newLine.getId());
             newLine = model.createLineAdd(3);
             model.setVerX(poindTreangle1.getCenterX());
             model.setVerY(poindTreangle1.getCenterY());
             model.SideGo(newLine);
             //Двунаправленная связь
-            model.lineBindCircles(poindTreangle1,poindLine2,newLine);
+            model.lineBindCircles(poindTreangle1, poindLine2, newLine);
             model.mouseLine(newLine);
-            Point2D v3=new Point2D(poindLine2.getCenterX(),poindLine2.getCenterY());
-            infoStatus=infoStatus+poindLine2.getId();
+            Point2D v3 = new Point2D(poindLine2.getCenterX(), poindLine2.getCenterY());
+            infoStatus = infoStatus + poindLine2.getId();
             //Добавить многоугольник в форме треугольника
-            Polygon t=model.treangleAdd(v1,v2,v3,infoStatus);
-            paneShape.getChildren().addAll(newLine,t);
+            Polygon t = model.treangleAdd(v1, v2, v3, infoStatus);
+            paneShape.getChildren().addAll(newLine, t);
             t.toBack();
             newLine.toBack();
             model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
             //Заменить имя
-            model.findNameId(poindTreangle1.getId(),poindLine2.getId(),newLine.getId());
-            treangleAdd= false;//окончание режима добавления
-            poindAdd1=false;
-            angleCol=0;
+            model.findNameId(poindTreangle1.getId(), poindLine2.getId(), newLine.getId());
+            treangleAdd = false;//окончание режима добавления
+            poindAdd1 = false;
+            angleCol = 0;
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
@@ -533,91 +541,92 @@ public class  Controller extends View {
             addLineRayStart(1);
         }
         //Окончание построения луча
-        if(rayAdd && poindAdd1){
+        if (rayAdd && poindAdd1) {
             addLineRayEnd();
-            rayAdd=false;//закончить построение луча
+            rayAdd = false;//закончить построение луча
             //Связать точки с лучом
-            model.rayBindCircles(poindLine1,poindLine2,newLine );
+            model.rayBindCircles(poindLine1, poindLine2, newLine);
             //Заменить имя
-            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            model.findNameId(poindLine1.getId(), poindLine2.getId(), newLine.getId());
             //Добавить имя на доску
             model.nameLineAdd(newLine);
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
         }
-         //Добавление прямой
-        if (lineAdd && !poindAdd1){
+        //Добавление прямой
+        if (lineAdd && !poindAdd1) {
             addLineRayStart(2);//Создание первой точки и линии
         }
-        if (lineAdd && poindAdd1){
+        if (lineAdd && poindAdd1) {
             addLineRayEnd();
             //Привязка свойств мышки
             model.mouseLine(newLine);
             //Связать точки с прямой
             model.circlesBindLine(poindLine1, poindLine2, newLine);
             //Заменить имя
-            model.findNameId(poindLine1.getId(),poindLine2.getId(),newLine.getId());
+            model.findNameId(poindLine1.getId(), poindLine2.getId(), newLine.getId());
             //Добавить имя
             model.nameLineAdd(newLine);
-            lineAdd=false;
+            lineAdd = false;
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
         }
 
         //Добавление медианы
-        if(medianaAdd){
-            poindLine1=model.getTimeVer();
-            newLine=model.mbhLineAdd(poindLine1,4);
+        if (medianaAdd) {
+            poindLine1 = model.getTimeVer();
+            newLine = model.mbhLineAdd(poindLine1, 4);
             model.mouseLine(newLine);
-            medianaAdd=false;
+            medianaAdd = false;
             model.setTxtShape("");
             model.txtAreaOutput();
         }
         //Добавление биссектрисы
-        if(bisectorAdd){
-            poindLine1=model.getTimeVer();
-            newLine=model.mbhLineAdd(poindLine1,5);
+        if (bisectorAdd) {
+            poindLine1 = model.getTimeVer();
+            newLine = model.mbhLineAdd(poindLine1, 5);
             model.mouseLine(newLine);
-            bisectorAdd=false;
+            bisectorAdd = false;
             model.setTxtShape("");
             model.txtAreaOutput();
         }
         //Добавление высоты
-        if(heightAdd){
-            poindLine1=model.getTimeVer();
-            newLine=model.mbhLineAdd(poindLine1,6);
+        if (heightAdd) {
+            poindLine1 = model.getTimeVer();
+            newLine = model.mbhLineAdd(poindLine1, 6);
             model.mouseLine(newLine);
-            heightAdd=false;
+            heightAdd = false;
             model.setTxtShape("");
             model.txtAreaOutput();
         }
 
         event.consume();
-        }//End onMousePressed()
+    }//End onMousePressed()
 
     /**
      * Метод addLineRayStart(int Segment)
      * Метод начала построения отрезков, лучей и прямых.
      * Вход: номер геометрической фигуры, 0-отрезок, 1-луч, 2 прямая,3 треугольник
-     * @param  Segment - номер фигуры
+     *
+     * @param Segment - номер фигуры
      */
-    public void addLineRayStart(int Segment){
+    public void addLineRayStart(int Segment) {
         //увеличить индекс
         if (!model.isPoindOldAdd()) {//false - новая вершина true - взять имеющую
             poindLine1 = model.createPoindAdd(true);//создать новую вершину
             paneShape.getChildren().add(poindLine1);
         } else {
-            poindLine1=model.getTimeVer();
+            poindLine1 = model.getTimeVer();
         }
         model.indexAdd(poindLine1);//увеличить индекс
 
         newLine = model.createLineAdd(Segment);//создать линию
         //Сохранить первую точку треугольника и первую сторону
-        if (treangleAdd && !poindAdd2){
-            poindTreangle1=poindLine1;
-            lineTriangle1=newLine;//
+        if (treangleAdd && !poindAdd2) {
+            poindTreangle1 = poindLine1;
+            lineTriangle1 = newLine;//
         }
         paneShape.getChildren().add(newLine);//добавить на доску
         newLine.toBack();//переместить линию вниз под точку
@@ -630,15 +639,15 @@ public class  Controller extends View {
      * Метод окончания построения геометрической фигуры.
      * Закрывает режим добавления фигур.
      */
-    public void addLineRayEnd(){
+    public void addLineRayEnd() {
         model.setPoindLineAdd(false);
         if (!model.isPoindOldAdd()) {
             model.setPoindLineAdd(true);
             poindLine2 = model.createPoindAdd(true);//создать новую
             paneShape.getChildren().add(poindLine2);
             model.indexAdd(poindLine2);//увеличить индекс
-        }else {
-            poindLine2=model.getTimeVer();
+        } else {
+            poindLine2 = model.getTimeVer();
             model.indexAdd(poindLine1);//увеличить индекс
         }
         //Привязка свойств мышки
@@ -648,15 +657,16 @@ public class  Controller extends View {
         poindAdd2 = false;//закрыть 2 точку
         model.setPoindLineAdd(false);
         model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
-     }
+    }
 
     /**
      * Метод onScroll(ScrollEvent event)
      * Метод изменения масштаба координатной сетки при вращении колесика мышки
+     *
      * @param event - изменения колесика мышки
      */
-     public void onScroll(ScrollEvent event) {
-        double sc=event.getDeltaY();
+    public void onScroll(ScrollEvent event) {
+        double sc = event.getDeltaY();
         gridViews.onScrollView(sc);
         updateShape();
     }
@@ -676,20 +686,20 @@ public class  Controller extends View {
                 c.setCenterY(gridViews.accessY(p.getY()));
             }
         //Обновление всех линий
-        for (PoindLine pl : model.getPoindLines()){
-            if(pl!=null){
+        for (PoindLine pl : model.getPoindLines()) {
+            if (pl != null) {
                 //Обновляем отрезки
-                    Line l = pl.getLine();
-                    l.setStartX(gridViews.accessX(pl.getStX()));
-                    l.setStartY(gridViews.accessY(pl.getStY()));
-                    l.setEndX(gridViews.accessX(pl.getEnX()));
-                    l.setEndY(gridViews.accessY(pl.getEnY()));
+                Line l = pl.getLine();
+                l.setStartX(gridViews.accessX(pl.getStX()));
+                l.setStartY(gridViews.accessY(pl.getStY()));
+                l.setEndX(gridViews.accessX(pl.getEnX()));
+                l.setEndY(gridViews.accessY(pl.getEnY()));
             }
         }
         //Обновление дуг углов
-        for (VertexArc va: model.getVertexArcs()){
-            if(va!=null){
-                Arc a=va.getArc();
+        for (VertexArc va : model.getVertexArcs()) {
+            if (va != null) {
+                Arc a = va.getArc();
                 a.setCenterX(gridViews.accessX(va.getCenterX()));
                 a.setCenterY(gridViews.accessY(va.getCenterY()));
                 a.setRadiusX(va.getRadiusX());
@@ -700,27 +710,28 @@ public class  Controller extends View {
             }
         }
     }
+
     /**
      * Метод menuPoindClick().
      * Предназначен для вывода определения точки, прямой, отрезка.
      * Вызывается из пункта меню Фигуры->Точка, прямая, отрезок.
      */
     public void menuPoindClick() {
-        model.webHTML(webViewLeft,"line.html");//Вывод в web файла
+        model.webHTML(webViewLeft, "line.html");//Вывод в web файла
 
         //Создать точки
-        for (int i=0;i<5;i++) {
-         final double max = 500.;
-         double x;
-         double y;
-         x=Math.random()*max;
-         y=Math.random()*max;
-         model.setVerX(Math.round(x));
-         model.setVerY(Math.round(y));
-         model.setVerX0(gridViews.revAccessX(Math.round(x)));
-         model.setVerY0(gridViews.revAccessY(Math.round(y)));
-         Circle newPoind = model.createPoindAdd(true);//создать точку
-         paneShape.getChildren().add(newPoind);//добавить на доску
+        for (int i = 0; i < 5; i++) {
+            final double max = 500.;
+            double x;
+            double y;
+            x = Math.random() * max;
+            y = Math.random() * max;
+            model.setVerX(Math.round(x));
+            model.setVerY(Math.round(y));
+            model.setVerX0(gridViews.revAccessX(Math.round(x)));
+            model.setVerY0(gridViews.revAccessY(Math.round(y)));
+            Circle newPoind = model.createPoindAdd(true);//создать точку
+            paneShape.getChildren().add(newPoind);//добавить на доску
         }
 
 
@@ -732,15 +743,16 @@ public class  Controller extends View {
      * Вызывается из пункта меню Фигуры->Луч и угол.
      */
     public void menuRayClick() {
-        model.webHTML(webViewLeft,"rayandangle.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "rayandangle.html");//Вывод в web файла html
     }
+
     /**
      * Метод menuAngleClick().
      * Предназначен для вывода определений смежных и вертикальных углов
      * Вызывается из пункта меню Фигуры->Смежные и вертикальные углы
      */
     public void menuAngleClick() {
-        model.webHTML(webViewLeft,"angle.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "angle.html");//Вывод в web файла html
     }
 
     /**
@@ -749,7 +761,7 @@ public class  Controller extends View {
      * меню Аксиомы и следствие->Аксиомы принадлежности
      */
     public void menuAcsiomy1Click() {
-        model.webHTML(webViewLeft,"acsiomy_1.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "acsiomy_1.html");//Вывод в web файла html
     }
 
     /**
@@ -758,7 +770,7 @@ public class  Controller extends View {
      * меню Аксиомы и следствие->Аксиомы равенства и наложения
      */
     public void menuAcsiomy2Click() {
-        model.webHTML(webViewLeft,"acsiomy_2.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "acsiomy_2.html");//Вывод в web файла html
     }
 
     /**
@@ -767,7 +779,7 @@ public class  Controller extends View {
      * меню Аксиомы и следствие->Аксиомы измерения
      */
     public void menuAcsiomy3Click() {
-        model.webHTML(webViewLeft,"acsiomy_3.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "acsiomy_3.html");//Вывод в web файла html
     }
 
     /**
@@ -776,7 +788,7 @@ public class  Controller extends View {
      * меню Аксиомы и следствие->Аксиомы параллельности.
      */
     public void menuAcsiomy4Click() {
-        model.webHTML(webViewLeft,"acsiomy_4.html");//Вывод в web файла html
+        model.webHTML(webViewLeft, "acsiomy_4.html");//Вывод в web файла html
     }
 
 
@@ -786,9 +798,9 @@ public class  Controller extends View {
      * Пункт из меню "Настройки - Показывать большие буквы."
      */
     public void menuShowPoindName() {
-            visibleName(menuShowPoindName.isSelected(),"poind");
-            model.setShowPoindName(menuShowPoindName.isSelected());//поменять логическую переменную
-        }
+        visibleName(menuShowPoindName.isSelected(), "poind");
+        model.setShowPoindName(menuShowPoindName.isSelected());//поменять логическую переменную
+    }
 
 
     /**
@@ -797,28 +809,31 @@ public class  Controller extends View {
      * Пункт из меню "Настройки - Показывать маленькие буквы".
      */
     public void menuShowLineName() {
-        visibleName(menuShowLineName.isSelected(),"line");
+        visibleName(menuShowLineName.isSelected(), "line");
         model.setShowLineName(menuShowLineName.isSelected()); //поменять логическую переменную
     }
+
     /**
      * Метод menuAngleName()
      * Предназначен для показа и скрытия имен углов
      * Пункт из меню "Настройки - Показывать имена углов".
      */
     public void menuAngleName() {
-        visibleName(menuAngleName.isSelected(),"arc");
+        visibleName(menuAngleName.isSelected(), "arc");
         model.setShowAngleName(menuAngleName.isSelected());//поменять логическую переменную
     }
+
     /**
      * Метод visibleNameLine(boolean bName, String name).
      * Предназначен для показа и скрытия имен.
+     *
      * @param bName - логическая переменная (true - показывать, false - не показывать)
-     * @param name - какие имена (line, poind, arc)
+     * @param name  - какие имена (line, poind, arc)
      */
-    private void visibleName(boolean bName, String name){
-        for (NamePoindLine pn: model.getNamePoindLines()){
-            if(pn!=null){
-                if(pn.getType().equals(name)) {
+    private void visibleName(boolean bName, String name) {
+        for (NamePoindLine pn : model.getNamePoindLines()) {
+            if (pn != null) {
+                if (pn.getType().equals(name)) {
                     pn.getText().setVisible(bName);
                     pn.setVisibleLine(bName);
                 }
@@ -826,7 +841,7 @@ public class  Controller extends View {
         }
     }
 
-   public void menuTriangle() {
+    public void menuTriangle() {
         model.webViewLeftString(webViewLeft, 0);//Определения
     }
 
@@ -846,10 +861,11 @@ public class  Controller extends View {
         model.setShowGrid(menuGrid.isSelected());
         if (model.isShowGrid()) {
             gridViews.gridCartesian();//Вывод сетки
-        }else{
+        } else {
             paneGrid.getChildren().clear();//Очистить экран и память
         }
     }
+
     /**
      * Метод menuIsosceles().
      * Нажат пункт меню "Теоремы-Признак равнобедренного треугольника".
@@ -905,8 +921,8 @@ public class  Controller extends View {
      */
     //Всплывающее окно при наведении на кнопку "Треугольник"
     public void onMouseEnteredTreangle() {
-         tooltip.setText("Добавить треугольник");
-         btnTreangle.setTooltip(tooltip);
+        tooltip.setText("Добавить треугольник");
+        btnTreangle.setTooltip(tooltip);
     }
 
     /**
@@ -931,6 +947,7 @@ public class  Controller extends View {
         tooltip.setText("Добавить высоту");
         btnHeight.setTooltip(tooltip);
     }
+
     /**
      * Метод onMouseEnteredDelete()
      * Всплывающая подсказка при наведении на кнопку "Удалить"
@@ -939,7 +956,7 @@ public class  Controller extends View {
         tooltip.setText("Удалить геометрическую фигуру");
         btnDelete.setTooltip(tooltip);
     }
-   
+
     //Тестовая кнопка вывод информации по всем коллекциям для тестирования системы
     public void btnTest() {
         model.ColTest();
@@ -964,7 +981,7 @@ public class  Controller extends View {
         TwofxmlLoader();
     }
 
-//Загрузка шаблона окна для признаков равенства треугольников
+    //Загрузка шаблона окна для признаков равенства треугольников
     public void TwofxmlLoader() {
         try {
             Parent root1 = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("equality.fxml")));
@@ -979,43 +996,42 @@ public class  Controller extends View {
     }
 
 
-//Нажата кнопка меню "О программе"
+    //Нажата кнопка меню "О программе"
     public void onAbout() {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
         window.initStyle(StageStyle.UTILITY);//Только кнопка закрыть
-        VBox root=new VBox();
+        VBox root = new VBox();
         root.setStyle(
                 "-fx-background-image: url(/Images/About.png); " +
                         "-fx-background-repeat: no-repeat;"
         );
         root.setAlignment(Pos.TOP_CENTER);
 
-        Label label2=new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
-        label2.setFont(Font.font("Verdana", FontWeight.BOLD,24.0));
+        Label label2 = new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
+        label2.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
         label2.setTextFill(Color.SANDYBROWN);
         label2.setTextAlignment(TextAlignment.CENTER);
-        Label label=new Label("Учебно-справочное пособие");
-        label.setFont(Font.font("Verdana", FontWeight.BOLD,34.0));
+        Label label = new Label("Учебно-справочное пособие");
+        label.setFont(Font.font("Verdana", FontWeight.BOLD, 34.0));
         label.setTextFill(Color.YELLOW);
         label.setTextAlignment(TextAlignment.CENTER);
-        Label label1=new Label("Геометрия\n\n");
-        label1.setFont(Font.font("Verdana", FontWeight.BOLD,58.0));
+        Label label1 = new Label("Геометрия\n\n");
+        label1.setFont(Font.font("Verdana", FontWeight.BOLD, 58.0));
         label1.setTextFill(Color.YELLOW);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3=new Label("Выполнил ученик 8Б класса \n Носов Алексей \n2021 г.");
-        label3.setFont(Font.font("Verdana", FontWeight.BOLD,24.0));
+        Label label3 = new Label("Выполнил ученик 8Б класса \n Носов Алексей \n2021 г.");
+        label3.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
 
-        root.getChildren().addAll(label2,label,label1,label3);
+        root.getChildren().addAll(label2, label, label1, label3);
         Scene scene = new Scene(root, 864, 489);
         window.setScene(scene);
         window.setTitle("О программе");
         window.show();
 
     }
-
 
 
 }

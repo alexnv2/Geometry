@@ -18,7 +18,7 @@ class View implements Observer{
     //Объявляем класс Model
     Model model=new Model();
     //Объявляем класс сетки с методами перемещения координатной сетки и масштабирования
-    //Как расширение класса пересчетв мировых координат в в окна просмотра
+    //Как расширение класса пересчета мировых координат в окне просмотра
     GridView gridViews=new GridView();
     //Конструктор класса отображения
     View() {
@@ -38,7 +38,7 @@ class View implements Observer{
             case "WebGo"->this.webGo(model.getWebView());//вывод файла HTML
             case "TextShapeGo"->this.textShapeGo(model.getTextArea());//для вывода в правое окно
            // case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
-            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дугм для треугольников
+            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дуг для треугольников
             case "ArcColorGo"->this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
         }
@@ -51,7 +51,7 @@ class View implements Observer{
 
     /*
     Методы для вывода информации на экран
-    Все данные расчитываются в класса модели (Model)
+    Все данные расчитываются в классе модели (Model)
      */
     //Перемещение точек
     private void vertexGo(Circle ver){
@@ -106,12 +106,12 @@ class View implements Observer{
     }
 
     /**
-     * Метод TextGo(Text text).
-     * Предназначен для выводы имен точек, прямых, отрезков
-     * @param text - объект текст
+     * Метод TextGo(Text t).
+     * Предназначен для выводов имен точек, прямых, отрезков
+     * @param t - объект текст
      */
-     private void TextGo(Text text){
-        text.setX(model.getTextX());
-        text.setY(model.getTextY());
+     private void TextGo(Text t){
+        t.setX(model.getTextX());
+        t.setY(model.getTextY());
     }
 }
