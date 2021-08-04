@@ -16,9 +16,11 @@ import javafx.scene.web.WebView;
 import lombok.Data;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import static ContstantString.StringStatus.*;
 import static ContstantString.StringWeb.*;
@@ -291,7 +293,7 @@ class Model implements  Observable {
                String s1 = p.getId();
                double s2 = p.getX();
                double s3 = p.getY();
-               txtShape = txtShape + "Точка: " + s1 + " (" + s2 + ", " + s3 + ")\n";
+               txtShape = MessageFormat.format("{0}Точка: {1} ({2}, {3})\n", txtShape, s1, s2, s3);
 
            }
        }
@@ -302,7 +304,7 @@ class Model implements  Observable {
                int l = p.getSegment();
                switch (l){
                    case 0 ->{double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
-                       txtShape = txtShape + STA_10+ nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
+                       txtShape = MessageFormat.format("{0}{1}{2} Длина:{3}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment / 100);
                    }
                    case 1 -> txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
                    case 2 -> txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
@@ -318,14 +320,14 @@ class Model implements  Observable {
        //Информация об углах
         for( VertexArc v: vertexArcs){
             if(v!=null) {
-                txtShape = txtShape + "Угол " + nameSplitRemove(v.getId()) +"= "+v.getLengthAngle()+ " гр. \n";
+                txtShape = MessageFormat.format("{0}Угол {1}= {2} гр. \n", txtShape, nameSplitRemove(v.getId()), v.getLengthAngle());
                 }
             }
        txtShape=txtShape+"-------------------------------- "+"\n";//добавить разделитель
         //Информация об треугольниках
        for (TreangleName t: treangleNames){
            if(t!=null){
-               txtShape=txtShape+STA_21+ nameSplitRemove(t.getID())+" \n";
+               txtShape= MessageFormat.format("{0}{1}{2} \n", txtShape, STA_21, nameSplitRemove(t.getID()));
            }
        }
        textAreaGo();
@@ -376,9 +378,7 @@ class Model implements  Observable {
          //  System.out.println("do "+nameText.getId());
        });
        //Уход мышки с объекта
-       nameText.setOnMouseExited(e-> {
-           nameText.setCursor(Cursor.DEFAULT);
-        });
+       nameText.setOnMouseExited(e-> nameText.setCursor(Cursor.DEFAULT));
 
        return nameText;
    }
@@ -481,6 +481,7 @@ class Model implements  Observable {
      * @return - объект Text
      */
    private Text findNameText(Circle circle){
+
        for (NamePoindLine np: namePoindLines){
            if(np!=null){
                if(np.getId().equals(circle.getId())){
@@ -489,6 +490,8 @@ class Model implements  Observable {
            }
        }
        return null;
+
+
    }
    private String findID(Line line){
        for (PoindLine p: poindLines){
@@ -526,7 +529,7 @@ class Model implements  Observable {
      */
    private void nameLineRatchet(Line line, Text nameLine){
        //Найти точки на линии
-       String[] sVer=findID(line).split("_");
+       String[] sVer= Objects.requireNonNull(findID(line)).split("_");
        //Найти середину линии
        double aX=findCircle(sVer[0]).getCenterX();
        double aY=findCircle(sVer[0]).getCenterY();
@@ -596,49 +599,7 @@ class Model implements  Observable {
         return newPoind;//возвращает точку
     }
 
-   /*
-    private void circlesBindOnLine(Circle newPoind, Line line, double t) {
-        line.startXProperty().addListener((obj, oldValue, newValue)->{
 
-            if(t>0 && t<1) {
-                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
-                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
-                newPoind.setCenterX(x);
-                newPoind.setCenterY(y);
-            }
-        });
-        line.endXProperty().addListener((obj, oldValue, newValue)->{
-
-            if(t>0 && t<1) {
-                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
-                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
-                newPoind.setCenterX(x);
-                newPoind.setCenterY(y);
-            }
-        });
-
-        line.startYProperty().addListener((obj, oldValue, newValue)->{
-
-            if(t>0 && t<1) {
-                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
-                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
-                newPoind.setCenterX(x);
-                newPoind.setCenterY(y);
-            }
-        });
-        line.endYProperty().addListener((obj, oldValue, newValue)->{
-
-            if(t>0 && t<1) {
-                double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
-                double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
-
-                newPoind.setCenterX(x);
-                newPoind.setCenterY(y);
-            }
-        });
-    }
-
-    */
 
     /**
      * Метод createPoind()
@@ -659,58 +620,11 @@ class Model implements  Observable {
                 if(findPoindCircleMove(circle.getId())) {
                     //Найти по точке имя в коллекции
                     Text txt=findNameText(circle);
-                    if(!txt.xProperty().isBound()){//проверить на связь, если нет связать
+                    if(!Objects.requireNonNull(txt).xProperty().isBound()){//проверить на связь, если нет связать
                         textBindCircle(circle,txt, (int)(txt.getX()-circle.getCenterX()),(int)(txt.getY()-circle.getCenterY()));//если нет, связать
                     }
                     //Найти точку в коллекции, определить принадлежит ли она линии
-                    /*
-                    for(PoindCircle p: poindCircles){
-                        if(p!=null){
-                            if(p.getId().equals(circle.getId())){
-                                if(p.isBLine()) {
-                                    poindMove = p.isBLine();
-                                    line = p.getLine();
-                                    t = p.getT();
 
-                                }else{
-                                    poindMove=false;
-                                }
-
-                            }
-                        }
-                    }
-
-
-                    //Точка принадлежит прямой
-                    if(poindMove){
-                          double tX=(e.getX()-circle.getCenterX())/(line.getEndX()-line.getStartX());
-                          double tY=(e.getY()-circle.getCenterY())/(line.getEndY()-line.getStartY());
-                          double t=abs((tX+tY)/2);
-                          if(t>0 && t<1 ) {
-                              double x = line.getStartX() + (line.getEndX() - line.getStartX()) * t;
-                              double y = line.getStartY() + (line.getEndY() - line.getStartY()) * t;
-                              circle.setCenterX(x);
-                              circle.setCenterY(y);
-                            //  verX=x;
-                            //  verY=y;
-                            //  verX0=gridViews.revAccessX(x);
-                            //  verY0=gridViews.revAccessY(y);
-                              for (PoindCircle p: poindCircles){
-                                  if(p!=null){
-                                      if(p.getId().equals(circle.getId())){
-                                          p.setT(t);
-                                     //     p.setX(gridViews.revAccessX(circle.getCenterX()));
-                                     //     p.setY(gridViews.revAccessY(circle.getCenterY()));
-                                      }
-                                  }
-                              }
-                          }
-                    }else {//не принадлежит прямой
-                        circle.setCenterX(e.getX());
-                        circle.setCenterY(e.getY());
-                    }
-
-                     */
                     circle.setCenterX(e.getX());
                     circle.setCenterY(e.getY());
                     //добавить новые координаты в коллекцию PoindCircle
@@ -736,7 +650,7 @@ class Model implements  Observable {
                     timeVer = circle;//сохранить выбранную точку для построения
                     //Вызвать метод для увелечения счетчика index в коллекции PoindCircles
                     if (removeObject) { //Режим для удаления
-                        boolean remove = removePoindAdd(circle);
+                          removePoindAdd(circle);
                     }
                 }else{
                     stringLeftStatus=STA_19;
@@ -798,13 +712,13 @@ class Model implements  Observable {
      * Вызывается из метода createPoind() из события onMousePressed().
      * @param c -объект точка
      */
-    private boolean removePoindAdd(Circle c){
+    private void removePoindAdd(Circle c){
         for(PoindCircle p: poindCircles){
             if(p!=null){
                 if(p.getId().equals(c.getId())){
                     if(p.getIndex()==0){//индекс = 0 удаляем, иначе уменьшаем индекс и удаляем связанные фигуры
                         Text txt=findNameText(p.getCircle());//найти имя объекта
-                        if(txt.xProperty().isBound()){//проверить на связь
+                        if(Objects.requireNonNull(txt).xProperty().isBound()){//проверить на связь
                             textUnBindCircle(txt);//отменить связь
                         }
                         paneBoards.getChildren().remove(txt);//удаление имени с доски
@@ -815,34 +729,30 @@ class Model implements  Observable {
                         //Вывод информации об объектах в правую часть доски
                         setTxtShape("");
                         txtAreaOutput();
-                        return true;
                     }else{
                         removeObject=false;
-                        return true;
                     }
+                    return;
 
                 }
             }
         }
-        return false;
     }
 
     /**
      * Метод removeNameText(Text txt).
      * Предназначен для удаления имени точки. Вызывается из метода removePoindAdd(Circle c).
      * @param txt -объект имя точки
-     * @return -true - успешное удаление
      */
-    private boolean removeNameText(Text txt){
+    private void removeNameText(Text txt){
         for(NamePoindLine pn: namePoindLines){
             if(pn!=null){
                 if(txt.getId().equals(pn.getId())){
                     namePoindLines.remove(pn);
-                    return true;
+                    return;
                 }
             }
         }
-        return false;
     }
     /**
      * Метод indexAdd(Circle c)
@@ -858,29 +768,6 @@ class Model implements  Observable {
             }
         }
     }
-
-    /**
-     * Метод removeIndex(Circle c)
-     * Метод для уменьшения счетчика, вызывается перед удалением точки.
-     * Точку можно удалить, если индекс равен 0.
-     * @param circle
-     * Возврат: индекс точки.
-     */
-   private int removeIndex(Circle circle){
-       for(PoindCircle c: poindCircles){
-           if(c!=null){
-               if(c.getId().equals(circle.getId())){
-               if(c.getIndex()==0){
-                   return 0;
-               }else {
-                   c.setIndex(c.getIndex() - 1);
-                   return c.getIndex();
-                    }
-               }
-           }
-       }
-      return -1;//точка не найдена
-   }
 
     /**
      * Метод createLine(int seg).
@@ -1371,10 +1258,8 @@ class Model implements  Observable {
         double arcStart=angleVector(o2.getCenterX(),o2.getCenterY(),o3.getCenterX(),o3.getCenterY());
         double str=areaTriangle(o2.getCenterX()+200,o2.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
         double str1=areaTriangle(o1.getCenterX(), o1.getCenterY(), o2.getCenterX(), o2.getCenterY(), o3.getCenterX(), o3.getCenterY());
-        if (str<0){
-            arcStart=360-arcStart;
-               }else {
-            arcStart=arcStart;
+        if (str<0) {
+            arcStart = 360 - arcStart;
         }
         if(str1>0){
             arcStart=arcStart-angleABC;
@@ -1563,19 +1448,11 @@ class Model implements  Observable {
         ray.startXProperty().bindBidirectional(cStart.centerXProperty());
         ray.startYProperty().bindBidirectional(cStart.centerYProperty());
         //Расчет конца луча
-        ray.startYProperty().addListener((obj, oldValue, newValue) -> {
-            ray.setEndY(rayLineY(cStart, cEnd));
-        });
-        ray.startXProperty().addListener((obj, oldValue, newValue) -> {
-            ray.setEndX(rayLineX(cStart, cEnd));
-        });
+        ray.startYProperty().addListener((obj, oldValue, newValue) -> ray.setEndY(rayLineY(cStart, cEnd)));
+        ray.startXProperty().addListener((obj, oldValue, newValue) -> ray.setEndX(rayLineX(cStart, cEnd)));
         //Точка на луче
-        cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            ray.setEndX(rayLineX(cStart, cEnd));
-        });
-        cEnd.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            ray.setEndY(rayLineY(cStart, cEnd));
-        });
+        cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> ray.setEndX(rayLineX(cStart, cEnd)));
+        cEnd.centerYProperty().addListener((obj, oldValue, newValue) -> ray.setEndY(rayLineY(cStart, cEnd)));
     }
 
     /**
@@ -1588,33 +1465,21 @@ class Model implements  Observable {
      * @param treangle - многоугольник в форме треугольника
      */
     private void polygonBindCircles(Circle c1, Circle c2, Circle c3, Polygon treangle) {
-        c1.centerXProperty().addListener((obj, oldValue, newValue)->{
-           treangle.getPoints().set(0,c1.getCenterX());
-       });
-        c1.centerYProperty().addListener((obj, oldValue, newValue)->{
-            treangle.getPoints().set(1,c1.getCenterY());
-        });
-        c2.centerXProperty().addListener((obj, oldValue, newValue)->{
-            treangle.getPoints().set(2,c2.getCenterX());
-        });
-        c2.centerYProperty().addListener((obj, oldValue, newValue)->{
-            treangle.getPoints().set(3,c2.getCenterY());
-        });
-        c3.centerXProperty().addListener((obj, oldValue, newValue)->{
-            treangle.getPoints().set(4,c3.getCenterX());
-        });
-        c3.centerYProperty().addListener((obj, oldValue, newValue)->{
-            treangle.getPoints().set(5,c3.getCenterY());
-        });
+        c1.centerXProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(0,c1.getCenterX()));
+        c1.centerYProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(1,c1.getCenterY()));
+        c2.centerXProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(2,c2.getCenterX()));
+        c2.centerYProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(3,c2.getCenterY()));
+        c3.centerXProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(4,c3.getCenterX()));
+        c3.centerYProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(5,c3.getCenterY()));
     }
     /**
      * Метод rayUnBindCircles(Circle cStart, Circle cEnd, Line ray)
      * Метод отмены двунаправленного связывания точки начала луча и начала линии,
      * а также отмены однонаправленного связывания второй точки на луче с окончанием линии.
      * Вызывается перед удалением объекта.
-     * @param cStart
-     * @param cEnd
-     * @param ray
+     * @param cStart -объект начала луча
+     * @param cEnd - объект конца луча
+     * @param ray -объект линия
      */
     public void rayUnBindCircles(Circle cStart, Circle cEnd, Line ray) {
         ray.startXProperty().unbindBidirectional(cStart.centerXProperty());
@@ -1651,19 +1516,19 @@ class Model implements  Observable {
         c2.centerYProperty().bindBidirectional(arc.centerYProperty());
         arc.centerXProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);//новый угол
-            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
+            nameArcShow(c2,arc, Objects.requireNonNull(findArcNameAngle(arc.getId())));//новое место имени угла
         });
         arc.centerYProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);//новый угол
-            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
+            nameArcShow(c2,arc, Objects.requireNonNull(findArcNameAngle(arc.getId())));//новое место имени угла
         });
         c1.centerXProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);
-            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
+            nameArcShow(c2,arc, Objects.requireNonNull(findArcNameAngle(arc.getId())));//новое место имени угла
         });
         c3.centerXProperty().addListener((obj, oldValue, newValue)->{
             arcVertexGo(c1,c2,c3,arc,30);
-            nameArcShow(c2,arc,findArcNameAngle(arc.getId()));//новое место имени угла
+            nameArcShow(c2,arc, Objects.requireNonNull(findArcNameAngle(arc.getId())));//новое место имени угла
         });
     }
 
@@ -1770,41 +1635,7 @@ class Model implements  Observable {
     }
 
 
-    //Тестовый метод для вывода информации по коллекциям
-    public void ColTest(){
-        System.out.println("Коллекция PoindCircle");
-        int z=0;
-        for(PoindCircle p: poindCircles){
-            System.out.println(z+" "+p);
-            z+=1;
-        }
-        System.out.println("Коллекция PoindLine");
-        int t=0;
-        for( PoindLine d: poindLines){
-            System.out.println(t+" "+d);
-            t+=1;
-        }
-        System.out.println("Коллекция дуг");
-        int b=0;
-        for(VertexArc va:vertexArcs){
-            System.out.println(b+" "+va);
-            b+=1;
-        }
-        System.out.println("Коллекция имен");
-        int n=0;
-        for(NamePoindLine nm: namePoindLines){
-            System.out.println(n+" "+nm);
-            n+=1;
-        }
-        System.out.println("Коллекция треугольников");
-        int tc=0;
-        for(TreangleName tr: treangleNames){
-            System.out.println(tc+" "+tr);
-            tc+=1;
-        }
-    }
-
-    private void selectCircle(Circle dot)
+       private void selectCircle(Circle dot)
     {
         //Если выбран существующий объект
         if (selected == dot) return;
@@ -2087,5 +1918,29 @@ class Model implements  Observable {
         double o = -pow(a1, 2) - pow(b1, 2);
         return new Point2D((-c1 * a1 - c2 * b1)/o, (a1 * c2 - b1 * c1)/o);
     }
+
+    //Тестовый метод для вывода информации по коллекциям
+    public void ColTest(){
+        //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
+        //Глава 2. Пакет java.util.function
+        // стр.40 Пример 2.3
+        System.out.println("Коллекция PoindCircle");
+        poindCircles.forEach(System.out::println);//ссылка на метод
+
+        System.out.println("Коллекция PoindLine");
+        poindLines.forEach(System.out::println);//лямбда выражение
+
+        System.out.println("Коллекция дуг");
+        vertexArcs.forEach(System.out::println);
+
+        System.out.println("Коллекция имен");
+        namePoindLines.forEach(System.out::println);
+
+        System.out.println("Коллекция треугольников");
+        treangleNames.forEach(System.out::println);
+
+    }
+
+
 }
 
