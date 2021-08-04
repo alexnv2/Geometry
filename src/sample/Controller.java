@@ -473,7 +473,6 @@ public class Controller extends View {
             if (angleCol == 3) {
                 poindAdd2 = false;//закрыть 2 точку
                 model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
-                System.out.println(infoStatus);
                 //угол
                 Arc arcAngle = model.createVertexAdd(infoStatus);
                 paneShape.getChildren().add(arcAngle);//рисуем арку дуги

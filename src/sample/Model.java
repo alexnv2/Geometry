@@ -228,7 +228,6 @@ class Model implements  Observable {
         if (indexAngle == '\u03ca') {
             indexAngle = '\u03b1';
             indexAngleInt ++;
-            System.out.println(indexAngleInt);
         }
         return s;
     }
@@ -581,7 +580,7 @@ class Model implements  Observable {
             double tX=(newPoind.getCenterX()-line.getStartX())/(line.getEndX()-line.getStartX());
             double tY=(newPoind.getCenterY()-line.getStartY())/(line.getEndY()-line.getStartY());
             double t=(tX+tY)/2;
-            System.out.println("tx= "+tX+" ty= "+tY);
+
             for(PoindCircle p: poindCircles){
                 if(p!=null){
                     if(p.getCircle().getId().equals(newPoind.getId())){
@@ -818,7 +817,6 @@ class Model implements  Observable {
                         txtAreaOutput();
                         return true;
                     }else{
-                       // System.out.println("poind связана");
                         removeObject=false;
                         return true;
                     }
@@ -984,8 +982,7 @@ class Model implements  Observable {
         //уход с линии
         newLine.setOnMouseExited(e->{
             poindAdd=false;
-            // System.out.println("При уходе с линии "+poindAdd);
-            //Установить статус
+           //Установить статус
             setStringLeftStatus("");
             statusGo(Status);
             newLine.setStrokeWidth(2);
