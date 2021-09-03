@@ -2,6 +2,7 @@ package sample;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
@@ -51,6 +52,8 @@ class Model implements  Observable {
     private GridView gridViews;
     private Arc arcGo;
     private Color ColorGo;
+    private Button btnToolTip;//ссылка на кнопку
+    private String textToolTip;//текст при наведении на кнопку
 
 
     private String stringWebView;//text left
@@ -252,7 +255,7 @@ class Model implements  Observable {
         switch (c) {
             case 0 -> setStringWebView(WEB_HTML + TR_OPR + TR_ANGLE + TR_NERAVENSVO + TR_SUNANGLE + TR_AREA_1 +
                     pathImg4 + TR_AREA_2 + pathImg5 + TR_AREA_3 + pathImg11 + WEB_END);
-            case 1 -> setStringWebView(WEB_HTML + TR_TEOREMA33 + TR_TEOREMA34 + WEB_END);
+            case 1 -> setStringWebView(WEB_HTML + TR_TEOREMA33 + WEB_END);
             case 2 -> setStringWebView(WEB_HTML + TR_BISSECTOR + TR_BISSEC_FOR + pathImg1 + WEB_END);
             case 3 -> setStringWebView((WEB_HTML + TR_MEDIANA + TR_DLINA_MEDIAN + pathImg2 + WEB_END));
             case 4 -> setStringWebView(WEB_HTML + TR_HIGTH + TR_ORTOSENTR + TR_DLINA_HIGHT + pathImg3 + WEB_END);
@@ -263,6 +266,7 @@ class Model implements  Observable {
             case 9 -> setStringWebView(WEB_HTML + TR_MIDDLE_PER + WEB_END);
             case 10 -> setStringWebView(WEB_HTML + TR_OXYGEN + WEB_END);
             case 11 -> setStringWebView(WEB_HTML + OP_GEOMETRY_1 + WEB_END);
+            case 12 -> setStringWebView(WEB_HTML+TR_TEOREMA34+WEB_END);
         }
         webViewGo(o);//на вывод
     }
@@ -1013,6 +1017,18 @@ class Model implements  Observable {
         notifyObservers("WebView");
     }
 
+
+
+    /**
+     * Метод ToolTipGo(Button o)
+     * Предназначен для вывода всплывающих подсказок
+     * @param o - кнопка
+     */
+    void ToolTipGo(Button o){
+       btnToolTip = o;//ссылка на кнопку
+       notifyObservers("ToolTip");//вывести всплывающую подсказку
+    }
+
     /**
      * Метод webGo()
      * Предназначен для оправки сообщения в View, что надо вывести информацию в левую часть доски
@@ -1040,7 +1056,12 @@ class Model implements  Observable {
         Status=o;
         notifyObservers("LeftStatusGo");
      }
-     //Вывод в правую часть доски
+
+    /**
+     * Метод textAreaGo()
+     * Предназначен для отправки уведомления в Вид о готовности данных
+     * для вывода в правой части доски.
+     */
     public void textAreaGo(){
         notifyObservers("TextShapeGo");
     }
@@ -1065,7 +1086,7 @@ class Model implements  Observable {
      * @return объект Circle или null если не найден.
      */
     Circle findCircle(String c){
-        for (PoindCircle c0: poindCircles) {
+         for (PoindCircle c0: poindCircles) {
             if (c0 != null) {
                 if (c0.getId().equals(String.valueOf(c))) {
                     return c0.getCircle();

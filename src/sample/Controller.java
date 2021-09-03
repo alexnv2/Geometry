@@ -25,7 +25,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import lombok.val;
 
 import java.util.Objects;
@@ -109,6 +108,8 @@ public class Controller extends View {
     private boolean medianaAdd = false;//true - проведение медианы из вершины треугольника
     private boolean bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
     private boolean heightAdd = false;//true - проведение высоты из вершины треугольника
+    private boolean verticalAdd=false;//true - построение перпендикуляра к прямой
+
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
     private int angleCol = 0;//индекс счета углов
@@ -119,8 +120,6 @@ public class Controller extends View {
 
 
     private String infoStatus;//Вершины угла
-    //Для всплывающих подсказок
-    private final Tooltip tooltip = new Tooltip();
 
     /**
      * Метод инициализации для класса Controller
@@ -164,11 +163,7 @@ public class Controller extends View {
         if (model.isShowGrid()) {
             gridViews.gridCartesian();//Вывод сетки
         }
-        //Настройки всплывающих подсказок
-        tooltip.setShowDelay(Duration.millis(10.0));
-        tooltip.setFont(Font.font(12));
-        tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
-                "-fx-text-fill: black");
+
         //Добавить изображение к кнопкам
         btnPoind.setStyle("-fx-background-image: url(/Images/point.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnSegment.setStyle("-fx-background-image: url(/Images/point&line.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
@@ -235,7 +230,7 @@ public class Controller extends View {
     }
 
     /**
-     * Метод btnAngle().
+     * Метод btnAngle()
      * Метод для события нажатия кнопки "Добавить угол".
      * Устанавливает режим добавления угла.
      */
@@ -247,6 +242,17 @@ public class Controller extends View {
         infoStatus = "";//Имя для коллекции VertexArc
     }
 
+    /**
+     * Метод btnVertical()
+     * Метод для события нажатия кнопки "Провести перпендикуляр к прямой"
+     * Устанавливает режим построения перпендикуляра к прямой.
+     */
+    public void btnVertical() {
+        model.setStringLeftStatus(STA_26);
+        model.statusGo(leftStatus);
+        verticalAdd = true;//режим построения угла
+        infoStatus = "";//Имя для коллекции VertexArc
+    }
     /**
      * Метод btnTreangle().
      * Метод на события нажатия кнопки "Добавить треугольник".
@@ -661,7 +667,6 @@ public class Controller extends View {
     /**
      * Метод onScroll(ScrollEvent event)
      * Метод изменения масштаба координатной сетки при вращении колесика мышки
-     *
      * @param event - изменения колесика мышки
      */
     public void onScroll(ScrollEvent event) {
@@ -825,8 +830,7 @@ public class Controller extends View {
     /**
      * Метод visibleNameLine(boolean bName, String name).
      * Предназначен для показа и скрытия имен.
-     *
-     * @param bName - логическая переменная (true - показывать, false - не показывать)
+      * @param bName - логическая переменная (true - показывать, false - не показывать)
      * @param name  - какие имена (line, poind, arc)
      */
     private void visibleName(boolean bName, String name) {
@@ -854,7 +858,7 @@ public class Controller extends View {
 
     /**
      * Метод menuGrid().
-     * Пункт меню "Настройки - Показывать сетку".
+     * Пункт меню "Настройки -> Показывать сетку".
      */
     public void menuGrid() {
         model.setShowGrid(menuGrid.isSelected());
@@ -864,64 +868,95 @@ public class Controller extends View {
             paneGrid.getChildren().clear();//Очистить экран и память
         }
     }
-
     /**
      * Метод menuIsosceles().
-     * Нажат пункт меню "Теоремы-Признак равнобедренного треугольника".
+     * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника".
      */
     public void menuIsosceles() {
         model.webViewLeftString(webViewLeft, 1);
     }
-
-
+    /**
+     * Метод menuPrIsosceles().
+     * Нажат пункт меню "Теоремы и свойства-> Признак равнобедренного треугольника".
+     */
+    public void menuPrIsosceles() {
+        model.webViewLeftString(webViewLeft, 12);
+    }
+    /**
+     * Метод menuEquil()
+     * Нажат пункт меню "Теоремы и свойства-> Первый признак равенства треугольников"
+     */
+    public void menuEquil() {
+        model.setWindShow(0);
+        TwofxmlLoader();
+    }
+    /**
+     * Метод menuSecond()
+     * Нажат пункт меню "Теоремы и свойства-> Второй признак равенства треугольников"
+     */
+    public void menuSecond() {
+        model.setWindShow(1);
+        TwofxmlLoader();
+    }
+    /**
+     * Метод menuTread()
+     * Нажат пункт меню "Теоремы и свойства-> Третий признак равенства треугольников"
+     */
+    public void menuTread() {
+        model.setWindShow(2);
+        TwofxmlLoader();
+    }
     /**
      * Метод onMouseEnteredPoind().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить точку".
      */
-    //Всплывающие подсказки при наведении на кнопку "Точка"
     public void onMouseEnteredPoind() {
-        tooltip.setText("Добавить точку");
-        btnPoind.setTooltip(tooltip);
+        model.setTextToolTip("Добавить точку");
+        model.ToolTipGo(btnPoind);
     }
 
     /**
      * Метод onMoseEnteredSegment().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить отрезок".
      */
-    //Всплывающее окно при наведении на кнопку "Отрезок"
     public void onMoseEnteredSegment() {
-        tooltip.setText("Добавить отрезок");
-        btnSegment.setTooltip(tooltip);
+        model.setTextToolTip("Добавить отрезок");
+        model.ToolTipGo(btnSegment);
     }
 
     /**
      * Метод onMouseEnteredRay().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить луч".
      */
-    //Всплывающее окно при наведении на кнопку "Луч"
     public void onMouseEnteredRay() {
-        tooltip.setText("Добавить луч");
-        btnRay.setTooltip(tooltip);
+        model.setTextToolTip("Добавить луч");
+        model.ToolTipGo(btnRay);
     }
 
     /**
      * Метод onMouseEnteredLine().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить прямую".
      */
-    //Всплывающее окно при наведении на кнопку "Прямая"
     public void onMouseEnteredLine() {
-        tooltip.setText("Добавить прямую");
-        btnLine.setTooltip(tooltip);
+        model.setTextToolTip("Добавить прямую");
+        model.ToolTipGo(btnLine);
     }
 
+    /**
+     * Метод onMouseEnteredAngle()
+     * Всплывающая подсказка при наведении мышки на кнопку "Добавить угол"
+     */
+    public void onMouseEnteredAngle() {
+        model.setTextToolTip("Добавить угол");
+        model.ToolTipGo(btnAngle);
+    }
     /**
      * Метод onMouseEnteredTreangle().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить треугольник".
      */
-    //Всплывающее окно при наведении на кнопку "Треугольник"
     public void onMouseEnteredTreangle() {
-        tooltip.setText("Добавить треугольник");
-        btnTreangle.setTooltip(tooltip);
+        model.setTextToolTip("Добавить треугольник");
+        model.ToolTipGo(btnTreangle);
     }
 
     /**
@@ -929,8 +964,8 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить медиану".
      */
     public void onMouseEnteredMediana() {
-        tooltip.setText("Добавить медиану");
-        btnMediana.setTooltip(tooltip);
+        model.setTextToolTip("Добавить медиану");
+        model.ToolTipGo(btnMediana);
     }
 
     /**
@@ -938,13 +973,21 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить биссектрису".
      */
     public void onMouseEnteredBisector() {
-        tooltip.setText("Добавить биссектрису");
-        btnBisector.setTooltip(tooltip);
+        model.setTextToolTip("Добавить биссектрису");
+        model.ToolTipGo(btnBisector);
     }
 
+    /**
+     * Метод onMouseEnteredVertical()
+     * Всплывающая подсказка при наведении мышки на кнопку "Добавить перпендикуляр к прямой"
+     */
+    public void onMouseEnteredVertical() {
+        model.setTextToolTip("Добавить перпендикуляр к прямой");
+        model.ToolTipGo(btnVertical);
+    }
     public void onMouseEnteredHeight() {
-        tooltip.setText("Добавить высоту");
-        btnHeight.setTooltip(tooltip);
+        model.setTextToolTip("Добавить высоту");
+        model.ToolTipGo(btnHeight);
     }
 
     /**
@@ -952,8 +995,8 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении на кнопку "Удалить"
      */
     public void onMouseEnteredDelete() {
-        tooltip.setText("Удалить геометрическую фигуру");
-        btnDelete.setTooltip(tooltip);
+        model.setTextToolTip("Удалить геометрическую фигуру");
+        model.ToolTipGo(btnDelete);
     }
 
     //Тестовая кнопка вывод информации по всем коллекциям для тестирования системы
@@ -962,23 +1005,7 @@ public class Controller extends View {
     }
 
 
-    //первый признак равенства треугольников
-    public void onClickEquil() {
-        model.setWindShow(0);
-        TwofxmlLoader();
-    }
 
-    //второй признак равенства треугольников
-    public void onClickSecond() {
-        model.setWindShow(1);
-        TwofxmlLoader();
-    }
-
-    //третий признак равенства треугольников
-    public void onClickTread() {
-        model.setWindShow(2);
-        TwofxmlLoader();
-    }
 
     //Загрузка шаблона окна для признаков равенства треугольников
     public void TwofxmlLoader() {
@@ -1031,6 +1058,7 @@ public class Controller extends View {
         window.show();
 
     }
+
 
 
 }

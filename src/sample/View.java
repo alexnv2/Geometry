@@ -1,14 +1,18 @@
 package sample;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 
 /**
  * Класс View расширяет интерфейс Observer.
@@ -20,11 +24,20 @@ class View implements Observer{
     //Объявляем класс сетки с методами перемещения координатной сетки и масштабирования
     //Как расширение класса пересчета мировых координат в окне просмотра
     GridView gridViews=new GridView();
+    //Для всплывающих подсказок
+    private final Tooltip tooltip = new Tooltip();
+
     //Конструктор класса отображения
     View() {
         //Регистрация слушателя в классе Model
         model.registerObserver(this);
-     }
+        //Свойства сплывающих подсказок
+        tooltip.setShowDelay(Duration.millis(10.0));
+        tooltip.setFont(Font.font(12));
+        tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
+                "-fx-text-fill: black");
+
+    }
      //Переопределить метод из класса интерфейса Observer.
     @Override
     //Какую информацию надо вывести
@@ -35,14 +48,28 @@ class View implements Observer{
             case "RayGo" ->this.rayGo(model.getLine());//для луча и прямой
             case "WebView"->this.webViewGo(model.getWebView());//Заполнение слева и внизу
             case "LeftStatusGo" ->this.statusGo(model.getStatus());//вывод статуса
-            case "WebGo"->this.webGo(model.getWebView());//вывод файла HTML
+            case "WebGo"->this.webFileHTMLGo(model.getWebView());//вывод файла HTML
             case "TextShapeGo"->this.textShapeGo(model.getTextArea());//для вывода в правое окно
            // case "ColorGo" -> this.SrokeColor(model.getColorLine());//цвет
             case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дуг для треугольников
             case "ArcColorGo"->this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
+            case "ToolTip" ->this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
         }
     }
+
+    /**
+     * Метод ToolTipGo(Button btnToolTip)
+     * Предназначен для вывода всплывающих подсказок
+     * @param btnToolTip - кнопка на которую наведена мышка
+     */
+    private void ToolTipGo(Button btnToolTip) {
+        //Настройки всплывающих подсказок
+
+        tooltip.setText(model.getTextToolTip());//получить текс
+        btnToolTip.setTooltip(tooltip);//вывести подсказку
+    }
+
     //Вывод в правую часть доски
     private void textShapeGo(TextArea txtArea) {
         txtArea.setText(model.getTxtShape());
@@ -72,14 +99,17 @@ class View implements Observer{
         ray.setEndX(model.getRayStartX());
         ray.setEndY(model.getRayStartY());
     }
+
     //Заполнение web страниц слева
     private void webViewGo(WebView webView) {
         webView.setContextMenuEnabled(false);
         WebEngine w=webView.getEngine();
         w.loadContent(model.getStringWebView());
     }
+
+
     //Загрузить файл в формате html и вывести слева
-    private void webGo(WebView web){
+    private void webFileHTMLGo(WebView web){
         web.setContextMenuEnabled(false);
         WebEngine w=web.getEngine();
         w.load(model.getLeftHTML());
