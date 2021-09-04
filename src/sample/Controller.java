@@ -103,12 +103,12 @@ public class Controller extends View {
     private boolean segmentAdd = false;//true - создать отрезок
     private boolean rayAdd = false;//true - создание луча
     private boolean lineAdd = false;//true - создание прямой
-    private boolean angleAdd = false;//true -создание угла
+
     private boolean treangleAdd = false;//true - создание треугольника
     private boolean medianaAdd = false;//true - проведение медианы из вершины треугольника
     private boolean bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
     private boolean heightAdd = false;//true - проведение высоты из вершины треугольника
-    private boolean verticalAdd=false;//true - построение перпендикуляра к прямой
+    private boolean verticalAdd = false;//true - построение перпендикуляра к прямой
 
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
@@ -238,7 +238,7 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.statusGo(leftStatus);
-        angleAdd = true;//режим построения угла
+        model.setAngleAdd (true);//режим построения угла
         infoStatus = "";//Имя для коллекции VertexArc
     }
 
@@ -464,7 +464,7 @@ public class Controller extends View {
         }
 
         //Добавление угла первая точка
-        if (angleAdd && !poindAdd1) {
+        if (model.isAngleAdd() && !poindAdd1) {
             //увеличить индекс
             if (!model.isPoindOldAdd()) {//false - новая вершина true - взять имеющую
                 poindLine1 = model.createPoindAdd(true);//создать новую вершину
@@ -485,7 +485,7 @@ public class Controller extends View {
                 arcAngle.toBack();//перемещать узел вниз только после добавления на стол
                 //Связываем арку с углом и именем
                 model.arcBindPoind(infoStatus, arcAngle);
-                angleAdd = false;//окончание режима добавления
+                model.setAngleAdd(false);//окончание режима добавления
                 poindAdd1 = false;
                 angleCol = 0;
                 //Вывод информации об объектах в правую часть доски
@@ -580,7 +580,7 @@ public class Controller extends View {
         }
 
         //Добавление медианы
-        if (medianaAdd) {
+        if (medianaAdd ) {
             poindLine1 = model.getTimeVer();
             newLine = model.mbhLineAdd(poindLine1, 4);
             model.mouseLine(newLine);
@@ -605,6 +605,43 @@ public class Controller extends View {
             heightAdd = false;
             model.setTxtShape("");
             model.txtAreaOutput();
+        }
+        //Построение перпендикуляра
+        if(verticalAdd && !model.isPoindOldAdd()){
+            poindLine1 = model.getTimeVer();//получаем точку из которой надо опустить перпендикуляр
+            model.setPoindOldAdd(true);
+            if(verticalAdd && model.isPoindOldAdd()) {
+                newLine = model.getTimeLine();//получаем прямую к которой надо опустить перпендикуляр
+                Line oldLine=newLine;
+                Point2D A1 = new Point2D(poindLine1.getCenterX(), poindLine1.getCenterY());
+                Point2D B1 = new Point2D(newLine.getStartX(), newLine.getStartY());
+                Point2D C1 = new Point2D(newLine.getEndX(), newLine.getEndY());
+                Point2D D1 = model.heightPoind(A1, B1, C1);
+                addLineRayStart(0);//Создание первой точки и линии
+                poindAdd2=false;
+                newLine.setStartX(A1.getX());
+                newLine.setStartY(A1.getY());
+                newLine.setEndX(D1.getX());
+                newLine.setEndY(D1.getY());
+                //Переводим координаты линии в мировые
+                model.findLinesUpdateXY(newLine.getId());
+                //Задаем координаты точки
+                model.setVerX(D1.getX());
+                model.setVerY(D1.getY());
+                //Переводим в мировые
+                model.setVerX0(gridViews.revAccessX(D1.getX()));
+                model.setVerY0(gridViews.revAccessY(D1.getY()));
+                //Создаем расчетную точку не перемещаемую
+                Circle newPoind = model.createPoindAdd(false);//создать точку
+                //Заменить имя
+                model.findNameId(poindLine1.getId(), newPoind.getId(), newLine.getId());
+                paneShape.getChildren().add(newPoind);//добавить на доску
+                //связать точки
+                model.verticalBindCircles(poindLine1, newPoind, newLine, oldLine);
+
+            }
+            model.setPoindOldAdd(false);
+            verticalAdd=false;
         }
 
         event.consume();

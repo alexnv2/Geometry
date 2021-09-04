@@ -80,8 +80,10 @@ class Model implements  Observable {
     private double verLineEndY;//координата Y мировая для Line EndY
     private double textX;//координата Х для имен точек
     private double textY;//координата Y для имен точек
-
+    //Для выбранных объектов
     private Circle timeVer;//для временного хранения выбранных вершин
+    private Line timeLine;// для временного хранения выбранной линии
+
     private String verSegmentStart;//имя начала отрезка для метода txtAreaOutput
     private String verSegmentEnd;//имя конца отрезка для метода txtAreaOutput
     private String verSegmentAngle;//имя угла
@@ -97,7 +99,10 @@ class Model implements  Observable {
     private boolean poindAdd=false;//true- режим добавления точки
     private boolean poindLineAdd=false;
     private boolean lineAdd=false;
+    private boolean verticalAddMouse;//ссылка из контролера
     private double radiusPoind=5;//радиус точки
+
+    private boolean angleAdd = false;//true -создание угла
 
     private double arcRadius;//радиус дуги
     private double angleStart;//начало дуги гр.
@@ -642,7 +647,7 @@ class Model implements  Observable {
         circle.setOnMousePressed(e->{
             selectCircle(circle);
                 //Проверить разрешено ли взять эту точку. Если расчетная, то запрещено
-                if(findPoindAddMove(circle)) {
+                if(findPoindAddMove(circle) || angleAdd) {
                     poindOldAdd = true;//взять эту точку для отрезка
                     timeVer = circle;//сохранить выбранную точку для построения
                     //Вызвать метод для увелечения счетчика index в коллекции PoindCircles
@@ -824,6 +829,8 @@ class Model implements  Observable {
          });
          //нажата левая кнопка
          newLine.setOnMousePressed(e->{
+             timeLine = newLine;//выбрана данная линия, для построения перпендикуляра
+             verticalAddMouse=true;//линия выбрана
          });
          return newLine;
      }
@@ -867,8 +874,7 @@ class Model implements  Observable {
         });
         //нажата левая кнопка
         newLine.setOnMousePressed(e->{
-
-
+           timeLine = newLine;//сохранить линию для перпендикуляра
         });
     }
     /**
@@ -895,6 +901,7 @@ class Model implements  Observable {
          //Задаем вид линии
          newLine.getStrokeDashArray().addAll(arrDash);
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
+         verticalAddMouse=false;
          return newLine;
       }
 
@@ -1086,7 +1093,7 @@ class Model implements  Observable {
         notifyObservers("TextShapeGo");
     }
     /**
-     * Метод findNameId(String poindA, String poindB, String linaA )
+     * Метод findNameId(String poindA, String poindB, String linaA)
      * Предназначен для поиска по коллекции PoindLine для замены имени отрезка в коллекции
      * @param poindA  - вершина А
      * @param poindB - вершина В
@@ -1353,25 +1360,6 @@ class Model implements  Observable {
             }
         }
     }
-
-
-    //Прямой угол вместо дуги
-    public void rectangle90(Circle o1,Circle o2, Circle o3, Circle o4, Line l1, Line l2){
-        double tx=o2.getCenterX()-o1.getCenterX();
-        double ty=o2.getCenterY()-o1.getCenterY();
-        double t= 0.15;
-        double ax=o1.getCenterX()+tx*t;
-        double ay=o1.getCenterY()+ty*t;
-        intersection(ax,ay,o1.getCenterX(),o1.getCenterY(),o3.getCenterX(),o3.getCenterY());
-        setVerX1(ax);
-        setVerY1(ay);
-        SideGo(l1);
-        intersection(ax,ay,o1.getCenterX(),o1.getCenterY(),o4.getCenterX(),o4.getCenterY());
-        setVerX1(ax);
-        setVerY1(ay);
-        SideGo(l2);
-    }
-
     /**
      * Метод angleTriangle(Point2D p1, Point2D p2, Point2D p3).
      * Предназначен для расчета угла по координатам вершин.
@@ -1413,27 +1401,6 @@ class Model implements  Observable {
     private double areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3){
         return ((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1))/2;
     }
-
-    /**
-     * Метод intersection(double x1, double y1, double x2, double y2, double x3, double y3)
-     * Предназначен для вычисления точки пересечения двух прямых под углом в 90 градусов.
-     * @param x1 - координата х1
-     * @param y1 - координата y1
-     * @param x2 - координата х2
-     * @param y2 - координата y2
-     * @param x3 - координата х3
-     * @param y3 - координата y3
-     */
-    private void intersection(double x1, double y1, double x2, double y2, double x3, double y3) {
-        double a1 = y3 - y2;
-        double b1 = x2 - x3;
-        double c1 = x2 * y3 - x3 * y2;
-        double c2 = -x1 * (x3 - x2) + y1 * (y2 - y3);
-        //Вычисление главного определителя
-        double o = -pow(a1, 2) - pow(b1, 2);
-        setVerX((-c1 * a1 - c2 * b1)/o);
-        setVerY((a1 * c2 - b1 * c1)/o);
-    }
     /**
      * Метод lineBindCircles(Circle c1, Circle c2, Line l)
      * Метод двунаправленного связывания точек начала и конца линии с самой линией.
@@ -1449,6 +1416,46 @@ class Model implements  Observable {
         l.endYProperty().bindBidirectional(c2.centerYProperty());
     }
 
+    /**
+     * Метод verticalBindCircles(Circle c, Line l)
+     * Предназначен для связывания перпендикуляра с прямой, перемещается только точка
+     * @param c1 - объект точка из которой опущен перпендикуляр
+     * @param c2 - объект точка пересечения перпендикуляра с прямой
+     * @param l - объект линия перпендикуляра
+     * @param l1 - объект линия прямой
+     */
+    public void verticalBindCircles(Circle c1, Circle c2,Line l, Line l1){
+        l.startXProperty().bindBidirectional(c1.centerXProperty());
+        l.startYProperty().bindBidirectional(c1.centerYProperty());
+        l.startYProperty().addListener((obj, oldValue, newValue) -> {
+            Point2D A1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+            Point2D B1 = new Point2D(l1.getStartX(), l1.getStartY());
+            Point2D C1 = new Point2D(l1.getEndX(), l1.getEndY());
+            Point2D D1 = heightPoind(A1, B1, C1);
+            l.setEndX(D1.getX());
+            l.setEndY(D1.getY());
+            c2.setCenterX(D1.getX());
+            c2.setCenterY(D1.getY());
+            //Обновляем мировые координаты в коллекциях
+            findCirclesUpdateXY(c2.getId(),c2.getCenterX(),c2.getCenterY());
+            findLineUpdateXY(l.getId());
+        });
+        l.startXProperty().addListener((obj, oldValue, newValue) -> {
+            Point2D A1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+            Point2D B1 = new Point2D(l1.getStartX(), l1.getStartY());
+            Point2D C1 = new Point2D(l1.getEndX(), l1.getEndY());
+            Point2D D1 = heightPoind(A1, B1, C1);
+            l.setEndX(D1.getX());
+            l.setEndY(D1.getY());
+            c2.setCenterX(D1.getX());
+            c2.setCenterY(D1.getY());
+            //Обновляем мировые координаты в коллекциях
+            findCirclesUpdateXY(c2.getId(),c2.getCenterX(),c2.getCenterY());
+            findLineUpdateXY(c2.getId());
+        });
+
+
+    }
     /**
      * Метод textBindCircle(Circle c, Text txt, int dx, int dy).
      * Предназначен для связывания место расположения надписи с точкой.
@@ -1471,22 +1478,7 @@ class Model implements  Observable {
         txt.xProperty().unbind();
         txt.yProperty().unbind();
     }
-    /**
-     * Метод lineUnBindCircles(Circle c1, Circle c2, Line l)
-     * Метод отмены двунаправленного связывания точек начала и конца линии с самой линий.
-     * Используется при удалении отрезков и треугольников
-     * @param c1 - точка начала отрезка
-     * @param c2 - точка конца отрезка
-     * @param l - линия между отрезками
-     */
-    public void lineUnBindCircles(Circle c1, Circle c2, Line l){
-        l.startXProperty().unbindBidirectional(c1.centerXProperty());
-        l.startYProperty().unbindBidirectional(c1.centerYProperty());
-        l.endXProperty().unbindBidirectional(c2.centerXProperty());
-        l.endYProperty().unbindBidirectional(c2.centerYProperty());
-    }
-
-    /**
+     /**
      * Метод rayBindCircles(Circle cStart, Circle cEnd, Line ray)
      * Метод создания двунаправленного связывания точки начала луча и начала линии,
      * а также однонаправленного связывания второй точки на луче с окончанием линии.
@@ -1523,34 +1515,7 @@ class Model implements  Observable {
         c3.centerXProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(4,c3.getCenterX()));
         c3.centerYProperty().addListener((obj, oldValue, newValue)-> treangle.getPoints().set(5,c3.getCenterY()));
     }
-    /**
-     * Метод rayUnBindCircles(Circle cStart, Circle cEnd, Line ray)
-     * Метод отмены двунаправленного связывания точки начала луча и начала линии,
-     * а также отмены однонаправленного связывания второй точки на луче с окончанием линии.
-     * Вызывается перед удалением объекта.
-     * @param cStart -объект начала луча
-     * @param cEnd - объект конца луча
-     * @param ray -объект линия
-     */
-    public void rayUnBindCircles(Circle cStart, Circle cEnd, Line ray) {
-        ray.startXProperty().unbindBidirectional(cStart.centerXProperty());
-        ray.startYProperty().unbindBidirectional(cStart.centerYProperty());
-        //Расчет конца луча
-        ray.startYProperty().removeListener((obj, oldValue, newValue) -> {
-            // ray.setEndY(rayLineY(cStart, cEnd));
-        });
-        ray.startXProperty().removeListener((obj, oldValue, newValue) -> {
-            // ray.setEndX(rayLineX(cStart, cEnd));
-        });
-        //Точка на луче
-        cEnd.centerXProperty().removeListener((obj, oldValue, newValue) -> {
-            // ray.setEndX(rayLineX(cStart, cEnd));
-        });
-        cEnd.centerYProperty().removeListener((obj, oldValue, newValue) -> {
-            // ray.setEndY(rayLineY(cStart, cEnd));
-        });
-    }
-    /**
+     /**
      * Метод arcBindPoind(String s, Arc a)
      * Метод двунаправленного связывания центра угла с точкой, а также однонаправленного связывания
      * двух точек угла с расчетными размерами угла. А также связывания имени угла.
@@ -1607,31 +1572,6 @@ class Model implements  Observable {
         }
         return null;
     }
-
-    /**
-     * Метод arcUnBindPoind()
-     * Метод отмены двунаправленного связывания центра угла с точкой, а также отмены однонаправленного связывания
-     * двух точек угла. Вызывается перед удалением арки угла.
-     * @param s - строка содержащая название угла, типа АВС (А и С - боковые точки, В - центральная точка угла.)
-     * @param arc - объект арка угла.
-     */
-    public void arcUnBindPoind(String s, Arc arc){
-        char[] arcChar=s.toCharArray();
-        Circle c1=findCircle(String.valueOf(arcChar[0]));
-        Circle c2=findCircle(String.valueOf(arcChar[1]));
-        Circle c3=findCircle(String.valueOf(arcChar[2]));
-        c2.centerXProperty().unbindBidirectional(arc.centerXProperty());
-        c2.centerYProperty().unbindBidirectional(arc.centerYProperty());
-        arc.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            // model.arcVertexGo(c1,c2,c3,arc);
-        });
-        c1.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            //model.arcVertexGo(c1,c2,c3,arc);
-        });
-        c3.centerXProperty().removeListener((obj, oldValue, newValue)->{
-            //model.arcVertexGo(c1,c2,c3,arc);
-        });
-    }
     /**
      * Метод circlesBindLine(Circle cStart, Circle cEnd, Line l)
      * Метод однонаправленного связывания двух точек на прямой с прямой и расчетом начала и конца прямой.
@@ -1684,8 +1624,6 @@ class Model implements  Observable {
     double rayLineY(Circle c1, Circle c2){
         return c1.getCenterY()+(c2.getCenterY()-c1.getCenterY())*3;
     }
-
-
        private void selectCircle(Circle dot)
     {
         //Если выбран существующий объект
@@ -1700,9 +1638,6 @@ class Model implements  Observable {
             selected.setFill(Color.RED);//поменять цвет
         }
     }
-
-
-
     /**
      * Метод createMedianaBisectorHeight(Circle c, Circle c1, Circle c2,Point2D mc, int i).
      * Предназначен для построения отрезка медианы, биссектрисы, высоты и точки на противолежащей стороне от вершины,
@@ -1735,7 +1670,6 @@ class Model implements  Observable {
         }
     return newLineTreangle;
     }
-
     /**
      * Метод mbh(Circle c, Circle c1, Circle c2, Circle md, Line lm, int nl).
      * Предназначен для связывания медианы, биссектрисы и высоты с вершинами треугольника.
@@ -1744,7 +1678,7 @@ class Model implements  Observable {
      * @param c2 - объект вершина треугольника
      * @param md - объект точка пересечения биссектрисы со стороной треугольника
      * @param lm - отрезок биссектриса
-     * @param  nl - код точки (4- медиана, 5 - биссектриса, 6 - высота
+     * @param  nl - код точки (4- медиана, 5 - биссектриса, 6 - высота)
      */
     private void mbhBindCircles(Circle c, Circle c1, Circle c2, Circle md, Line lm, int nl) {
         c.centerXProperty().bindBidirectional(lm.startXProperty());
@@ -1854,7 +1788,6 @@ class Model implements  Observable {
             findMedianaUpdateXY(md,lm);
         });
     }
-
      /**
      * Метод findMedianaUpdateXY(Circle md, Line lm).
      * Предназначен для обновления мировых координат точки и линии окончания медианы в коллекциях.
@@ -1879,7 +1812,6 @@ class Model implements  Observable {
             }
         }
     }
-
     /**
      * Метод mbhLineAdd(Circle c)
      * Предназначен для проведения медианы, биссектрисы и высоты треугольника.
@@ -1954,13 +1886,14 @@ class Model implements  Observable {
     /**
      * Метод heightPoind(Point2D p1, Point2D p2, Point2D p3)
      * Предназначен для определения координаты точки пересечения высоты со стороной треугольника.
+     * А также нахождения точки пересечения перпендикуляра с прямой.
      * Вызывается из метода heightAdd(Circle c) - добавить высоту.
      * @param p1 - координаты вершины А
      * @param p2 - координаты вершины В
      * @param p3 - координаты вершины С
      * @return - возвращает координаты точки пересечения высоты треугольника из вершины А к стороне ВС.
      */
-    private Point2D heightPoind(Point2D p1, Point2D p2, Point2D p3) {
+    public Point2D heightPoind(Point2D p1, Point2D p2, Point2D p3) {
         double a1=p3.getY()-p2.getY();
         double b1=p2.getX()-p3.getX();
         double c1=p2.getX()*p3.getY()-p3.getX()*p2.getY();
@@ -1991,4 +1924,3 @@ class Model implements  Observable {
         treangleNames.forEach(System.out::println);
     }
 }
-

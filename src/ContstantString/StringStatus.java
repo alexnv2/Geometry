@@ -25,7 +25,7 @@ public final class StringStatus {
     public static final String STA_23="Биссектриса ";
     public static final String STA_24="Укажите на доске вершину треугольника, из которой надо построить высоту.";
     public static final String STA_25="Высота ";
-    public static final String STA_26="Укажите на доске точку из которой надо провести перпендикуляр и прямую";
+    public static final String STA_26="Укажите на доске точку и перпендикулярную прямую";
 
 
 
