@@ -13,7 +13,20 @@
       <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол"/>
       <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы"/>
       <SeparatorMenuItem mnemonicParsing="false"/>
-      <MenuItem fx:id="menuTreangle" mnemonicParsing="false" text="Треугольник" onAction="#menuTriangle"/>
+      <Menu fx:id="menuTreangleP" mnemonicParsing="false" text="Треугольник" >
+           <MenuItem fx:id="menuTreangle" mnemonicParsing="false" onAction="#menuTriangle"
+                  text="Определение треугольника"/>
+        <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr"
+                  text="Виды треугольников"/>
+
+        <MenuItem fx:id="menuBisector" mnemonicParsing="false" onAction="#menuBisector"
+                text="Биссектриса треугольника"/>
+          <MenuItem fx:id="menuMedina" mnemonicParsing="false" onAction="#menuMediana"
+                text="Медиана треугольника "/>
+          <MenuItem fx:id="menuHeight" mnemonicParsing="false" onAction="#menuHeight"
+                text="Высота треугольника"/>
+
+    </Menu>
       <MenuItem mnemonicParsing="false" text="Окружность"/>
     </Menu>
     <Menu mnemonicParsing="false" text="Теоремы и свойства">

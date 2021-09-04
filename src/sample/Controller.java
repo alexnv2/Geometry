@@ -737,10 +737,43 @@ public class Controller extends View {
             Circle newPoind = model.createPoindAdd(true);//создать точку
             paneShape.getChildren().add(newPoind);//добавить на доску
         }
-
-
+    }
+    /**
+     * Метод menuTriangle()
+     * Предназначен для вывода определения треугольника.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Определения треугольника.
+     */
+    public void menuTriangle() {
+        model.webViewLeftString(webViewLeft, 0);
     }
 
+    public void menuTr( ) {
+        model.webViewLeftString(webViewLeft, 9);
+    }
+    /**
+     * Метод menuBisector()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Биссектриса треугольника.
+     */
+    public void menuBisector() {
+        model.webViewLeftString(webViewLeft, 2);
+    }
+    /**
+     * Метод menuMediana()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Медиана треугольника.
+     */
+    public void menuMediana() {
+        model.webViewLeftString(webViewLeft, 3);
+    }
+    /**
+     * Метод menuHeight()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Высота треугольника.
+     */
+    public void menuHeight() {
+        model.webViewLeftString(webViewLeft, 4);
+    }
     /**
      * Метод menuRayClick().
      * Предназначен для вывода определений луча и угла
@@ -842,10 +875,6 @@ public class Controller extends View {
                 }
             }
         }
-    }
-
-    public void menuTriangle() {
-        model.webViewLeftString(webViewLeft, 0);//Определения
     }
 
     /**

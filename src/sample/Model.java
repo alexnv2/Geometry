@@ -49,12 +49,14 @@ class Model implements  Observable {
     private WebView webView; //браузер в левой части доски
     private TextArea textArea;//получаем ссылку на правую часть доски для вывода информации о фигурах
     private Pane paneBoards;//получаем ссылку на доску, где размещены объекты
-    private GridView gridViews;
-    private Arc arcGo;
-    private Color ColorGo;
+    private GridView gridViews;//сетка
+    private Arc arcGo;//дуга угла
+    private Color ColorArc=Color.DARKSLATEBLUE;//цвет дуг углов
+    private Color ColorFillArc=Color.LIGHTBLUE;//цвет заполнения дуги угла
+    private Color ColorLine=Color.DARKSLATEBLUE;//цвет линий по умолчанию
     private Button btnToolTip;//ссылка на кнопку
     private String textToolTip;//текст при наведении на кнопку
-
+    private int inDash=0;//индекс определяет внешний вид прямой (0-4 вида)
 
     private String stringWebView;//text left
     private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
@@ -90,8 +92,6 @@ class Model implements  Observable {
     private int indexLineInt=0;
     private char indexAngle='\u03b1';//Индекс для углов, начинается с альфа
     private int indexAngleInt=0;
-    //Вид линий
-    private int inDash=0;//индекс определяет внешний вид прямой (0-4 вида)
 
     private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
     private boolean poindAdd=false;//true- режим добавления точки
@@ -216,7 +216,6 @@ class Model implements  Observable {
         }
         return s;
     }
-
     /**
      * Метод indexAngledAdd()
      * Предназначен для задания имени угла греческим алфавитом
@@ -263,14 +262,13 @@ class Model implements  Observable {
             case 6 -> setStringWebView(WEB_HTML + TR_AREA_10 + pathImg10 + WEB_END);
             case 7 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_IN + TR_AREA_4 + pathImg6 + WEB_END);
             case 8 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_OUT + TR_AREA_5 + pathImg7 + WEB_END);
-            case 9 -> setStringWebView(WEB_HTML + TR_MIDDLE_PER + WEB_END);
+            case 9 -> setStringWebView(WEB_HTML + TR_OBTUSE +TR_OXYGEN+TR_REGULAR +WEB_END);
             case 10 -> setStringWebView(WEB_HTML + TR_OXYGEN + WEB_END);
             case 11 -> setStringWebView(WEB_HTML + OP_GEOMETRY_1 + WEB_END);
             case 12 -> setStringWebView(WEB_HTML+TR_TEOREMA34+WEB_END);
         }
         webViewGo(o);//на вывод
     }
-
     /**
      * Метод nameSplitRemove(String s).
      * Предназначен для удаления символа разделителя в именах названий точек, прямых и т.д.
@@ -336,7 +334,6 @@ class Model implements  Observable {
        }
        textAreaGo();
     }
-
     /**
      * Метод createNameShapes().
      * Предназначен для создания объекта хранения имени геометрической фигуру.
@@ -386,7 +383,6 @@ class Model implements  Observable {
 
        return nameText;
    }
-
     /**
      * Метод nameUpdateXY(String id).
      * Предназначен для обновления мировых координат и расстояния до точки при
@@ -421,7 +417,6 @@ class Model implements  Observable {
 
        }
    }
-
     /**
      * Метод nameCircleAdd().
      * Предназначен для добавления объекта Text связанного с именем точки.
@@ -442,7 +437,6 @@ class Model implements  Observable {
        //Односторонняя связь точки с именем объекта для перемещения
        textBindCircle(circle,textCircle,-20,20);
    }
-
     /**
      * Метод nameArcAdd()
      * Предназначен для добавления имени угла на доске.
@@ -459,7 +453,6 @@ class Model implements  Observable {
        //Добавить в коллекцию объектов на доске
        paneBoards.getChildren().add(textAngle);
    }
-
     /**
      * Метод nameArcShow()
      * Предназначен для расчета местоположения имени угла
@@ -495,8 +488,14 @@ class Model implements  Observable {
        }
        return null;
 
-
    }
+
+    /**
+     * Метод findID(Line line)
+     * Предназначен для поиска имени линии по объекту линия.
+     * @param line - объект линия
+     * @return имя линии
+     */
    private String findID(Line line){
        for (PoindLine p: poindLines){
            if(p!=null){
@@ -507,7 +506,6 @@ class Model implements  Observable {
        }
        return null;
    }
-
     /**
      * Метод nameLineAdd().
      * Предназначен для добавления имен к прямой и лучам.
@@ -525,7 +523,6 @@ class Model implements  Observable {
        //Добавить в коллекцию объектов на доске
        paneBoards.getChildren().add(nameLine);
    }
-
     /**
      * Метод nameLineRatchet().
      * Предназначен для расчета координат места названия линии.
@@ -550,7 +547,6 @@ class Model implements  Observable {
        nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
        TextGo(nameLine);//вывести на доску
    }
-
     /**
      * Метод nameBindLines().
      * Предназначен для связывания имени линии с началом и концом линии.
@@ -602,9 +598,6 @@ class Model implements  Observable {
 
         return newPoind;//возвращает точку
     }
-
-
-
     /**
      * Метод createPoind()
      * Предназначен для создания точек в виде кругов, а также привязке событий к данным точкам.
@@ -692,7 +685,6 @@ class Model implements  Observable {
 
         return circle;//завершено создание новой точки
     }
-
     /**
      * Метод findPoindAddMove(Circle c).
      * Предназначен для проверки на возможность выбрать точку для геометрической фигуры.
@@ -709,7 +701,6 @@ class Model implements  Observable {
         }
         return false;//всегда запрещено
     }
-
     /**
      * Метод removePoindAdd(Circle c)
      * Ищет выбранную точку в коллекции PoindCircle и удаляет.
@@ -742,7 +733,6 @@ class Model implements  Observable {
             }
         }
     }
-
     /**
      * Метод removeNameText(Text txt).
      * Предназначен для удаления имени точки. Вызывается из метода removePoindAdd(Circle c).
@@ -797,8 +787,6 @@ class Model implements  Observable {
             newLine.setEndY(verY);
         }
         newLine.setId(indexLineAdd());//Идентификатор узла
-        newLine.setStroke(Color.DARKSLATEBLUE);//Color
-        newLine.setStrokeWidth(2);//Толщина
 
          //Привязка событий мышки
          //Наведение на отрезок
@@ -839,7 +827,6 @@ class Model implements  Observable {
          });
          return newLine;
      }
-
     /**
      * Метод mouseLine().
      * Предназначен для привязки событий мышки к объекту Line.
@@ -893,7 +880,7 @@ class Model implements  Observable {
      Line createLineAdd(int segment){
          Line newLine = createLine(segment);//добавить линию
 
-         //Вид линии
+         //Вид линии по умолчанию -0. Задается в переменных
          switch (inDash){
              case 0->Collections.addAll(arrDash,2.0);
              case 1->Collections.addAll(arrDash,15.0, 5.0);
@@ -901,6 +888,11 @@ class Model implements  Observable {
              case 3->Collections.addAll(arrDash,2.0, 10.0);
              case 4->Collections.addAll(arrDash,10.0,4.0,10.0);
          }
+         //Цвет линии задается переменной ColorLine
+         LineColorGo(newLine);
+         //Толщина
+         newLine.setStrokeWidth(2);
+         //Задаем вид линии
          newLine.getStrokeDashArray().addAll(arrDash);
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
          return newLine;
@@ -984,41 +976,52 @@ class Model implements  Observable {
         return treangle;
     }
 
-
-
     /**
      * Метод VertexGo(Circle o).
-     * Уведомляет класс отображения View, о том что точка готова к перемещению на доске
+     * Уведомляет класс отображения View, о том что точка готова к перемещению на доске.
      * @param o - объект точка
      */
    void VertexGo(Circle o){
         vertex=o;
         notifyObservers("VertexGo");
     }
-    //Перемещение сторон
+    /**
+     * Метод SideGo(Line o)
+     * Уведомляет класс отображения View, о том что линия готова к перемещению на доске.
+     * @param o - объект линия
+     */
     void SideGo(Line o){
         line =o;
         notifyObservers("SideGo");
     }
-    //Перемещение луча и прямой
+    /**
+     * Метод RayGo(Line o)
+     * Уведомляет класс отображения View, о том что луч или прямая готова к перемещению на доске.
+     * @param o - объект линия
+     */
     void RayGo(Line o){
         line =o;
         notifyObservers("RayGo");
     }
-    //Перемещение букв
+    /**
+     * Метод TextGo(Text o)
+     * Уведомляет класс отображения View, о том что имя точки готово к перемещению на доске.
+     * @param o - объект Text
+     */
     void TextGo(Text o){
         textGo=o;
         notifyObservers("TextGo");
     }
 
-    //Слева
+    /**
+     * Метод webViewGo(WebView o)
+     * Уведомляет класс отображения View, о том что справочная информация готово к размещению на доске.
+     * @param o - объект WebView
+     */
     void webViewGo(WebView o){
         webView =o;
         notifyObservers("WebView");
     }
-
-
-
     /**
      * Метод ToolTipGo(Button o)
      * Предназначен для вывода всплывающих подсказок
@@ -1028,7 +1031,6 @@ class Model implements  Observable {
        btnToolTip = o;//ссылка на кнопку
        notifyObservers("ToolTip");//вывести всплывающую подсказку
     }
-
     /**
      * Метод webGo()
      * Предназначен для оправки сообщения в View, что надо вывести информацию в левую часть доски
@@ -1037,21 +1039,39 @@ class Model implements  Observable {
     void webGo(WebView o){
         webView =o;
         notifyObservers("WebGo");//Информация в левую часть готова для вывода.
-
     }
-
-    //Дуги
+    /**
+     * Метод ArcGo(Arc o)
+     * Предназначен для оправки сообщения в View, что дуга угла готова к выводу на доску.
+     * @param o - объект дуга угла
+     */
     void ArcGo(Arc o){
         arcGo=o;
         notifyObservers("ArcGo");
     }
-    //Цвет дуг
+    /**
+     * Метод ArcColorGo(Arc o)
+     * Предназначен для оправки сообщения в View, что цвет дуги угла готов к выводу на доску.
+     * @param o - объект дуга угла
+     */
     void ArcColorGo(Arc o){
         arcGo=o;
-        notifyObservers("ArcColorGo");
+        notifyObservers("ColorArc");
     }
-
-    //Вывод в статусной строке
+    /**
+     * Метод LineColorGo(Line o)
+     * Предназначен для оправки сообщения в View, что цвет линии готов к выводу на доску.
+     * @param o - объект линия
+     */
+    void LineColorGo(Line o){
+        line=o;
+        notifyObservers("ColorLine");
+    }
+    /**
+     * Метод statusGo(Label o)
+     * Предназначен для оправки сообщения в View, что вывод в статусную строку готово к выводу на доску.
+     * @param o - объект Label
+     */
     public void statusGo(Label o){
         Status=o;
         notifyObservers("LeftStatusGo");
@@ -1065,10 +1085,13 @@ class Model implements  Observable {
     public void textAreaGo(){
         notifyObservers("TextShapeGo");
     }
-
-    //Поиск по коллекции PoindLine для замены имени отрезка в коллекции
-    //Входа: Sting A, String B, String a (вершины созданного отрезка и линия)
-    //Выход: нет
+    /**
+     * Метод findNameId(String poindA, String poindB, String linaA )
+     * Предназначен для поиска по коллекции PoindLine для замены имени отрезка в коллекции
+     * @param poindA  - вершина А
+     * @param poindB - вершина В
+     * @param linaA - линия а
+     */
     public void findNameId(String poindA, String poindB, String linaA ){
        for(PoindLine p: poindLines){
            if(p!=null){
@@ -1229,9 +1252,8 @@ class Model implements  Observable {
         Circle o3=findCircle(arcChar[2]);
         Arc arcNew=new Arc();
         arcNew.setId(String.valueOf(arcChar[1]));
-        setColorGo(Color.DARKSLATEBLUE);
-        arcNew.setType(ArcType.ROUND);
-        arcNew.setFill(Color.LIGHTBLUE);
+        ArcColorGo(arcNew);//задаем цвет арки дуги и цвет фона
+        arcNew.setType(ArcType.ROUND);//тип арки
         arcNew.setOpacity(0.5);//прозрачность
         ArcColorGo(arcNew);//задать цвет
         arcVertexGo(o1,o2,o3,arcNew,30);//расчитать арку угла для построения
@@ -1392,7 +1414,16 @@ class Model implements  Observable {
         return ((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1))/2;
     }
 
-    //Точка пересечения двух прямых под 90 градусов, для высот
+    /**
+     * Метод intersection(double x1, double y1, double x2, double y2, double x3, double y3)
+     * Предназначен для вычисления точки пересечения двух прямых под углом в 90 градусов.
+     * @param x1 - координата х1
+     * @param y1 - координата y1
+     * @param x2 - координата х2
+     * @param y2 - координата y2
+     * @param x3 - координата х3
+     * @param y3 - координата y3
+     */
     private void intersection(double x1, double y1, double x2, double y2, double x3, double y3) {
         double a1 = y3 - y2;
         double b1 = x2 - x3;
@@ -1416,7 +1447,6 @@ class Model implements  Observable {
         l.startYProperty().bindBidirectional(c1.centerYProperty());
         l.endXProperty().bindBidirectional(c2.centerXProperty());
         l.endYProperty().bindBidirectional(c2.centerYProperty());
-
     }
 
     /**
@@ -1959,9 +1989,6 @@ class Model implements  Observable {
 
         System.out.println("Коллекция треугольников");
         treangleNames.forEach(System.out::println);
-
     }
-
-
 }
 
