@@ -612,34 +612,39 @@ public class Controller extends View {
             model.setPoindOldAdd(true);
             if(verticalAdd && model.isPoindOldAdd()) {
                 newLine = model.getTimeLine();//получаем прямую к которой надо опустить перпендикуляр
-                Line oldLine=newLine;
+                String[] nameLine =model.findID(newLine).split("_");//получить имя отрезка по имени прямой
                 Point2D A1 = new Point2D(poindLine1.getCenterX(), poindLine1.getCenterY());
                 Point2D B1 = new Point2D(newLine.getStartX(), newLine.getStartY());
                 Point2D C1 = new Point2D(newLine.getEndX(), newLine.getEndY());
-                Point2D D1 = model.heightPoind(A1, B1, C1);
-                addLineRayStart(0);//Создание первой точки и линии
+                Point2D D1 = model.heightPoind(A1, B1, C1);//координаты точки пересечения
+                addLineRayStart(7);//Создание первой точки и линии
                 poindAdd2=false;
-                newLine.setStartX(A1.getX());
-                newLine.setStartY(A1.getY());
-                newLine.setEndX(D1.getX());
-                newLine.setEndY(D1.getY());
-                //Переводим координаты линии в мировые
-                model.findLinesUpdateXY(newLine.getId());
-                //Задаем координаты точки
+                //Задаем координаты
+                model.setVerX1(poindLine1.getCenterX());
+                model.setVerY1(poindLine1.getCenterY());
                 model.setVerX(D1.getX());
                 model.setVerY(D1.getY());
-                //Переводим в мировые
+                model.SideGo(newLine); //проводим перпендикуляр
+                //Привязать события мыши
+                model.mouseLine(newLine);
+                //Переводим координаты линии в мировые
+                model.findLinesUpdateXY(newLine.getId());
+                //Переводим в мировые координаты точки
                 model.setVerX0(gridViews.revAccessX(D1.getX()));
                 model.setVerY0(gridViews.revAccessY(D1.getY()));
                 //Создаем расчетную точку не перемещаемую
                 Circle newPoind = model.createPoindAdd(false);//создать точку
-                //Заменить имя
+                //Обновить мировые координаты коллекции
+                model.findCirclesUpdateXY(newPoind.getId(),gridViews.revAccessX(newPoind.getCenterX()),gridViews.revAccessY(newPoind.getCenterY()));
+                //Заменить имя прямой на имя отрезка
                 model.findNameId(poindLine1.getId(), newPoind.getId(), newLine.getId());
+                model.setTxtShape("");
+                model.txtAreaOutput();
                 paneShape.getChildren().add(newPoind);//добавить на доску
-                //связать точки
-                model.verticalBindCircles(poindLine1, newPoind, newLine, oldLine);
-
+                //связать точки и перпендикуляр для перемещения
+                model.verticalBindCircles(poindLine1, model.findCircle(nameLine[0]),model.findCircle(nameLine[1]),newPoind,newLine);
             }
+            //закрыть режим создания перпендикуляра
             model.setPoindOldAdd(false);
             verticalAdd=false;
         }

@@ -13,7 +13,7 @@ public class PoindLine {
     private  double enY;
     private boolean bMove;// true- разрешено перемещение, false - линия расчетная, перемещение запрещено
     private boolean bSelect;//true - выделена на экране для группового удаления, false - по умолчанию
-    private int segment;//0-отрезок, 1-луч, 2 прямая, 3 треугольник
+    private int segment;//0-отрезок, 1-луч, 2-прямая, 3-треугольник, 4-медиана, 5-биссектриса, 6-высота, 7-перпендикуляр
     PoindLine(Line l, String i, double x0, double y0, double x1, double y1, boolean bm, boolean bs, int seg ){
         this.line=l;
         this.id=i;

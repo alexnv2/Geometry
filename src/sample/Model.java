@@ -319,6 +319,8 @@ class Model implements  Observable {
                        txtShape = txtShape + STA_17+ nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";}
                    case 4 -> txtShape=txtShape+STA_20 + nameSplitRemove(p.getId()) + "\n";
                    case 5 -> txtShape=txtShape+STA_23 + nameSplitRemove(p.getId()) + "\n";
+                   case 6 -> txtShape=txtShape+STA_25 + nameSplitRemove(p.getId()) + "\n";
+                   case 7 -> txtShape=txtShape+STA_27 + nameSplitRemove(p.getId()) + "\n";
 
                }
             }
@@ -501,7 +503,7 @@ class Model implements  Observable {
      * @param line - объект линия
      * @return имя линии
      */
-   private String findID(Line line){
+   public String findID(Line line){
        for (PoindLine p: poindLines){
            if(p!=null){
                if(p.getLine().getId().equals(line.getId())){
@@ -511,6 +513,7 @@ class Model implements  Observable {
        }
        return null;
    }
+
     /**
      * Метод nameLineAdd().
      * Предназначен для добавления имен к прямой и лучам.
@@ -847,17 +850,21 @@ class Model implements  Observable {
             for (PoindLine p: poindLines) {
                 if (p.getLine().getId().equals(newLine.getId())) {
                     switch (p.getSegment()) {
-                        case 0 -> { setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
+                        case 0 ->{ setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
-                        case 1 -> {setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
+                        case 1 ->{setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
-                        case 2 -> { setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
+                        case 2 ->{ setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
                         case 3 ->{setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
                         case 4 ->{setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
                         case 5 ->{setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 6 ->{setStringLeftStatus(STA_25 + nameSplitRemove(p.getId()));
+                            statusGo(Status);}
+                        case 7 ->{setStringLeftStatus(STA_27 + nameSplitRemove(p.getId()));
                             statusGo(Status);}
                     }
                 }
@@ -1420,41 +1427,43 @@ class Model implements  Observable {
      * Метод verticalBindCircles(Circle c, Line l)
      * Предназначен для связывания перпендикуляра с прямой, перемещается только точка
      * @param c1 - объект точка из которой опущен перпендикуляр
-     * @param c2 - объект точка пересечения перпендикуляра с прямой
-     * @param l - объект линия перпендикуляра
-     * @param l1 - объект линия прямой
+     * @param c2 - объект точка на прямой
+     * @param c3 - объект точка на прямой
+     * @param c4 - объект точка пересечения перпендикуляра с прямой
+     * @param l - объект линия перпендикуляр
      */
-    public void verticalBindCircles(Circle c1, Circle c2,Line l, Line l1){
+    public void verticalBindCircles(Circle c1, Circle c2,Circle c3, Circle c4, Line l){
         l.startXProperty().bindBidirectional(c1.centerXProperty());
         l.startYProperty().bindBidirectional(c1.centerYProperty());
-        l.startYProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D A1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D B1 = new Point2D(l1.getStartX(), l1.getStartY());
-            Point2D C1 = new Point2D(l1.getEndX(), l1.getEndY());
-            Point2D D1 = heightPoind(A1, B1, C1);
-            l.setEndX(D1.getX());
-            l.setEndY(D1.getY());
-            c2.setCenterX(D1.getX());
-            c2.setCenterY(D1.getY());
-            //Обновляем мировые координаты в коллекциях
-            findCirclesUpdateXY(c2.getId(),c2.getCenterX(),c2.getCenterY());
-            findLineUpdateXY(l.getId());
-        });
-        l.startXProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D A1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D B1 = new Point2D(l1.getStartX(), l1.getStartY());
-            Point2D C1 = new Point2D(l1.getEndX(), l1.getEndY());
-            Point2D D1 = heightPoind(A1, B1, C1);
-            l.setEndX(D1.getX());
-            l.setEndY(D1.getY());
-            c2.setCenterX(D1.getX());
-            c2.setCenterY(D1.getY());
-            //Обновляем мировые координаты в коллекциях
-            findCirclesUpdateXY(c2.getId(),c2.getCenterX(),c2.getCenterY());
-            findLineUpdateXY(c2.getId());
-        });
+        c2.centerXProperty().addListener((obj, oldValue, newValue)-> verticalUpdateCircle(c1,c2,c3,c4,l));
+        c2.centerYProperty().addListener((obj, oldValue, newValue)-> verticalUpdateCircle(c1,c2,c3,c4,l));
+        c3.centerXProperty().addListener((obj, oldValue, newValue)-> verticalUpdateCircle(c1,c2,c3,c4,l));
+        c3.centerYProperty().addListener((obj, oldValue, newValue)-> verticalUpdateCircle(c1,c2,c3,c4,l));
+        l.startYProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1,c2,c3,c4,l));
+        l.startXProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1,c2,c3,c4,l));
+    }
 
-
+    /**
+     * Метод verticalUpdateCircle(Circle c1, Circle c2,Circle c3, Circle c4, Line l)
+     * Вспомогательный метод для пересчета точки пересечения перпендикуляра с прямой.
+     * Вызывается из метода verticalBindCircles().
+     * @param c1 - объект точка из которой опущен перпендикуляр
+     * @param c2 - объект точка на прямой
+     * @param c3 - объект точка на прямой
+     * @param c4 - объект точка пересечения перпендикуляра с прямой
+     * @param l - объект линия перпендикуляр
+     */
+    private void verticalUpdateCircle(Circle c1, Circle c2,Circle c3, Circle c4, Line l){
+        Point2D A1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+        Point2D B1 = new Point2D(c2.getCenterX(), c2.getCenterY());
+        Point2D C1 = new Point2D(c3.getCenterX(), c3.getCenterY());
+        Point2D D1 = heightPoind(A1, B1, C1);
+        l.setEndX(D1.getX());
+        l.setEndY(D1.getY());
+        c4.setCenterX(D1.getX());
+        c4.setCenterY(D1.getY());
+        //Обновляем мировые координаты в коллекциях
+         findMedianaUpdateXY(c4,l);
     }
     /**
      * Метод textBindCircle(Circle c, Text txt, int dx, int dy).
