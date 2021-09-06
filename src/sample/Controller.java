@@ -117,7 +117,8 @@ public class Controller extends View {
 
     private boolean poindAdd1 = false;//true - создание первой точки для отрезка
     private boolean poindAdd2 = false;//true - создание второй точки для отрезка
-
+    private boolean poindAddVertical = false;//true - выбрана точка для перпендикуляра
+    private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
 
     private String infoStatus;//Вершины угла
 
@@ -238,7 +239,7 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.statusGo(leftStatus);
-        model.setAngleAdd (true);//режим построения угла
+        model.setAngleAdd(true);//режим построения угла
         infoStatus = "";//Имя для коллекции VertexArc
     }
 
@@ -253,6 +254,7 @@ public class Controller extends View {
         verticalAdd = true;//режим построения угла
         infoStatus = "";//Имя для коллекции VertexArc
     }
+
     /**
      * Метод btnTreangle().
      * Метод на события нажатия кнопки "Добавить треугольник".
@@ -453,6 +455,7 @@ public class Controller extends View {
         //Вторая точка для отрезка
         if (segmentAdd && poindAdd1) {
             addLineRayEnd();
+            model.setLineOldAdd(false);
             segmentAdd = false;//окончание режима добавления
             //Связать точки с прямой
             model.lineBindCircles(poindLine1, poindLine2, newLine);
@@ -548,6 +551,7 @@ public class Controller extends View {
         //Окончание построения луча
         if (rayAdd && poindAdd1) {
             addLineRayEnd();
+            model.setLineOldAdd(false);
             rayAdd = false;//закончить построение луча
             //Связать точки с лучом
             model.rayBindCircles(poindLine1, poindLine2, newLine);
@@ -574,13 +578,14 @@ public class Controller extends View {
             //Добавить имя
             model.nameLineAdd(newLine);
             lineAdd = false;
+            model.setLineOldAdd(false);
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
         }
 
         //Добавление медианы
-        if (medianaAdd ) {
+        if (medianaAdd) {
             poindLine1 = model.getTimeVer();
             newLine = model.mbhLineAdd(poindLine1, 4);
             model.mouseLine(newLine);
@@ -606,48 +611,56 @@ public class Controller extends View {
             model.setTxtShape("");
             model.txtAreaOutput();
         }
-        //Построение перпендикуляра
-        if(verticalAdd && !model.isPoindOldAdd()){
+        //Построение перпендикуляра к прямой, отрезку, лучу.
+        if (verticalAdd && model.isPoindOldAdd()) {
             poindLine1 = model.getTimeVer();//получаем точку из которой надо опустить перпендикуляр
-            model.setPoindOldAdd(true);
-            if(verticalAdd && model.isPoindOldAdd()) {
-                newLine = model.getTimeLine();//получаем прямую к которой надо опустить перпендикуляр
-                String[] nameLine =model.findID(newLine).split("_");//получить имя отрезка по имени прямой
-                Point2D A1 = new Point2D(poindLine1.getCenterX(), poindLine1.getCenterY());
-                Point2D B1 = new Point2D(newLine.getStartX(), newLine.getStartY());
-                Point2D C1 = new Point2D(newLine.getEndX(), newLine.getEndY());
-                Point2D D1 = model.heightPoind(A1, B1, C1);//координаты точки пересечения
-                addLineRayStart(7);//Создание первой точки и линии
-                poindAdd2=false;
-                //Задаем координаты
-                model.setVerX1(poindLine1.getCenterX());
-                model.setVerY1(poindLine1.getCenterY());
-                model.setVerX(D1.getX());
-                model.setVerY(D1.getY());
-                model.SideGo(newLine); //проводим перпендикуляр
-                //Привязать события мыши
-                model.mouseLine(newLine);
-                //Переводим координаты линии в мировые
-                model.findLinesUpdateXY(newLine.getId());
-                //Переводим в мировые координаты точки
-                model.setVerX0(gridViews.revAccessX(D1.getX()));
-                model.setVerY0(gridViews.revAccessY(D1.getY()));
-                //Создаем расчетную точку не перемещаемую
-                Circle newPoind = model.createPoindAdd(false);//создать точку
-                //Обновить мировые координаты коллекции
-                model.findCirclesUpdateXY(newPoind.getId(),gridViews.revAccessX(newPoind.getCenterX()),gridViews.revAccessY(newPoind.getCenterY()));
-                //Заменить имя прямой на имя отрезка
-                model.findNameId(poindLine1.getId(), newPoind.getId(), newLine.getId());
-                model.setTxtShape("");
-                model.txtAreaOutput();
-                paneShape.getChildren().add(newPoind);//добавить на доску
-                //связать точки и перпендикуляр для перемещения
-                model.verticalBindCircles(poindLine1, model.findCircle(nameLine[0]),model.findCircle(nameLine[1]),newPoind,newLine);
-            }
-            //закрыть режим создания перпендикуляра
-            model.setPoindOldAdd(false);
-            verticalAdd=false;
+            poindAddVertical = true;
         }
+        if (verticalAdd && model.isLineOldAdd()) {
+            newLine = model.getTimeLine();//получаем прямую к которой надо опустить перпендикуляр
+            lineAddVertical = true;
+        }
+        //Опускаем перпендикуляр, не важно что выбрано первым
+        if (poindAddVertical && lineAddVertical) {
+            model.setPoindOldAdd(true);//взять выбранную точку
+            String[] nameLine = model.findID(newLine).split("_");//получить имя отрезка по имени прямой
+            Point2D A1 = new Point2D(poindLine1.getCenterX(), poindLine1.getCenterY());
+            Point2D B1 = new Point2D(newLine.getStartX(), newLine.getStartY());
+            Point2D C1 = new Point2D(newLine.getEndX(), newLine.getEndY());
+            Point2D D1 = model.heightPoind(A1, B1, C1);//координаты точки пересечения
+            addLineRayStart(7);//Создание перпендикуляра
+            poindAdd2 = false;
+            //Задаем координаты
+            model.setVerX1(poindLine1.getCenterX());
+            model.setVerY1(poindLine1.getCenterY());
+            model.setVerX(D1.getX());
+            model.setVerY(D1.getY());
+            model.SideGo(newLine); //проводим перпендикуляр
+            //Привязать события мыши
+            model.mouseLine(newLine);
+            //Переводим координаты линии в мировые
+            model.findLinesUpdateXY(newLine.getId());
+            //Переводим в мировые координаты точки
+            model.setVerX0(gridViews.revAccessX(D1.getX()));
+            model.setVerY0(gridViews.revAccessY(D1.getY()));
+            //Создаем расчетную точку не перемещаемую
+            Circle newPoind = model.createPoindAdd(false);//создать точку
+            //Обновить мировые координаты коллекции
+            model.findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
+            //Заменить имя прямой на имя отрезка
+            model.findNameId(poindLine1.getId(), newPoind.getId(), newLine.getId());
+            model.setTxtShape("");
+            model.txtAreaOutput();
+            paneShape.getChildren().add(newPoind);//добавить на доску
+            //связать точки и перпендикуляр для перемещения
+            model.verticalBindCircles(poindLine1, model.findCircle(nameLine[0]), model.findCircle(nameLine[1]), newPoind, newLine);
+            verticalAdd = false;//выход из режима перпендикуляра
+            poindAddVertical = false;
+            lineAddVertical = false;
+            model.setPoindOldAdd(false);
+            //закрыть режим создания перпендикуляра
+        }
+
 
         event.consume();
     }//End onMousePressed()
@@ -709,6 +722,7 @@ public class Controller extends View {
     /**
      * Метод onScroll(ScrollEvent event)
      * Метод изменения масштаба координатной сетки при вращении колесика мышки
+     *
      * @param event - изменения колесика мышки
      */
     public void onScroll(ScrollEvent event) {
@@ -780,6 +794,7 @@ public class Controller extends View {
             paneShape.getChildren().add(newPoind);//добавить на доску
         }
     }
+
     /**
      * Метод menuTriangle()
      * Предназначен для вывода определения треугольника.
@@ -789,9 +804,10 @@ public class Controller extends View {
         model.webViewLeftString(webViewLeft, 0);
     }
 
-    public void menuTr( ) {
+    public void menuTr() {
         model.webViewLeftString(webViewLeft, 9);
     }
+
     /**
      * Метод menuBisector()
      * Предназначен для вывода определения биссектрисы.
@@ -800,6 +816,7 @@ public class Controller extends View {
     public void menuBisector() {
         model.webViewLeftString(webViewLeft, 2);
     }
+
     /**
      * Метод menuMediana()
      * Предназначен для вывода определения биссектрисы.
@@ -808,6 +825,7 @@ public class Controller extends View {
     public void menuMediana() {
         model.webViewLeftString(webViewLeft, 3);
     }
+
     /**
      * Метод menuHeight()
      * Предназначен для вывода определения биссектрисы.
@@ -816,6 +834,7 @@ public class Controller extends View {
     public void menuHeight() {
         model.webViewLeftString(webViewLeft, 4);
     }
+
     /**
      * Метод menuRayClick().
      * Предназначен для вывода определений луча и угла
@@ -905,7 +924,8 @@ public class Controller extends View {
     /**
      * Метод visibleNameLine(boolean bName, String name).
      * Предназначен для показа и скрытия имен.
-      * @param bName - логическая переменная (true - показывать, false - не показывать)
+     *
+     * @param bName - логическая переменная (true - показывать, false - не показывать)
      * @param name  - какие имена (line, poind, arc)
      */
     private void visibleName(boolean bName, String name) {
@@ -939,6 +959,7 @@ public class Controller extends View {
             paneGrid.getChildren().clear();//Очистить экран и память
         }
     }
+
     /**
      * Метод menuIsosceles().
      * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника".
@@ -946,6 +967,7 @@ public class Controller extends View {
     public void menuIsosceles() {
         model.webViewLeftString(webViewLeft, 1);
     }
+
     /**
      * Метод menuPrIsosceles().
      * Нажат пункт меню "Теоремы и свойства-> Признак равнобедренного треугольника".
@@ -953,6 +975,7 @@ public class Controller extends View {
     public void menuPrIsosceles() {
         model.webViewLeftString(webViewLeft, 12);
     }
+
     /**
      * Метод menuEquil()
      * Нажат пункт меню "Теоремы и свойства-> Первый признак равенства треугольников"
@@ -961,6 +984,7 @@ public class Controller extends View {
         model.setWindShow(0);
         TwofxmlLoader();
     }
+
     /**
      * Метод menuSecond()
      * Нажат пункт меню "Теоремы и свойства-> Второй признак равенства треугольников"
@@ -969,6 +993,7 @@ public class Controller extends View {
         model.setWindShow(1);
         TwofxmlLoader();
     }
+
     /**
      * Метод menuTread()
      * Нажат пункт меню "Теоремы и свойства-> Третий признак равенства треугольников"
@@ -977,6 +1002,7 @@ public class Controller extends View {
         model.setWindShow(2);
         TwofxmlLoader();
     }
+
     /**
      * Метод onMouseEnteredPoind().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить точку".
@@ -1021,6 +1047,7 @@ public class Controller extends View {
         model.setTextToolTip("Добавить угол");
         model.ToolTipGo(btnAngle);
     }
+
     /**
      * Метод onMouseEnteredTreangle().
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить треугольник".
@@ -1056,6 +1083,7 @@ public class Controller extends View {
         model.setTextToolTip("Добавить перпендикуляр к прямой");
         model.ToolTipGo(btnVertical);
     }
+
     public void onMouseEnteredHeight() {
         model.setTextToolTip("Добавить высоту");
         model.ToolTipGo(btnHeight);
@@ -1074,8 +1102,6 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
-
-
 
 
     //Загрузка шаблона окна для признаков равенства треугольников
@@ -1129,7 +1155,6 @@ public class Controller extends View {
         window.show();
 
     }
-
 
 
 }

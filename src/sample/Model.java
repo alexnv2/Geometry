@@ -95,11 +95,12 @@ class Model implements  Observable {
     private char indexAngle='\u03b1';//Индекс для углов, начинается с альфа
     private int indexAngleInt=0;
 
-    private boolean poindOldAdd=false;//true - Берем существующие точки для отрезка
+    private boolean poindOldAdd=false;//true - Берем существующие точки для построения фигур
+    private boolean lineOldAdd =false;//true - Берем существующую линию для построения фигур
     private boolean poindAdd=false;//true- режим добавления точки
-    private boolean poindLineAdd=false;
-    private boolean lineAdd=false;
-    private boolean verticalAddMouse;//ссылка из контролера
+    private boolean poindLineAdd=false;//true - добавление точки на линию
+//    private boolean lineAdd=false;
+
     private double radiusPoind=5;//радиус точки
 
     private boolean angleAdd = false;//true -создание угла
@@ -797,44 +798,8 @@ class Model implements  Observable {
         newLine.setId(indexLineAdd());//Идентификатор узла
 
          //Привязка событий мышки
-         //Наведение на отрезок
-         newLine.setOnMouseEntered(e->{
-             newLine.setCursor(Cursor.HAND);
-             poindAdd=true;
-              //Установить статус
-             for (PoindLine p: poindLines) {
-                 if (p.getLine().getId().equals(newLine.getId())) {
-                     switch (p.getSegment()) {
-                         case 0 -> { setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                         case 1 -> {setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                         case 2 -> { setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                         case 3 ->{setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                         case 4 ->{setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                         case 5 ->{setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
-                             statusGo(Status);}
-                     }
-                 }
-             }
-             newLine.setStrokeWidth(3);
-         });
-         //уход с линии
-         newLine.setOnMouseExited(e->{
-             poindAdd=false;
-             //Установить статус
-             setStringLeftStatus("");
-             statusGo(Status);
-             newLine.setStrokeWidth(2);
-         });
-         //нажата левая кнопка
-         newLine.setOnMousePressed(e->{
-             timeLine = newLine;//выбрана данная линия, для построения перпендикуляра
-             verticalAddMouse=true;//линия выбрана
-         });
+         mouseLine(newLine);
+
          return newLine;
      }
     /**
@@ -878,10 +843,12 @@ class Model implements  Observable {
             setStringLeftStatus("");
             statusGo(Status);
             newLine.setStrokeWidth(2);
+            lineOldAdd =false;
         });
         //нажата левая кнопка
         newLine.setOnMousePressed(e->{
-           timeLine = newLine;//сохранить линию для перпендикуляра
+            timeLine = newLine;//выбрана данная линия, для построения
+            lineOldAdd =true;//линия выбрана
         });
     }
     /**
@@ -908,7 +875,6 @@ class Model implements  Observable {
          //Задаем вид линии
          newLine.getStrokeDashArray().addAll(arrDash);
          poindLines.add(new PoindLine(newLine,newLine.getId(),verX0,verY0,verX0,verY0,true,false,segment));
-         verticalAddMouse=false;
          return newLine;
       }
 
