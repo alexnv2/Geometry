@@ -103,13 +103,14 @@ class Model implements  Observable {
 
     private double radiusPoind=5;//радиус точки
 
-    private boolean angleAdd = false;//true -создание угла
+    private boolean angleAdd ;//true -создание угла
+    private boolean removeObject;//true - режим удаления
 
     private double arcRadius;//радиус дуги
     private double angleStart;//начало дуги гр.
     private double angleLength;//длина дуги гр.
 
-    private boolean removeObject=false;//true - режим удаления
+
     //Логические переменные из меню настроек
     private boolean showPoindName=true;//по умолчанию, всегда показывать имена точек
     private boolean showLineName=false;//по умолчанию, не показывать имена линий

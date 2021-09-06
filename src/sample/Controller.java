@@ -8,6 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
@@ -99,16 +101,16 @@ public class Controller extends View {
 
 
     //Режимы создания
-    private boolean poindAdd = false;//true - создать точку
-    private boolean segmentAdd = false;//true - создать отрезок
-    private boolean rayAdd = false;//true - создание луча
-    private boolean lineAdd = false;//true - создание прямой
+    private boolean poindAdd ;//true - создать точку
+    private boolean segmentAdd;//true - создать отрезок
+    private boolean rayAdd ;//true - создание луча
+    private boolean lineAdd;//true - создание прямой
 
-    private boolean treangleAdd = false;//true - создание треугольника
-    private boolean medianaAdd = false;//true - проведение медианы из вершины треугольника
-    private boolean bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
-    private boolean heightAdd = false;//true - проведение высоты из вершины треугольника
-    private boolean verticalAdd = false;//true - построение перпендикуляра к прямой
+    private boolean treangleAdd;//true - создание треугольника
+    private boolean medianaAdd ;//true - проведение медианы из вершины треугольника
+    private boolean bisectorAdd;//true - проведение биссектрисы из вершины треугольника
+    private boolean heightAdd;//true - проведение высоты из вершины треугольника
+    private boolean verticalAdd;//true - построение перпендикуляра к прямой
 
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
@@ -177,8 +179,46 @@ public class Controller extends View {
         btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+    }
 
+    /**
+     * Метод nullCreate()
+     * Предназначен для сброса всех режимов построения.
+     * Вызывается перед тем, как установить какой-то режим построения фигуры
+     * на доске.
+     */
+    private void visibleCreate(Boolean b){
+        poindAdd = b;//true - создать точку
+        segmentAdd = b;//true - создать отрезок
+        rayAdd = b;//true - создание луча
+        lineAdd = b;//true - создание прямой
+        treangleAdd = b;//true - создание треугольника
+        medianaAdd = b;//true - проведение медианы из вершины треугольника
+        bisectorAdd = b;//true - проведение биссектрисы из вершины треугольника
+        heightAdd = b;//true - проведение высоты из вершины треугольника
+        verticalAdd = b;//true - построение перпендикуляра к прямой
+        model.setAngleAdd(b);//true - построение угла
+        model.setRemoveObject(b);//true - режим удаления фигур
+    }
 
+    /**
+     * Метод disableButton(Boolean b)
+     * Предназначен для блокировки кнопок, когда включен режим рисования фигур на доске.
+     * После завершения режима построения, кнопки разблокируются.
+     * @param b - true кнопки не блокированы, false - разблокированы
+     */
+    private void disableButton(Boolean b){
+        btnAngle.setDisable(b);
+        btnVertical.setDisable(b);
+        btnBisector.setDisable(b);
+        btnMediana.setDisable(b);
+        btnHeight.setDisable(b);
+        btnTreangle.setDisable(b);
+        btnRay.setDisable(b);
+        btnSegment.setDisable(b);
+        btnLine.setDisable(b);
+        btnPoind.setDisable(b);
+        btnDelete.setDisable(b);
     }
 
     /**
@@ -190,8 +230,9 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_1);
         model.statusGo(leftStatus);//Установить статус
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         poindAdd = true;//Установить режим добавления
-
     }
 
     /**
@@ -203,7 +244,9 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_2);
         model.statusGo(leftStatus);
-        segmentAdd = true;
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        segmentAdd = true;//режим построения отрезка
     }
 
     /**
@@ -215,6 +258,8 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_3);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         rayAdd = true;//режим построения луча
     }
 
@@ -227,6 +272,8 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_4);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         lineAdd = true;//режим построения прямой
     }
 
@@ -239,8 +286,11 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.statusGo(leftStatus);
-        model.setAngleAdd(true);//режим построения угла
         infoStatus = "";//Имя для коллекции VertexArc
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        model.setAngleAdd(true);//режим построения угла
+
     }
 
     /**
@@ -251,8 +301,10 @@ public class Controller extends View {
     public void btnVertical() {
         model.setStringLeftStatus(STA_26);
         model.statusGo(leftStatus);
-        verticalAdd = true;//режим построения угла
         infoStatus = "";//Имя для коллекции VertexArc
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        verticalAdd = true;//режим построения угла
     }
 
     /**
@@ -261,11 +313,12 @@ public class Controller extends View {
      * Устанавливает режим добавления треугольника.
      */
     public void btnTreangle() {
-        //Установить статус
         model.setStringLeftStatus(STA_5);
         model.statusGo(leftStatus);
-        treangleAdd = true;
         infoStatus = "";//Для коллекции TreangleName
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        treangleAdd = true;
     }
 
     /**
@@ -275,6 +328,8 @@ public class Controller extends View {
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         medianaAdd = true;
     }
 
@@ -285,6 +340,8 @@ public class Controller extends View {
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         bisectorAdd = true;
     }
 
@@ -295,6 +352,8 @@ public class Controller extends View {
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         heightAdd = true;
     }
 
@@ -307,6 +366,8 @@ public class Controller extends View {
         //Установить статус
         model.setStringLeftStatus(STA_15);
         model.statusGo(leftStatus);
+        visibleCreate(false);//сбросить все режимы
+        disableButton(true);//блокировать кнопки
         model.setRemoveObject(true);//установить режим удаления
     }
 
@@ -443,6 +504,7 @@ public class Controller extends View {
             paneShape.getChildren().add(newPoind);//добавить на доску
             poindAdd = false;//Режим добавления точки окончен
             model.setPoindLineAdd(false);
+            disableButton(false);//разблокировать кнопки
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
@@ -456,6 +518,7 @@ public class Controller extends View {
         if (segmentAdd && poindAdd1) {
             addLineRayEnd();
             model.setLineOldAdd(false);
+            disableButton(false);//разблокировать кнопки
             segmentAdd = false;//окончание режима добавления
             //Связать точки с прямой
             model.lineBindCircles(poindLine1, poindLine2, newLine);
@@ -490,6 +553,7 @@ public class Controller extends View {
                 model.arcBindPoind(infoStatus, arcAngle);
                 model.setAngleAdd(false);//окончание режима добавления
                 poindAdd1 = false;
+                disableButton(false);//разблокировать кнопки
                 angleCol = 0;
                 //Вывод информации об объектах в правую часть доски
                 model.setTxtShape("");
@@ -537,6 +601,7 @@ public class Controller extends View {
             //Заменить имя
             model.findNameId(poindTreangle1.getId(), poindLine2.getId(), newLine.getId());
             treangleAdd = false;//окончание режима добавления
+            disableButton(false);//разблокировать кнопки
             poindAdd1 = false;
             angleCol = 0;
             //Вывод информации об объектах в правую часть доски
@@ -553,6 +618,7 @@ public class Controller extends View {
             addLineRayEnd();
             model.setLineOldAdd(false);
             rayAdd = false;//закончить построение луча
+            disableButton(false);//разблокировать кнопки
             //Связать точки с лучом
             model.rayBindCircles(poindLine1, poindLine2, newLine);
             //Заменить имя
@@ -578,6 +644,7 @@ public class Controller extends View {
             //Добавить имя
             model.nameLineAdd(newLine);
             lineAdd = false;
+            disableButton(false);//разблокировать кнопки
             model.setLineOldAdd(false);
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
@@ -590,6 +657,7 @@ public class Controller extends View {
             newLine = model.mbhLineAdd(poindLine1, 4);
             model.mouseLine(newLine);
             medianaAdd = false;
+            disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
         }
@@ -599,6 +667,7 @@ public class Controller extends View {
             newLine = model.mbhLineAdd(poindLine1, 5);
             model.mouseLine(newLine);
             bisectorAdd = false;
+            disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
         }
@@ -608,6 +677,7 @@ public class Controller extends View {
             newLine = model.mbhLineAdd(poindLine1, 6);
             model.mouseLine(newLine);
             heightAdd = false;
+            disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
         }
@@ -657,6 +727,8 @@ public class Controller extends View {
             verticalAdd = false;//выход из режима перпендикуляра
             poindAddVertical = false;
             lineAddVertical = false;
+            poindAdd2 = false;
+            disableButton(false);//разблокировать кнопки
             model.setPoindOldAdd(false);
             //закрыть режим создания перпендикуляра
         }
@@ -691,7 +763,6 @@ public class Controller extends View {
         paneShape.getChildren().add(newLine);//добавить на доску
         newLine.toBack();//переместить линию вниз под точку
         poindAdd2 = true;//режим добавления второй точки и последующих
-
     }
 
     /**
@@ -1143,7 +1214,7 @@ public class Controller extends View {
         label1.setFont(Font.font("Verdana", FontWeight.BOLD, 58.0));
         label1.setTextFill(Color.YELLOW);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("Выполнил ученик 8Б класса \n Носов Алексей \n2021 г.");
+        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n2022 г. \nПрограмма с открытым исходным кодом.\nВерсия 1.0");
         label3.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
@@ -1155,7 +1226,16 @@ public class Controller extends View {
         window.show();
 
     }
-
-
+    /**
+     * Метод onKeyPressed(KeyEvent key)
+     * Предназначен для сброса режима построения и разблокировок кнопок.
+     * @param key - нажата кнопка ESC
+     */
+    public void onKeyPressed(KeyEvent key){
+        if(key.getCode()== KeyCode.ESCAPE){
+            disableButton(false);//разблокировать кнопки
+          //  visibleCreate(false);//сбросить все режимы
+        }
+    }
 }
 

@@ -6,7 +6,8 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller" onKeyPressed="#onKeyPressed">
   <MenuBar VBox.vgrow="NEVER">
     <Menu mnemonicParsing="false" text="Фигуры">
       <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок"/>
@@ -103,7 +104,7 @@
     <StackPane fx:id="Cartesian">
       <Pane fx:id="paneGrid"/>
       <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved"
-            onMousePressed="#onMousePressed" onScroll="#onScroll">
+            onMousePressed="#onMousePressed"  onScroll="#onScroll">
 
       </Pane>
     </StackPane>
