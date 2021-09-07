@@ -3,6 +3,10 @@ package sample;
 import javafx.scene.shape.Line;
 import lombok.Data;
 
+/**
+ * Класс PoindLine для коллекции PoindLine. Предназначен для хранения информации об отрезках, прямых,
+ * лучей, перпендикуляров, медиан, биссектрис, высот.
+ */
 @Data
 public class PoindLine {
     private Line line;

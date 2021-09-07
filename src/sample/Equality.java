@@ -1,7 +1,4 @@
 package sample;
-
-//Класс контролер для equality.fxml
-
 import javafx.animation.*;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -15,6 +12,15 @@ import javafx.util.Duration;
 
 import static ContstantString.StringWeb.*;
 
+/**
+ * Класс Equality наследует класс View.
+ * Класс контролер для equality.fxml. Предназначен для вывода вспомогательного окна с доказательствами трех признаков
+ * равенства треугольников.
+ * @author A. Nosov
+ * @version 1.0
+ * @see sample.View
+ * @see sample.Model
+ */
 public class Equality extends View {
 
     @FXML
@@ -27,7 +33,7 @@ public class Equality extends View {
     public Line hatch2_1;
     public Arc arcB1_1;
     public Arc arcB1_2;
-    public Polygon treagle1;
+    public Polygon treangle1;
     public Group groupTr2;
     public Group groupTr3;
     public Group hatchB, hatchB1;
@@ -41,6 +47,10 @@ public class Equality extends View {
     @FXML
     private Line hatch_1, hatch_2;
 
+    /**
+     * Метод initialize().
+     * Предназначен для инициализации переменных.
+     */
     @FXML
     private void initialize(){
     //1 признак равенства
@@ -128,7 +138,10 @@ public class Equality extends View {
         }
     }
 
-    //Анимация для совмещения треугольников
+    /**
+     * Метод onClickCombine().
+     * Предназначен для вывода анимации совмещения треугольников.
+     */
     public void onClickCombine() {
         //Перемещениe для 3 признака равенства треугольников
         if(model.getWindShow()==2) {
@@ -158,7 +171,7 @@ public class Equality extends View {
             rt2.setCycleCount(1);
             rt2.setInterpolator(Interpolator.LINEAR);
 
-            //Паралельное выполнение
+            //Параллельное выполнение
             ParallelTransition pt = new ParallelTransition(groupTriangles);
             pt.getChildren().addAll(tr, rtX,rt2);
             pt.play();
@@ -185,7 +198,7 @@ public class Equality extends View {
             rt2.setCycleCount(1);
             rt2.setInterpolator(Interpolator.LINEAR);
 
-            //Паралельное выполнение
+            //Параллельное выполнение
             ParallelTransition pt = new ParallelTransition(groupTriangles);
             pt.getChildren().addAll(tr, rt2);
             pt.play();

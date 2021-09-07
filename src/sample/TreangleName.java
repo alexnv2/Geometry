@@ -4,7 +4,8 @@ import javafx.scene.shape.Polygon;
 import lombok.Data;
 
 /**
- * Класс для колекции треугольников
+ * Класс TreangleName для коллекции треугольников TreangleName.
+ * Предназначен для хранения информации об треугольниках.
  */
 @Data
 public class TreangleName {

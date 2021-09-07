@@ -19,7 +19,7 @@
 
         <HBox>
             <Group fx:id="groupTriangles" layoutX="0" layoutY="30.0">
-                <Polygon fx:id="treagle1" fill="#e02d2d00" points="40.0, 285.0, 251.0, 43.0, 338.0, 191.0"
+                <Polygon fx:id="treangle1" fill="#e02d2d00" points="40.0, 285.0, 251.0, 43.0, 338.0, 191.0"
                          stroke="#1605f7" strokeType="INSIDE" strokeWidth="2.0"/>
                 <Arc fx:id="arcA" centerX="40.0" centerY="285.0" fill="#cbff1f00" length="29.0" radiusX="30.0"
                      radiusY="30.0" startAngle="20.0" stroke="#081bee" strokeType="INSIDE" type="ROUND">

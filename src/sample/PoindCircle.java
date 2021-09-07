@@ -1,5 +1,4 @@
 package sample;
-//Коллекция для хранения точек
 
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -7,7 +6,7 @@ import lombok.Data;
 
 /**
  * Класс PoindCircle
- * Для колеккции PoindCircle
+ * Для коллекции PoindCircle. Предназначен для хранения информации о точках.
  */
 @Data
 public class PoindCircle {

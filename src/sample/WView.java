@@ -4,8 +4,11 @@ package sample;
 import lombok.Data;
 import java.text.DecimalFormat;
 
+/**
+ * Класс WView.
+ * Предназначен для перерасчета мировых координат в координаты окна просмотра.
+ */
 @Data
-//Класс перерасчета координат
 public class WView {
     private double A, B, C, D ; //Коэффициенты перерасчета
     private double Wt, Wb, Wl, Wr;//Мировые координаты
@@ -18,7 +21,7 @@ public class WView {
     private double VPx, VPy;//Координаты мыши при нажатии кнопки
     private  double Ko=100;//Коэффициент округления координат
 
-    //Конструктор c параметрами
+    //Конструктор с параметрами
     WView(double Wt, double Wb, double Wl, double Wr, double Vt, double Vb, double Vl, double Vr) {
         this.Wt=Wt;
         this.Wb=Wb;
@@ -31,7 +34,7 @@ public class WView {
         //Коэффициенты
         rate();
     }
-    //Конструктор по умолчаниию
+    //Конструктор по умолчанию
     WView(){
         Wt=300;
         Wb=-300;
@@ -50,33 +53,67 @@ public class WView {
     //Сетка Y
     double gridShowY(double ty) {return Math.round((B*ty*M)+D);}
 
-    // Перерасчет декартовой координаты X в координаты экрана
+    /**
+     * Метод accessX(double tx).
+     * Предназначен для пересчета мировых координат по оси X в координаты экрана в масштабе.
+     * @param tx - мировые координаты по оси X
+     * @return - возвращает координаты экрана
+     */
     double accessX(double tx) {return Math.round((A*tx*M)/(k0*k3)+C);} //С масштабом
-    //Перерасчет декартовой координаты y в координаты экрана
+
+    /**
+     * Метод accessY(double ty).
+     * Предназначен для пересчета мировых координат по оси Y в координаты экрана в масштабе.
+     * @param ty - мировые координаты по оси Y
+     * @return - возвращает координаты экрана
+     */
     double accessY(double ty) {return Math.round((B*ty*M)/(k0*k3)+D);}
-    //Перерасчет координаты экрана wx  в декартовые с округлением в
+
+    /**
+     * Метод revAccessX(double wx).
+     * Предназначен для пересчета координат экрана по оси х в мировые с округлением.
+     * @param wx - координаты экрана по оси х.
+     * @return - возвращает мировые координаты экрана по оси х.
+     */
+
     double revAccessX(double wx) {
         double x=Math.round((wx-C)/A)/M*k0*k3;
         x=Math.round(x*Ko);
         return x/Ko;
     }
-    //Перерасчет координат экрана wy в декартовые
+
+    /**
+     * Метод revAccessY(double wy).
+     * Предназначен для пересчета координат экрана по оси y в мировые с округлением.
+     * @param wy - координаты экрана по оси y
+     * @return - возвращает мировые координаты по оси y
+     */
     double revAccessY(double wy) {
         double y=Math.round((wy-D)/B)/M*k0*k3;
         y=Math.round(y*Ko);
         return y/Ko;
     }
-    //С масштабом
-    //Коэффициенты пересчета координат
+
+    /**
+     * Метод rate().
+     * Предназначен для вычисления коэффициентов пересчета координат с масштабом.
+     */
+
     void rate(){
         A=(Vr-Vl)/(Wr-Wl);
         C=Vl-A*Wl;
         B=(Vb-Vt)/(Wb-Wt);
         D=Vb-B*Wb;
     }
-    //Убираем лишние нули
+
+    /**
+     * Метод doubleString(double d).
+     * Предназначен для удаления лишних нулей.
+     * @param d - число
+     * @return - возвращает число без лишних нулей после запятой.
+     */
     public String doubleString(double d){
-        DecimalFormat dF = new DecimalFormat( "#.###########" );
-        return String.valueOf(dF.format(d));
+        DecimalFormat dF = new DecimalFormat( "#.###########" );//задаем формат вывода
+        return String.valueOf(dF.format(d));//форматируем число
     }
 }

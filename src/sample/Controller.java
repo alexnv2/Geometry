@@ -46,11 +46,20 @@ import static ContstantString.StringStatus.*;
 
 public class Controller extends View {
 
+    /**
+     * paneShape - контейнер для геометрических фигур
+     */
     //Связать переменные с шаблоном FXML
     @FXML
-    public Pane paneShape;//контейнер для геометрических фигур
-    public StackPane Cartesian;//контейнер для декартовых координат
-    public TextArea txtShape;//контейнер для правой части доски
+    public Pane paneShape;
+    /**
+     * Cartesian - контейнер для декартовых координат
+     */
+    public StackPane Cartesian;
+    /**
+     * txtShape - контейнер для правой части доски
+     */
+    public TextArea txtShape;
     public MenuItem menuTreangle;
     public MenuItem menuSecondTr;
     public MenuItem menuEqualTr;
@@ -60,13 +69,13 @@ public class Controller extends View {
     @FXML
     private Button btnTreangle;
     @FXML
-    private Button btnPoind;//кнопка добавить точку
+    private Button btnPoind;
     @FXML
-    private Button btnSegment;//кнопка добавить отрезок
+    private Button btnSegment;
     @FXML
-    private Button btnRay;//кнопка добавить луч
+    private Button btnRay;
     @FXML
-    private Button btnLine;//кнопка добавить прямую
+    private Button btnLine;
     @FXML
     private Button btnAngle;
     @FXML
@@ -182,23 +191,23 @@ public class Controller extends View {
     }
 
     /**
-     * Метод nullCreate()
+     * Метод visibleCreate()
      * Предназначен для сброса всех режимов построения.
      * Вызывается перед тем, как установить какой-то режим построения фигуры
      * на доске.
      */
-    private void visibleCreate(Boolean b){
-        poindAdd = b;//true - создать точку
-        segmentAdd = b;//true - создать отрезок
-        rayAdd = b;//true - создание луча
-        lineAdd = b;//true - создание прямой
-        treangleAdd = b;//true - создание треугольника
-        medianaAdd = b;//true - проведение медианы из вершины треугольника
-        bisectorAdd = b;//true - проведение биссектрисы из вершины треугольника
-        heightAdd = b;//true - проведение высоты из вершины треугольника
-        verticalAdd = b;//true - построение перпендикуляра к прямой
-        model.setAngleAdd(b);//true - построение угла
-        model.setRemoveObject(b);//true - режим удаления фигур
+    private void visibleCreate(){
+        poindAdd = false;//true - создать точку
+        segmentAdd = false;//true - создать отрезок
+        rayAdd = false;//true - создание луча
+        lineAdd = false;//true - создание прямой
+        treangleAdd = false;//true - создание треугольника
+        medianaAdd = false;//true - проведение медианы из вершины треугольника
+        bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
+        heightAdd = false;//true - проведение высоты из вершины треугольника
+        verticalAdd = false;//true - построение перпендикуляра к прямой
+        model.setAngleAdd(false);//true - построение угла
+        model.setRemoveObject(false);//true - режим удаления фигур
     }
 
     /**
@@ -229,8 +238,8 @@ public class Controller extends View {
     public void btnPoindClick() {
         //Установить статус
         model.setStringLeftStatus(STA_1);
-        model.statusGo(leftStatus);//Установить статус
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);//Установить статус
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         poindAdd = true;//Установить режим добавления
     }
@@ -243,8 +252,8 @@ public class Controller extends View {
     public void btnSegmentClick() {
         //Установить статус
         model.setStringLeftStatus(STA_2);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         segmentAdd = true;//режим построения отрезка
     }
@@ -257,8 +266,8 @@ public class Controller extends View {
     public void btnRay() {
         //Установить статус
         model.setStringLeftStatus(STA_3);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         rayAdd = true;//режим построения луча
     }
@@ -271,8 +280,8 @@ public class Controller extends View {
     public void btnLine() {
         //Установить статус
         model.setStringLeftStatus(STA_4);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         lineAdd = true;//режим построения прямой
     }
@@ -285,9 +294,9 @@ public class Controller extends View {
     public void btnAngle() {
         //Установить статус
         model.setStringLeftStatus(STA_14);
-        model.statusGo(leftStatus);
+        model.StatusGo(leftStatus);
         infoStatus = "";//Имя для коллекции VertexArc
-        visibleCreate(false);//сбросить все режимы
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         model.setAngleAdd(true);//режим построения угла
 
@@ -300,9 +309,9 @@ public class Controller extends View {
      */
     public void btnVertical() {
         model.setStringLeftStatus(STA_26);
-        model.statusGo(leftStatus);
+        model.StatusGo(leftStatus);
         infoStatus = "";//Имя для коллекции VertexArc
-        visibleCreate(false);//сбросить все режимы
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         verticalAdd = true;//режим построения угла
     }
@@ -314,9 +323,9 @@ public class Controller extends View {
      */
     public void btnTreangle() {
         model.setStringLeftStatus(STA_5);
-        model.statusGo(leftStatus);
+        model.StatusGo(leftStatus);
         infoStatus = "";//Для коллекции TreangleName
-        visibleCreate(false);//сбросить все режимы
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         treangleAdd = true;
     }
@@ -327,8 +336,8 @@ public class Controller extends View {
      */
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         medianaAdd = true;
     }
@@ -339,8 +348,8 @@ public class Controller extends View {
      */
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         bisectorAdd = true;
     }
@@ -351,8 +360,8 @@ public class Controller extends View {
      */
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         heightAdd = true;
     }
@@ -365,8 +374,8 @@ public class Controller extends View {
     public void btnDelete() {
         //Установить статус
         model.setStringLeftStatus(STA_15);
-        model.statusGo(leftStatus);
-        visibleCreate(false);//сбросить все режимы
+        model.StatusGo(leftStatus);
+        visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         model.setRemoveObject(true);//установить режим удаления
     }
@@ -376,7 +385,6 @@ public class Controller extends View {
      * Отслеживает события перемещения мышки по доске без нажатой кнопки
      * Выводит координаты мыши в статусной строке
      * Используется при добавлении геометрических фигур на доску.
-     *
      * @param mouseEvent - координаты мыши
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
@@ -488,7 +496,6 @@ public class Controller extends View {
      * Отслеживает нажатие кнопки на доске
      * Используется для перемещения сетки и координатных осей, а также
      * для создания геометрических фигур.
-     *
      * @param event - событие мыши
      */
     public void onMousePressed(MouseEvent event) {
@@ -793,20 +800,22 @@ public class Controller extends View {
     /**
      * Метод onScroll(ScrollEvent event)
      * Метод изменения масштаба координатной сетки при вращении колесика мышки
-     *
      * @param event - изменения колесика мышки
      */
     public void onScroll(ScrollEvent event) {
-        double sc = event.getDeltaY();
-        gridViews.onScrollView(sc);
-        updateShape();
+        //Проверить настройки отображения сетки
+        if(model.isShowGrid()) {
+            double sc = event.getDeltaY();//пересчитать обороты колеса
+            gridViews.onScrollView(sc);//изменить масштаб
+            updateShape();//обновить фигуры
+        }
     }
 
     /**
      * Метод updateShape()
      * Метод перемещения всех геометрических объектов на доске при
-     * перемещении координатной сетки. Для перемещения используются мировые координаты фигур
-     * из коллекций.
+     * перемещении координатной сетки или изменения масштаба.
+     * Для перемещения используются мировые координаты фигур  из коллекций.
      */
     public void updateShape() {
         //обновление точек
@@ -837,7 +846,6 @@ public class Controller extends View {
                 a.setRadiusY(va.getRadiusY());
                 a.setStartAngle(va.getStartAngle());
                 a.setLength(va.getLengthAngle());
-
             }
         }
     }
@@ -849,7 +857,6 @@ public class Controller extends View {
      */
     public void menuPoindClick() {
         model.webHTML(webViewLeft, "line.html");//Вывод в web файла
-
         //Создать точки
         for (int i = 0; i < 5; i++) {
             final double max = 500.;
@@ -970,7 +977,6 @@ public class Controller extends View {
         visibleName(menuShowPoindName.isSelected(), "poind");
         model.setShowPoindName(menuShowPoindName.isSelected());//поменять логическую переменную
     }
-
 
     /**
      * Метод menuShowLineName().
@@ -1207,20 +1213,20 @@ public class Controller extends View {
         label2.setTextFill(Color.SANDYBROWN);
         label2.setTextAlignment(TextAlignment.CENTER);
         Label label = new Label("Учебно-справочное пособие");
-        label.setFont(Font.font("Verdana", FontWeight.BOLD, 34.0));
+        label.setFont(Font.font("Arial", FontWeight.BOLD, 34.0));
         label.setTextFill(Color.YELLOW);
         label.setTextAlignment(TextAlignment.CENTER);
         Label label1 = new Label("Геометрия\n\n");
-        label1.setFont(Font.font("Verdana", FontWeight.BOLD, 58.0));
-        label1.setTextFill(Color.YELLOW);
+        label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
+        label1.setTextFill(Color.RED);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n2022 г. \nПрограмма с открытым исходным кодом.\nВерсия 1.0");
-        label3.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
+        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n2022 г. \nПрограмма с открытым исходным кодом.\n \n ");
+        label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
 
         root.getChildren().addAll(label2, label, label1, label3);
-        Scene scene = new Scene(root, 864, 489);
+        Scene scene = new Scene(root, 864, 520);
         window.setScene(scene);
         window.setTitle("О программе");
         window.show();

@@ -14,16 +14,24 @@ import lombok.EqualsAndHashCode;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
+/**
+ * Класс GridView наследует класс WView.
+ * Предназначен для вывода сетки и декартовых координат.
+ * Наследует класс пересчет мировых координат в окно просмотра.
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
-//Класс для вывода сетки и координатых осей
-//Расширение класса пересчета мировых координат в окно просмотра
+
 public class GridView extends WView{
    StackPane Cartesian; //начало стека контейнера
    Pane paneGrid;//контейнер для координатной сетки
     GridView(){
    }
-    //Вывод сетки и координатных осей
+
+    /**
+     * Метод gridCartesian().
+     * Предназначен для вывода сетки и координатных осей.
+     */
     public void gridCartesian(){
         Group group=new Group();
         Group group2=new Group();
@@ -42,7 +50,7 @@ public class GridView extends WView{
         //Для текста
         Shape[] shapes4=new Shape[z3+z4];
         Shape[] shapes5=new Shape[z1+z2];
-        //Веркикальнаяя сетка
+        //Вертикальная сетка
         for(int i=0; i<z1;i++) {
             shapes0[i] = new Line(gridShowX(i), 0, gridShowX(i), getVb());
             shapes0[i].setStrokeWidth(1);
@@ -62,7 +70,7 @@ public class GridView extends WView{
             if (i % 5 == 0) {
                 shapes0[i].setStrokeWidth(2);
                 if (i != 0) {
-                    //Если начало координат выше зоны прсмотра
+                    //Если начало координат выше зоны просмотра
                     if (gridShowY(0) <= 0) {
                         shapes5[i] = new Text(gridShowX(i) - 10, getVt() + 12, doubleString( i * rk));
 
@@ -159,7 +167,11 @@ public class GridView extends WView{
     }
 
 
-    //Изменение мастштаба мирового окна
+    /**
+     * Метод onScrollView(double sc).
+     * Предназначен для изменения масштаба координатной сетки.
+     * @param sc - количество поворотов колеса мышки
+     */
     public void onScrollView(double sc) {
         //double sc=scrollEvent.getDeltaY();//
         setWl(getWl()+(getVr()/sc));//для пропорциональности

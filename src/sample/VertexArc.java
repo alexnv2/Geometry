@@ -3,6 +3,9 @@ package sample;
 import javafx.scene.shape.Arc;
 import lombok.Data;
 
+/**
+ * Класс VertexArc для коллекции углов VertexArc. Предназначен для хранения данных об углах.
+ */
 //класс для хранения углов
 @Data
 public class VertexArc {
