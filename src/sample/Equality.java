@@ -71,15 +71,21 @@ public class Equality extends View {
            namePr.setText("Первый признак равенства треугольников.");
            model.setTextX(220);
            model.setTextY(30);
-           model.TextGo(namePr);
+           //Передать для вывода в View
+           model.setTextGo(namePr);
+           model.notifyObservers("TextGo");
            proof.setText(TR_PROOF_ONE);
-           model.TextGo(proof);
+           model.setTextGo(proof);
+           model.notifyObservers("TextGo");
            theorem.setText(TR_THEOREM_ONE);
-           model.TextGo(theorem);
+           model.setTextGo(theorem);
+           model.notifyObservers("TextGo");
            proposition_1.setText(TR_PROPOSITION_1_ONE);
-           model.TextGo(proposition_1);
+           model.setTextGo(proposition_1);
+           model.notifyObservers("TextGo");
            proposition_2.setText(TR_PROPOSITION_2_ONE);
-           model.TextGo(proposition_2);
+           model.setTextGo(proposition_2);
+           model.notifyObservers("TextGo");
        }
         //2 признак равенства
         if(model.getWindShow()==1) {
@@ -99,15 +105,20 @@ public class Equality extends View {
             namePr.setText("Второй признак равенства треугольников.");
             model.setTextX(220);
             model.setTextY(30);
-            model.TextGo(namePr);
+            model.setTextGo(namePr);
+            model.notifyObservers("TextGo");
             proof.setText(TR_PROOF_TWO);
-            model.TextGo(proof);
+            model.setTextGo(proof);
+            model.notifyObservers("TextGo");
             theorem.setText(TR_THEOREM_TWO);
-            model.TextGo(theorem);
+            model.setTextGo(theorem);
+            model.notifyObservers("TextGo");
             proposition_1.setText(TR_PROPOSITION_1_TWO);
-            model.TextGo(proposition_1);
+            model.setTextGo(proposition_1);
+            model.notifyObservers("TextGo");
             proposition_2.setText(TR_PROPOSITION_2_TWO);
-            model.TextGo(proposition_2);
+            model.setTextGo(proposition_2);
+            model.notifyObservers("TextGo");
         }
         //3 признак равенства
         if(model.getWindShow()==2) {
@@ -126,13 +137,17 @@ public class Equality extends View {
             namePr.setText("Третий признак равенства треугольников.");
             model.setTextX(220);
             model.setTextY(30);
-            model.TextGo(namePr);
+            model.setTextGo(namePr);
+            model.notifyObservers("TextGo");
             proof.setText(TR_PROOF_THREE);
-            model.TextGo(proof);
+            model.setTextGo(proof);
+            model.notifyObservers("TextGo");
             theorem.setText(TR_THEOREM_THREE);
-            model.TextGo(theorem);
+            model.setTextGo(theorem);
+            model.notifyObservers("TextGo");
             proposition_1.setText(TR_PROPOSITION_1_THREE);
-            model.TextGo(proposition_1);
+            model.setTextGo(proposition_1);
+            model.notifyObservers("TextGo");
             proposition_2.setText(TR_PROPOSITION_2_THREE);
 
         }

@@ -29,7 +29,9 @@ class View implements Observer {
     //Для всплывающих подсказок
     private final Tooltip tooltip = new Tooltip();
 
-    //Конструктор класса отображения
+    /**
+     * Констриктор класса отображения View.
+     */
     View() {
         //Регистрация слушателя в классе Model
         model.registerObserver(this);
@@ -38,12 +40,16 @@ class View implements Observer {
         tooltip.setFont(Font.font(12));
         tooltip.setStyle("-fx-background-color: LIGHTBLUE;" +
                 "-fx-text-fill: black");
-
     }
 
-    //Переопределить метод из класса интерфейса Observer.
+    /**
+     * Метод notification(String message).
+     * Получает сообщения из класса Model о готовности информации к выводу на экран.
+     * Метод переопределяется из интерфейса Observer.
+     *
+     * @param message - какую информацию надо вывести
+     */
     @Override
-    //Какую информацию надо вывести
     public void notification(String message) {
         switch (message) {
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин

@@ -170,149 +170,6 @@ class Model implements Observable {
     }
 
     /**
-     * Метод VertexGo(Circle o).
-     * Уведомляет класс отображения View, о том что точка готова к перемещению на доске.
-     *
-     * @param o - объект точка
-     */
-    @Override
-    public void VertexGo(Circle o) {
-        vertex = o;
-        notifyObservers("VertexGo");
-    }
-
-    /**
-     * Метод SideGo(Line o)
-     * Уведомляет класс отображения View, о том что линия готова к перемещению на доске.
-     *
-     * @param o - объект линия
-     */
-    @Override
-    public void SideGo(Line o) {
-        line = o;
-        notifyObservers("SideGo");
-    }
-
-    /**
-     * Метод RayGo(Line o)
-     * Уведомляет класс отображения View, о том что луч или прямая готова к перемещению на доске.
-     *
-     * @param o - объект линия
-     */
-    @Override
-    public void RayGo(Line o) {
-        line = o;
-        notifyObservers("RayGo");
-    }
-
-    /**
-     * Метод TextGo(Text o)
-     * Уведомляет класс отображения View, о том что имя точки готово к перемещению на доске.
-     *
-     * @param o - объект Text
-     */
-    @Override
-    public void TextGo(Text o) {
-        textGo = o;
-        notifyObservers("TextGo");
-    }
-
-    /**
-     * Метод webViewGo(WebView o)
-     * Уведомляет класс отображения View, о том что справочная информация готово к размещению на доске.
-     *
-     * @param o - объект WebView
-     */
-    @Override
-    public void WebViewGo(WebView o) {
-        webView = o;
-        notifyObservers("WebView");
-    }
-
-    /**
-     * Метод ToolTipGo(Button o)
-     * Предназначен для вывода всплывающих подсказок
-     *
-     * @param o - кнопка
-     */
-    @Override
-    public void ToolTipGo(Button o) {
-        btnToolTip = o;//ссылка на кнопку
-        notifyObservers("ToolTip");//вывести всплывающую подсказку
-    }
-
-    /**
-     * Метод webGo()
-     * Предназначен для оправки сообщения в View, что надо вывести информацию в левую часть доски
-     *
-     * @param o - ссылка на объект
-     */
-    @Override
-    public void WebGo(WebView o) {
-        webView = o;
-        notifyObservers("WebGo");//Информация в левую часть готова для вывода.
-    }
-
-    /**
-     * Метод ArcGo(Arc o)
-     * Предназначен для оправки сообщения в View, что дуга угла готова к выводу на доску.
-     *
-     * @param o - объект дуга угла
-     */
-    @Override
-    public void ArcGo(Arc o) {
-        arcGo = o;
-        notifyObservers("ArcGo");
-    }
-
-    /**
-     * Метод ArcColorGo(Arc o)
-     * Предназначен для оправки сообщения в View, что цвет дуги угла готов к выводу на доску.
-     *
-     * @param o - объект дуга угла
-     */
-    @Override
-    public void ArcColorGo(Arc o) {
-        arcGo = o;
-        notifyObservers("ColorArc");
-    }
-
-    /**
-     * Метод LineColorGo(Line o)
-     * Предназначен для оправки сообщения в View, что цвет линии готов к выводу на доску.
-     *
-     * @param o - объект линия
-     */
-    @Override
-    public void LineColorGo(Line o) {
-        line = o;
-        notifyObservers("ColorLine");
-    }
-
-    /**
-     * Метод statusGo(Label o)
-     * Предназначен для оправки сообщения в View, что вывод в статусную строку готово к выводу на доску.
-     *
-     * @param o - объект Label
-     */
-    @Override
-    public void StatusGo(Label o) {
-        Status = o;
-        notifyObservers("LeftStatusGo");
-    }
-
-    /**
-     * Метод textAreaGo()
-     * Предназначен для отправки уведомления в Вид о готовности данных
-     * для вывода в правой части доски.
-     */
-    @Override
-    public void TextAreaGo() {
-        notifyObservers("TextShapeGo");
-    }
-
-
-    /**
      * Метод indexPoindAdd().
      * Предназначен для увелечения индекса в названии точки.
      */
@@ -388,7 +245,9 @@ class Model implements Observable {
     public void webHTML(WebView o, String file) {
         String pathFile = new File("").getAbsolutePath();//получить полный путь к файлу
         leftHTML = "file:" + pathFile + "\\src\\Web\\" + file;//установить ссылку
-        WebGo(o);//передать уведомление о выводе в левую часть доски
+        //Передать в View для вывода
+        webView=o;
+        notifyObservers("WebGo");
     }
 
 
@@ -431,7 +290,9 @@ class Model implements Observable {
             case 11 -> setStringWebView(WEB_HTML + OP_GEOMETRY_1 + WEB_END);
             case 12 -> setStringWebView(WEB_HTML + TR_TEOREMA34 + WEB_END);
         }
-        WebViewGo(o);//на вывод
+        //Передать в View для вывода
+        webView=o;
+        notifyObservers("WebView");
     }
 
     /**
@@ -504,7 +365,8 @@ class Model implements Observable {
                 txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_21, nameSplitRemove(t.getID()));
             }
         }
-        TextAreaGo();
+        //Передать в View для вывода
+        notifyObservers("TextShapeGo");
     }
 
     /**
@@ -609,7 +471,9 @@ class Model implements Observable {
         textX = circle.getCenterX() - 20;//место вывода Х при создании
         textY = circle.getCenterY() + 20;//место вывода Y при создании
         textCircle.setVisible(showPoindName);//показывать не показывать, зависит от меню "Настройка"
-        TextGo(textCircle);//вывести на доску
+        //Передать для вывода в View
+        textGo=textCircle;
+        notifyObservers("TextGo");
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textCircle);
         //Односторонняя связь точки с именем объекта для перемещения
@@ -650,7 +514,9 @@ class Model implements Observable {
         textX = circle.getCenterX() + x;//место вывода Х при создании
         textY = circle.getCenterY() - y;//место вывода Y при создании
         textAngle.setVisible(showAngleName);//показывать не показывать, зависит от меню "Настройка"
-        TextGo(textAngle);//вывести на доску
+        //Передать для вывода в View
+        textGo=textAngle;
+        notifyObservers("TextGo");
         return arcXY;
     }
 
@@ -733,7 +599,9 @@ class Model implements Observable {
         textY = cY + 15 * ((aX - bX) / dlina);//место вывода Y при создании
         nameLine.setText(line.getId());//Имя для вывода на доску
         nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
-        TextGo(nameLine);//вывести на доску
+        //Передать для вывода в View
+        textGo=nameLine;
+        notifyObservers("TextGo");
     }
 
     /**
@@ -764,7 +632,8 @@ class Model implements Observable {
         //добавить в коллекцию точек
         poindCircles.add(new PoindCircle(newPoind, newPoind.getId(), verX0, verY0, bMove, false, 0, null, 0.0, false));
         //Передать в View для вывода на экран
-        VertexGo(newPoind);
+        vertex=newPoind;
+        notifyObservers("VertexGo");
         //Добавить имя на доску
         nameCircleAdd(newPoind);
         //Добавить в правую часть доски
@@ -828,7 +697,7 @@ class Model implements Observable {
                 txtAreaOutput();
             } else {
                 setStringLeftStatus(STA_8);
-                StatusGo(Status);//Установить статус "Перемещение запрещено"
+                notifyObservers("LeftStatusGo");
             }
         });
         //Нажатие клавиши
@@ -844,7 +713,7 @@ class Model implements Observable {
                 }
             } else {
                 stringLeftStatus = STA_19;
-                StatusGo(Status);
+                notifyObservers("LeftStatusGo");
             }
         });
         //Наведение на точку
@@ -858,7 +727,7 @@ class Model implements Observable {
                     CycleMethod.NO_CYCLE, stops));
             //Установить статус "Точка + выбранная точка"
             setStringLeftStatus(STA_9 + circle.getId());
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         //Отпускание кнопки
         circle.setOnMouseReleased(e -> {
@@ -870,7 +739,7 @@ class Model implements Observable {
             poindOldAdd = false;//запрет брать точку для отрезков, прямых, лучей
             //Установить статус пустая строка
             setStringLeftStatus("");
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         circle.setOnMouseClicked(e -> {
 
@@ -1011,35 +880,35 @@ class Model implements Observable {
                     switch (p.getSegment()) {
                         case 0 -> {
                             setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 1 -> {
                             setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 2 -> {
                             setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 3 -> {
                             setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 4 -> {
                             setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 5 -> {
                             setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 6 -> {
                             setStringLeftStatus(STA_25 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                         case 7 -> {
                             setStringLeftStatus(STA_27 + nameSplitRemove(p.getId()));
-                            StatusGo(Status);
+                            notifyObservers("LeftStatusGo");
                         }
                     }
                 }
@@ -1051,7 +920,7 @@ class Model implements Observable {
             poindAdd = false;
             //Установить статус
             setStringLeftStatus("");
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
             newLine.setStrokeWidth(2);
             lineOldAdd = false;
         });
@@ -1080,8 +949,10 @@ class Model implements Observable {
             case 3 -> Collections.addAll(arrDash, 2.0, 10.0);
             case 4 -> Collections.addAll(arrDash, 10.0, 4.0, 10.0);
         }
+        //Передаем в View для вывода
         //Цвет линии задается переменной ColorLine
-        LineColorGo(newLine);
+        line=newLine;
+        notifyObservers("ColorLine");
         //Толщина
         newLine.setStrokeWidth(2);
         //Задаем вид линии
@@ -1107,7 +978,10 @@ class Model implements Observable {
                     poindOldAdd = true;
                     verX = pCl.getCenterX();
                     verY = pCl.getCenterY();
-                    SideGo(nl);
+                    //Передать в View для вывода
+                    line=nl;
+                    notifyObservers("SideGo");
+
                 } else {
                     setPoindOldAdd(false);
                 }
@@ -1163,11 +1037,11 @@ class Model implements Observable {
         //привязать событие мыши
         treangle.setOnMouseEntered(e -> {
             stringLeftStatus = STA_21 + nameSplitRemove(nameTr);
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         treangle.setOnMouseExited(e -> {
             stringLeftStatus = " ";
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         return treangle;
     }
@@ -1352,10 +1226,11 @@ class Model implements Observable {
         Circle o3 = findCircle(arcChar[2]);
         Arc arcNew = new Arc();
         arcNew.setId(String.valueOf(arcChar[1]));
-        ArcColorGo(arcNew);//задаем цвет арки дуги и цвет фона
         arcNew.setType(ArcType.ROUND);//тип арки
         arcNew.setOpacity(0.5);//прозрачность
-        ArcColorGo(arcNew);//задать цвет
+        //Передать в View для вывода
+        arcGo=arcNew;
+        notifyObservers("ColorArc");//задаем цвет арки дуги и цвет фона
         arcVertexGo(o1, o2, o3, arcNew, 30);//расчитать арку угла для построения
         String nameAngle = indexAngledAdd();//увеличить индекс
         nameArcAdd(o2, nameAngle, arcNew);//вывести имя угла
@@ -1366,12 +1241,12 @@ class Model implements Observable {
         arcNew.setOnMouseEntered(e -> {
             //Установить статус "Угол + выбранный угол + длина дуги в градусах"
             setStringLeftStatus(STA_16 + arcNew.getId() + " = " + arcNew.getLength() + " гр.");
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         //При выходе мышки из дуги, сбросить статусную стоку.
         arcNew.setOnMouseExited(e -> {
             setStringLeftStatus("");
-            StatusGo(Status);
+            notifyObservers("LeftStatusGo");
         });
         return arcNew;
     }
@@ -1419,7 +1294,9 @@ class Model implements Observable {
         //Заменить для построения арки угла
         verX = o2.getCenterX();
         verY = o2.getCenterY();
-        ArcGo(arc);//перемещение дуги
+        //Передать в View для вывода
+        arcGo=arc;
+        notifyObservers("ArcGo");
         //Восстановить текущие координаты мышки
         verX = stX;
         verY = stY;
@@ -1773,11 +1650,14 @@ class Model implements Observable {
         Circle newPoindTreangle = createPoindAdd(false);//создать новую расчетную точку
         verX = mc.getX();
         verY = mc.getY();
-        VertexGo(newPoindTreangle);
+        //Передать в View для вывода
+        vertex=newPoindTreangle;
+        notifyObservers("VertexGo");
         findCirclesUpdateXY(newPoindTreangle.getId(), gridViews.revAccessX(verX), gridViews.revAccessY(verY));
         verX1 = c.getCenterX();
         verY1 = c.getCenterY();
-        SideGo(newLineTreangle);
+        line=newLineTreangle;
+        notifyObservers("SideGo");
         findLinesUpdateXY(newLineTreangle.getId());
         paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску
         newLineTreangle.toFront();

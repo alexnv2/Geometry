@@ -1,5 +1,9 @@
 package ContstantString;
 
+/**
+ * Класс StringWeb.
+ * Содержит справочную информацию для правой части доски
+ */
 public final class StringWeb {
  public static int WIND_SHOW=0;
  public static final String WEB_HTML="<!doctype html><html lang=\"ru\"><head><meta charset=\"utf-8\"><style> p {font-size: 12pt; font-family: \"Times New Roman\";}#it-bold{font:italic bold 12pt Times New Roman;}#it-norm{font-style:italic ;}</style></head><body>" ;
@@ -36,7 +40,7 @@ public final class StringWeb {
  public static final String TR_PROPOSITION_1_THREE="Рассмотрим треугольники АВС и А₁В₁С₁, у которых АВ=А₁В₁, ВС=В₁С₁, СА=С₁А₁. Докажем что  △АВС=△А₁В₁С₁";
  public static final String TR_PROPOSITION_2_THREE="Так как по условию теоремы стороны АС и А₁С₁, ВС и В₁С₁ равны, то △А₁С₁С и △В₁С₁С - равнобедренные. По теореме о свойствах углов равнобедренного треугольника ∠1=∠2, ∠3=∠4, поэтому ∠А₁СВ₁=∠А₁С₁В₁. Итак АС=А₁С₁, ВС=В₁С₁, ∠С=∠С₁. Следовательно, треугольники АВС и А₁В₁С₁ равны по первому признаку равенрства треугольников. Теорема доказана.";
  public static final String TR_DLINA_MEDIAN="<p><span style=\"font-family: &quot;&quot;;\">Точка пересечения медиан является центром масс треугольника (если считать треугольник тонкой однородной пластиной).</span></p><p><span style=\"font-family: &quot;&quot;;\">Формула для расчета длины медианы:</span></p>";
- public static final String TR_DLINA_HIGHT="<p>Длина высоты проведенной к стороне треугольника расчитывается по формуле:</p>";
+ public static final String TR_DLINA_HIGHT="<p>Длина высоты проведенной к стороне треугольника рассчитывается по формуле:</p>";
  public static final String TR_AREA_1="<p><span id=\"it-norm\">Площадь треугольника равна половине произведения его стороны на высоту, проведенную к этой стороне:</span></p>";
  public static final String TR_AREA_2="<p><span id=\"it-norm\">Площадь треугольника равна половине произведения двух любых сторон на синус угла между ними:</span></p>";
  public static final String TR_AREA_3="<p><span id=\"it-norm\">Площадь треугольника по формуле Герона:</span></p>";
