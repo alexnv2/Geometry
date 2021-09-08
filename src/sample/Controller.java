@@ -234,10 +234,10 @@ public class Controller extends View {
      * @param mouseEvent - координаты мыши
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
-        model.setVerX(mouseEvent.getX());
-        model.setVerY(mouseEvent.getY());
-        model.setVerX0(gridViews.revAccessX(mouseEvent.getX()));
-        model.setVerY0(gridViews.revAccessY(mouseEvent.getY()));
+        model.setScreenX(mouseEvent.getX());
+        model.setScreenY(mouseEvent.getY());
+        model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
+        model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("x " + mouseEvent.getX() + " y " + mouseEvent.getY() + " Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
         //Добавление треугольника
         if (treangleAdd && newLine != null && poindAdd2) {
@@ -265,8 +265,8 @@ public class Controller extends View {
         //Создание луча
         if (rayAdd && newLine != null && poindAdd2) {
             //Расчитать координаты окончания луча
-            double x = model.getRayEndX() + (model.getVerX() - model.getRayEndX()) * 3;
-            double y = model.getRayEndY() + (model.getVerY() - model.getRayEndY()) * 3;
+            double x = model.getRayEndX() + (model.getScreenX() - model.getRayEndX()) * 3;
+            double y = model.getRayEndY() + (model.getScreenY() - model.getRayEndY()) * 3;
             //Добавить координаты пересчета в коллекцию
             model.setRayStartX(x);
             model.setRayStartY(y);
@@ -285,10 +285,10 @@ public class Controller extends View {
         //Создание прямой
         if (lineAdd && newLine != null && poindAdd2) {
             //расчитать концов прямой по уравнению прямой
-            double x = poindLine1.getCenterX() + (model.getVerX() - poindLine1.getCenterX()) * 3;
-            double y = poindLine1.getCenterY() + (model.getVerY() - poindLine1.getCenterY()) * 3;
-            double x1 = poindLine1.getCenterX() + (model.getVerX() - poindLine1.getCenterX()) * -3;
-            double y1 = poindLine1.getCenterY() + (model.getVerY() - poindLine1.getCenterY()) * -3;
+            double x = poindLine1.getCenterX() + (model.getScreenX() - poindLine1.getCenterX()) * 3;
+            double y = poindLine1.getCenterY() + (model.getScreenY() - poindLine1.getCenterY()) * 3;
+            double x1 = poindLine1.getCenterX() + (model.getScreenX() - poindLine1.getCenterX()) * -3;
+            double y1 = poindLine1.getCenterY() + (model.getScreenY() - poindLine1.getCenterY()) * -3;
 
             //Добавить координаты пересчета в коллекцию
             model.setVerLineStartX(gridViews.revAccessX(x1));
@@ -317,10 +317,10 @@ public class Controller extends View {
      */
     public void onMouseDraggen(MouseEvent event) {
         //координаты, нужны для перемещения объектов на доске
-        model.setVerX(event.getX());
-        model.setVerY(event.getY());
-        model.setVerX0(gridViews.revAccessX(event.getX()));
-        model.setVerY0(gridViews.revAccessY(event.getY()));
+        model.setScreenX(event.getX());
+        model.setScreenY(event.getY());
+        model.setDecartX(gridViews.revAccessX(event.getX()));
+        model.setDecartY(gridViews.revAccessY(event.getY()));
 
         //Перемещение сетки
         if (event.getTarget() == paneShape) {
@@ -365,9 +365,7 @@ public class Controller extends View {
             poindAdd = false;//Режим добавления точки окончен
             model.setPoindLineAdd(false);
             disableButton(false);//разблокировать кнопки
-            //Вывод информации об объектах в правую часть доски
-            model.setTxtShape("");
-            model.txtAreaOutput();
+
         }
         //Добавление отрезка
         if (segmentAdd && !poindAdd1) {
@@ -444,8 +442,8 @@ public class Controller extends View {
             //Заменить имя
             model.findNameId(poindLine1.getId(), poindLine2.getId(), newLine.getId());
             newLine = model.createLineAdd(3);
-            model.setVerX(poindTreangle1.getCenterX());
-            model.setVerY(poindTreangle1.getCenterY());
+            model.setScreenX(poindTreangle1.getCenterX());
+            model.setScreenY(poindTreangle1.getCenterY());
             //Передать в View для вывода
             model.setLine(newLine);
             model.notifyObservers("SideGo");
@@ -563,10 +561,10 @@ public class Controller extends View {
             addLineRayStart(7);//Создание перпендикуляра
             poindAdd2 = false;
             //Задаем координаты
-            model.setVerX1(poindLine1.getCenterX());
-            model.setVerY1(poindLine1.getCenterY());
-            model.setVerX(D1.getX());
-            model.setVerY(D1.getY());
+            model.setSegmentStartX(poindLine1.getCenterX());
+            model.setSegmentStartY(poindLine1.getCenterY());
+            model.setScreenX(D1.getX());
+            model.setScreenY(D1.getY());
             //Передать в View для вывода
             model.setLine(newLine);
             model.notifyObservers("SideGo");
@@ -575,8 +573,8 @@ public class Controller extends View {
             //Переводим координаты линии в мировые
             model.findLinesUpdateXY(newLine.getId());
             //Переводим в мировые координаты точки
-            model.setVerX0(gridViews.revAccessX(D1.getX()));
-            model.setVerY0(gridViews.revAccessY(D1.getY()));
+            model.setDecartX(gridViews.revAccessX(D1.getX()));
+            model.setDecartY(gridViews.revAccessY(D1.getY()));
             //Создаем расчетную точку не перемещаемую
             Circle newPoind = model.createPoindAdd(false);//создать точку
             //Обновить мировые координаты коллекции
@@ -722,10 +720,10 @@ public class Controller extends View {
             double y;
             x = Math.random() * max;
             y = Math.random() * max;
-            model.setVerX(Math.round(x));
-            model.setVerY(Math.round(y));
-            model.setVerX0(gridViews.revAccessX(Math.round(x)));
-            model.setVerY0(gridViews.revAccessY(Math.round(y)));
+            model.setScreenX(Math.round(x));
+            model.setScreenY(Math.round(y));
+            model.setDecartX(gridViews.revAccessX(Math.round(x)));
+            model.setDecartY(gridViews.revAccessY(Math.round(y)));
             Circle newPoind = model.createPoindAdd(true);//создать точку
             paneShape.getChildren().add(newPoind);//добавить на доску
         }
