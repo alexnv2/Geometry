@@ -173,7 +173,18 @@ class Model implements Observable {
             observer.notification(message);
         }
     }
-
+    /**
+     * Метод initIndex()
+     * Инициализация переменных после очистки доски.
+     */
+    public void initIndex(){
+        setIndexPoind("A");
+        setIndexPoindInt(0);
+        setIndexLine("a");
+        setIndexLineInt(0);
+        setIndexAngle('\u03b1');
+        setIndexAngleInt(0);
+    }
     /**
      * Метод indexPoindAdd().
      * Предназначен для увелечения индекса в названии точки.
@@ -866,7 +877,6 @@ class Model implements Observable {
 
         //Привязка событий мышки
         mouseLine(line);
-
         return line;
     }
 
@@ -934,6 +944,35 @@ class Model implements Observable {
             timeLine = newLine;//выбрана данная линия, для построения
             lineOldAdd = true;//линия выбрана
         });
+    }
+
+    public void rayAddLine(Line newLine, int seg){
+        //Расчитать координаты окончания луча
+        double x, y, x1 , y1;
+        x = getRayEndX() + (getScreenX() - getRayEndX()) * 3;
+        y = getRayEndY() + (getScreenY() - getRayEndY()) * 3;
+        x1 = getRayEndX() + (getScreenX() - getRayEndX()) * -3;
+        y1 = getRayEndY() + (getScreenY() - getRayEndY()) * -3;
+        //Добавить координаты пересчета в коллекцию
+        setRayStartX(x);
+        setRayStartY(y);
+        //Пересчет координат в мировые
+        setVerLineStartX(gridViews.revAccessX(x));
+        setVerLineStartY(gridViews.revAccessY(y));
+        if(seg==2) {
+            System.out.println(x1);
+            setRayEndX(x1);
+            setRayEndY(y1);
+            setVerLineEndX(gridViews.revAccessX(x1));
+            setVerLineEndY(gridViews.revAccessY(y1));
+        }else {
+            setVerLineEndX(gridViews.revAccessX(getRayEndX()));
+            setVerLineEndY(gridViews.revAccessY(getRayEndY()));
+        }
+        //Передать в View для вывода
+        setLine(newLine);
+        notifyObservers("RayGo");
+        findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
     }
 
     /**

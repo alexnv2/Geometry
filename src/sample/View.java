@@ -129,6 +129,7 @@ class View implements Observer {
      * @param ray - объект Линия
      */
     private void rayGo(Line ray) {
+        System.out.println("EndX "+model.getRayEndX()+" StartX "+model.getRayStartX());
         ray.setStartX(model.getRayEndX());
         ray.setStartY(model.getRayEndY());
         ray.setEndX(model.getRayStartX());
@@ -145,6 +146,7 @@ class View implements Observer {
         webView.setContextMenuEnabled(false);
         WebEngine w = webView.getEngine();
         w.loadContent(model.getStringWebView());
+       // System.out.println(model.getStringWebView());
     }
 
     /**
@@ -157,6 +159,7 @@ class View implements Observer {
         web.setContextMenuEnabled(false);
         WebEngine w = web.getEngine();
         w.load(model.getLeftHTML());
+       // System.out.println(model.getLeftHTML());
     }
 
     /**

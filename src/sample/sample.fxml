@@ -43,7 +43,7 @@
       <SeparatorMenuItem mnemonicParsing="false"/>
       <MenuItem mnemonicParsing="false" onAction="#menuIsosceles" text="Свойство равнобедренного треугольника"/>
       <MenuItem mnemonicParsing="false" onAction="#menuPrIsosceles" text="Признак равнобедренного треугольника"/>
-      <MenuItem mnemonicParsing="false" text="Перпендикуляр к прямой"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuPerpend" text="Перпендикуляр к прямой"/>
       <MenuItem mnemonicParsing="false" text="Признаки параллельности двух прямых"/>
       <MenuItem mnemonicParsing="false" text="Теоремы об углах, образованных двумя параллельными прямыми и секущей"/>
       <MenuItem mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми"/>

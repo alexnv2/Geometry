@@ -27,7 +27,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.val;
+
 import java.util.Objects;
+import java.util.Optional;
+
 import static ContstantString.StringStatus.*;
 
 /**
@@ -58,7 +61,7 @@ public class Controller extends View {
      */
     @FXML
     private TextArea txtShape;
-     @FXML
+    @FXML
     private Button btnTreangle;
     @FXML
     private Button btnPoind;
@@ -265,26 +268,14 @@ public class Controller extends View {
         //Создание луча
         if (rayAdd && newLine != null && poindAdd2) {
             //Расчитать координаты окончания луча
-            double x = model.getRayEndX() + (model.getScreenX() - model.getRayEndX()) * 3;
-            double y = model.getRayEndY() + (model.getScreenY() - model.getRayEndY()) * 3;
-            //Добавить координаты пересчета в коллекцию
-            model.setRayStartX(x);
-            model.setRayStartY(y);
-            //Пересчет координат в мировые
-            model.setVerLineStartX(gridViews.revAccessX(model.getRayEndX()));
-            model.setVerLineStartY(gridViews.revAccessY(model.getRayEndY()));
-            model.setVerLineEndX(gridViews.revAccessX(x));
-            model.setVerLineEndY(gridViews.revAccessY(y));
-            //Передать в View для вывода
-            model.setLine(newLine);
-            model.notifyObservers("RayGo");
-            model.findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
+            model.rayAddLine(newLine, 1);
             poindAdd1 = true;//первая точка создана
         }
 
         //Создание прямой
         if (lineAdd && newLine != null && poindAdd2) {
             //расчитать концов прямой по уравнению прямой
+
             double x = poindLine1.getCenterX() + (model.getScreenX() - poindLine1.getCenterX()) * 3;
             double y = poindLine1.getCenterY() + (model.getScreenY() - poindLine1.getCenterY()) * 3;
             double x1 = poindLine1.getCenterX() + (model.getScreenX() - poindLine1.getCenterX()) * -3;
@@ -305,6 +296,7 @@ public class Controller extends View {
             model.setLine(newLine);
             model.notifyObservers("RayGo");
             poindAdd1 = true;//разрешение для постройки 2 точки
+
         }
     }
 
@@ -714,7 +706,7 @@ public class Controller extends View {
     public void menuPoindClick() {
         model.webHTML(webViewLeft, "line.html");//Вывод в web файла
         //Создать точки
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             final double max = 500.;
             double x;
             double y;
@@ -727,6 +719,69 @@ public class Controller extends View {
             Circle newPoind = model.createPoindAdd(true);//создать точку
             paneShape.getChildren().add(newPoind);//добавить на доску
         }
+        model.setScreenX(142);
+        model.setScreenY(390);
+        model.setDecartX(gridViews.revAccessX(142));
+        model.setDecartY(gridViews.revAccessY(390));
+        Circle newPoind = model.createPoindAdd(true);//создать точку
+        paneShape.getChildren().add(newPoind);//добавить на доску
+
+
+        model.setScreenX(297);
+        model.setScreenY(302);
+        model.setDecartX(gridViews.revAccessX(297));
+        model.setDecartY(gridViews.revAccessY(302));
+        Circle newPoind1 = model.createPoindAdd(true);//создать точку
+        paneShape.getChildren().add(newPoind1);//добавить на доску
+        Line newLine = model.createLineAdd(1);
+        model.setRayEndX(142);
+        model.setRayEndY(390);
+        model.rayAddLine(newLine, 1);
+
+        paneShape.getChildren().add(newLine);//добавить на доску
+        newLine.toBack();
+        //Связать точки с лучом
+        model.rayBindCircles(newPoind, newPoind1, newLine);
+        //Заменить имя
+        model.findNameId(newPoind.getId(), newPoind1.getId(), newLine.getId());
+        //Добавить имя на доску
+        model.nameLineAdd(newLine);
+        //Вывод информации об объектах в правую часть доски
+        model.setTxtShape("");
+        model.txtAreaOutput();
+
+        //прямая
+        model.setScreenX(192);
+        model.setScreenY(234);
+        model.setDecartX(gridViews.revAccessX(192));
+        model.setDecartY(gridViews.revAccessY(234));
+        Circle newPoind2 = model.createPoindAdd(true);//создать точку
+        paneShape.getChildren().add(newPoind2);//добавить на доску
+
+
+        model.setScreenX(385);
+        model.setScreenY(144);
+        model.setDecartX(gridViews.revAccessX(385));
+        model.setDecartY(gridViews.revAccessY(144));
+        Circle newPoind3 = model.createPoindAdd(true);//создать точку
+        paneShape.getChildren().add(newPoind3);//добавить на доску
+        Line newLine1 = model.createLineAdd(2);
+        model.setRayEndX(192);
+        model.setRayEndY(234);
+        model.rayAddLine(newLine1, 2);
+
+        paneShape.getChildren().add(newLine1);//добавить на доску
+        newLine1.toBack();
+        //Связать точки с лучом
+        model.circlesBindLine(newPoind2, newPoind3, newLine1);
+        //Заменить имя
+        model.findNameId(newPoind2.getId(), newPoind3.getId(), newLine1.getId());
+        //Добавить имя на доску
+        model.nameLineAdd(newLine1);
+        //Вывод информации об объектах в правую часть доски
+        model.setTxtShape("");
+        model.txtAreaOutput();
+
     }
 
     /**
@@ -828,6 +883,13 @@ public class Controller extends View {
         model.webHTML(webViewLeft, "acsiomy_4.html");//Вывод в браузер файла html
     }
 
+    /**
+     * Метод menuPerpend().
+     * Вывод теоремы о перпендикуляре
+     */
+    public void menuPerpend() {
+        model.webHTML(webViewLeft, "perpend.html");//Вывод в браузер файла html
+    }
 
     /**
      * Метод menuShowPoindName()
@@ -1228,24 +1290,33 @@ public class Controller extends View {
 
     /**
      * Метод btnDelete()
-     * Нажата копка "Удалить геометрическую фигуру." Метод запускает режим удаления выбранных объектов.
-     * Признак для удаления флаг bSelect=true во всех коллекциях
+     * Нажата копка "Удалить геометрическую фигуру." Метод удаляет все геометрические объекты.
      */
     public void btnDelete() {
-        //Установить статус
-        model.setStringLeftStatus(STA_15);
-        model.notifyObservers("LeftStatusGo");
-        visibleCreate();//сбросить все режимы
-        disableButton(true);//блокировать кнопки
-        model.setRemoveObject(true);//установить режим удаления
-    }
+            Alert alert = new Alert(Alert.AlertType.NONE, "Вы уверены, что надо удалить все геометрические фигуры?",  ButtonType.OK, ButtonType.CANCEL);
+            alert.setTitle("Удаление геометрический фигур");
+            alert.setHeaderText("Очистить доску от всех геометрических фигур.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //удаляем из коллекций
+                paneShape.getChildren().clear();
+                model.getPoindCircles().clear();
+                model.getPoindLines().clear();
+                model.getVertexArcs().clear();
+                model.getNamePoindLines().clear();
+                model.getTreangleNames().clear();
+                model.initIndex();//инициализация индексов
+                model.setTxtShape("");
+                model.txtAreaOutput();
+            }
+        }
 
     /**
      * Метод onMouseEnteredDelete()
      * Всплывающая подсказка при наведении на кнопку "Удалить"
      */
     public void onMouseEnteredDelete() {
-        model.setTextToolTip("Удалить геометрическую фигуру");
+        model.setTextToolTip("Удалить с доски все геометрические фигуры");
         //Передать в View для вывода
         model.setBtnToolTip(btnDelete);
         model.notifyObservers("ToolTip");
@@ -1288,4 +1359,5 @@ public class Controller extends View {
         model.ColTest();
     }
 }
+
 
