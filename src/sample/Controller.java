@@ -83,6 +83,9 @@ public class Controller extends View {
     private Button btnBisector;
     @FXML
     private Button btnHeight;
+    @FXML
+    private Button btnCircle;
+
     //Web браузер для вывода данных
     @FXML
     private WebView webViewLeft;//для размещения информации слева от доски
@@ -96,6 +99,7 @@ public class Controller extends View {
     private Line newLine;//отрезок
     private Circle poindLine1;//первая точка луча, прямой, отрезка
     private Circle poindLine2;//вторая точка луча, прямой, отрезка
+    private Circle circle;//окружность
     @FXML
     private CheckMenuItem menuShowPoindName;
     @FXML
@@ -118,6 +122,7 @@ public class Controller extends View {
     private boolean bisectorAdd;//true - проведение биссектрисы из вершины треугольника
     private boolean heightAdd;//true - проведение высоты из вершины треугольника
     private boolean verticalAdd;//true - построение перпендикуляра к прямой
+    private boolean circleAdd;//true - построение окружности
 
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
@@ -129,6 +134,8 @@ public class Controller extends View {
     private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
 
     private String infoStatus;//Вершины угла и вершины треугольника при создании.
+
+
 
     /**
      * Метод инициализации для класса Controller
@@ -264,6 +271,18 @@ public class Controller extends View {
         //Вторая точка, если расстояние до неё меньше 15px, конец отрезка
         //переходит на точку. Щелчок мышкой, вторая точка выбрана заданная
         model.lineAddPoind(newLine, poindAdd2);
+
+        //Добавить окружность
+        if (circleAdd && circle !=null && poindAdd1){
+            poindAdd2=true;
+            //Расчитать радиус
+            double r=model.distance(poindLine1.getCenterX(),poindLine1.getCenterY(),model.getScreenX(),model.getScreenY());
+            double rw=model.distance(gridViews.revAccessX(poindLine1.getCenterX()),gridViews.revAccessY(poindLine1.getCenterY()),model.getDecartX(),model.getDecartY());;
+            model.setRadiusCircle(Math.round(r));
+            model.setRadiusCircleW(Math.round(rw));
+            model.circleView(circle);//вывести на доску
+        }
+
 
         //Создание луча
         if (rayAdd && newLine != null && poindAdd2) {
@@ -586,6 +605,31 @@ public class Controller extends View {
             model.setPoindOldAdd(false);
             //закрыть режим создания перпендикуляра
         }
+        //Построить окружность
+        if (circleAdd && !poindAdd1 ) {
+            //добавить центр окружности на доску
+            if (!model.isPoindOldAdd() && !poindAdd1) {//false - новая точка true - взять имеющую
+                poindLine1 = model.createPoindAdd(true);//создать новую вершину
+                paneShape.getChildren().add(poindLine1);
+            } else {
+                poindLine1 = model.getTimeVer();
+            }
+            poindAdd1 = true;
+            //создать новую окружность
+            circle = model.createCircleAdd(poindLine1);
+        //закончить построение окружности
+        }
+          if(circleAdd && poindAdd2){
+              model.updateCircle(circle);
+              circleAdd=false;
+              poindAdd1=false;
+              poindAdd2=false;
+              disableButton(false);//разблокировать кнопки
+              //Вывод информации об объектах в правую часть доски
+              model.setTxtShape("");
+              model.txtAreaOutput();
+          }
+
 
 
         event.consume();
@@ -1184,6 +1228,19 @@ public class Controller extends View {
     }
 
     /**
+     * Метод btnCircle().
+     * Метод для события нажатия кнопки "Построить окружность".
+     * Устанавливает режим построения окружности.
+     */
+    public void btnCircleClick() {
+        model.setStringLeftStatus(STA_28);
+        model.notifyObservers("LeftStatusGo");
+        visibleCreate();//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        circleAdd = true;//режим построения окружности
+    }
+
+    /**
      * Метод onMouseEnteredVertical()
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить перпендикуляр к прямой"
      */
@@ -1194,6 +1251,18 @@ public class Controller extends View {
         model.notifyObservers("ToolTip");
     }
 
+
+    /**
+     * Метод onMouseEnteredCircle().
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить окружность"
+     */
+    public void onMouseEnteredCircle() {
+        model.setTextToolTip("Построить окружность");
+        //Передать в View для вывода
+        model.setBtnToolTip(btnCircle);
+        model.notifyObservers("ToolTip");
+
+    }
     /**
      * Метод btnTreangle().
      * Метод на события нажатия кнопки "Добавить треугольник".
@@ -1292,7 +1361,7 @@ public class Controller extends View {
      * Метод btnDelete()
      * Нажата копка "Удалить геометрическую фигуру." Метод удаляет все геометрические объекты.
      */
-    public void btnDelete() {
+    public void   btnDelete() {
             Alert alert = new Alert(Alert.AlertType.NONE, "Вы уверены, что надо удалить все геометрические фигуры?",  ButtonType.OK, ButtonType.CANCEL);
             alert.setTitle("Удаление геометрический фигур");
             alert.setHeaderText("Очистить доску от всех геометрических фигур.");
@@ -1305,6 +1374,7 @@ public class Controller extends View {
                 model.getVertexArcs().clear();
                 model.getNamePoindLines().clear();
                 model.getTreangleNames().clear();
+                model.getCircleLines().clear();
                 model.initIndex();//инициализация индексов
                 model.setTxtShape("");
                 model.txtAreaOutput();
@@ -1358,6 +1428,10 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
+
+
+
+
 }
 
 

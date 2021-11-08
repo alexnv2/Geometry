@@ -64,6 +64,7 @@ class View implements Observer {
             case "ColorArc" -> this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
+            case "CircleGo" ->this.CircleGo(model.getCircle());//вывод окружности
         }
     }
 
@@ -129,7 +130,6 @@ class View implements Observer {
      * @param ray - объект Линия
      */
     private void rayGo(Line ray) {
-        System.out.println("EndX "+model.getRayEndX()+" StartX "+model.getRayStartX());
         ray.setStartX(model.getRayEndX());
         ray.setStartY(model.getRayEndY());
         ray.setEndX(model.getRayStartX());
@@ -146,7 +146,6 @@ class View implements Observer {
         webView.setContextMenuEnabled(false);
         WebEngine w = webView.getEngine();
         w.loadContent(model.getStringWebView());
-       // System.out.println(model.getStringWebView());
     }
 
     /**
@@ -159,7 +158,7 @@ class View implements Observer {
         web.setContextMenuEnabled(false);
         WebEngine w = web.getEngine();
         w.load(model.getLeftHTML());
-       // System.out.println(model.getLeftHTML());
+
     }
 
     /**
@@ -207,5 +206,9 @@ class View implements Observer {
     private void TextGo(Text t) {
         t.setX(model.getTextX());
         t.setY(model.getTextY());
+    }
+
+    private void CircleGo(Circle c){
+        c.setRadius(model.getRadiusCircle());
     }
 }

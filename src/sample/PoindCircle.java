@@ -10,6 +10,7 @@ import lombok.Data;
  */
 @Data
 public class PoindCircle {
+
 private Circle circle; //точка
 private String id; //номер
 private double x; //координата x

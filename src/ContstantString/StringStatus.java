@@ -29,6 +29,8 @@ public final class StringStatus {
     public static final String STA_25="Высота ";
     public static final String STA_26="Укажите на доске точку и перпендикулярную прямую";
     public static final String STA_27="Перпендикуляр ";
+    public static final String STA_28="Укажите на доске центр окружности";
+    public static final String STA_29="Окружность радиусом: ";
 
 
 

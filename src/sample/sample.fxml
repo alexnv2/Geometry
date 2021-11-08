@@ -28,7 +28,7 @@
                 text="Высота треугольника"/>
 
     </Menu>
-      <MenuItem mnemonicParsing="false" text="Окружность"/>
+      <MenuItem mnemonicParsing="false" text="Окружность" />
     </Menu>
     <Menu mnemonicParsing="false" text="Теоремы и свойства">
       <Menu mnemonicParsing="false" text="Признаки равенства">
@@ -82,6 +82,7 @@
     <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick" onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical" onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />

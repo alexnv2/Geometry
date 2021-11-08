@@ -43,6 +43,7 @@ import static java.lang.StrictMath.sqrt;
 class Model implements Observable {
 
     //Переменные класса
+    private Circle circle;//окружность
     private Circle vertex; //точка
     private Circle selected;//Хранит ссылки на выбранные объекты
     private Line line;//линия, луч, прямая
@@ -124,6 +125,9 @@ class Model implements Observable {
     private boolean poindMove = false;
     private double t;//для параметрической прямой, когда точка принадлежит прямой
 
+    private double radiusCircle;//радиус окружности, для View
+    private double radiusCircleW;//радиус окружности в мировых координатах
+
 
     //Коллекции
     private LinkedList<PoindCircle> poindCircles = new LinkedList<>();//коллекция для точек по классу
@@ -132,9 +136,11 @@ class Model implements Observable {
     private ArrayList<Double> arrDash = new ArrayList<>();//массив для создания вида строк
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
+    private LinkedList<CircleLine> circleLines=new LinkedList<>();//коллекция окружностей
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
+
 
     public void setWindShow(int w) {
         WIND_SHOW = w;
@@ -193,7 +199,6 @@ class Model implements Observable {
         String s;
         if (indexPoindInt > 0) {
             s = indexPoind + indexPoindInt;
-            System.out.println(s);
         } else {
             s = indexPoind;
         }
@@ -277,7 +282,6 @@ class Model implements Observable {
     //Текст для отображения в левой части
     public void webViewLeftString(WebView o, int c) {
         String pathImages = new File(".").getAbsolutePath();
-        // System.out.println(pathImages);
         String pathImg1 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_bisector.png" + " width=274 height=242>";
         String pathImg2 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_median.png" + " width=343 height=194>";
         String pathImg3 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_higth.png" + " width=344 height=292>";
@@ -343,7 +347,7 @@ class Model implements Observable {
 
             }
         }
-        txtShape = txtShape + "--------------------------------" + "\n";//добавить разделитель
+
         //Информация об отрезках, лучах и прямых
         for (PoindLine p : poindLines) {
             if (p.getLine() != null) {
@@ -367,20 +371,25 @@ class Model implements Observable {
                 }
             }
         }
-        txtShape = txtShape + "--------------------------------" + "\n";//добавить разделитель
+
         //Информация об углах
         for (VertexArc v : vertexArcs) {
             if (v != null) {
                 txtShape = MessageFormat.format("{0}Угол {1}= {2} гр. \n", txtShape, nameSplitRemove(v.getId()), v.getLengthAngle());
             }
         }
-        txtShape = txtShape + "-------------------------------- " + "\n";//добавить разделитель
+
         //Информация об треугольниках
         for (TreangleName t : treangleNames) {
             if (t != null) {
                 txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_21, nameSplitRemove(t.getID()));
             }
         }
+        //Информация об окружностях
+        for (CircleLine p: circleLines)
+            if(p!=null){
+                txtShape=MessageFormat.format("{0}{1}{2} \n",txtShape, STA_29,p.getRadius());
+            }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
     }
@@ -428,7 +437,6 @@ class Model implements Observable {
         //Наведение мышки на объект
         nameText.setOnMouseEntered(e -> {
             nameText.setCursor(Cursor.HAND);
-            //  System.out.println("do "+nameText.getId());
         });
         //Уход мышки с объекта
         nameText.setOnMouseExited(e -> nameText.setCursor(Cursor.DEFAULT));
@@ -846,6 +854,130 @@ class Model implements Observable {
     }
 
     /**
+     * Метод createCircle().
+     * Предназначен для создания новой окружности и подключения событий мышки.
+     * @return circle - возвращает созданную окружность
+     */
+    Circle createCircle(){
+        Circle newCircle=new Circle(screenX, screenY, 0,Color.TRANSPARENT);
+        newCircle.setStroke(Color.CHOCOLATE);
+        newCircle.setStrokeWidth(2.0);
+        newCircle.setId(indexLineAdd());//добавить имя окружности
+         //привязать события мышки
+        //При наведении
+        newCircle.setOnMouseEntered(e->{
+            newCircle.setCursor(Cursor.HAND);
+            //Установить статус "Окружность"
+            setStringLeftStatus(STA_29 +findCircleRadius(newCircle));
+            notifyObservers("LeftStatusGo");
+        });
+        //При уходе
+        newCircle.setOnMouseExited(e->{
+            newCircle.setCursor(Cursor.DEFAULT);
+            setStringLeftStatus("");
+            notifyObservers("LeftStatusGo");
+        });
+        //При перемещении с нажатой кнопкой
+        newCircle.setOnMouseDragged(e->{
+            Circle c=findCircle(findNameCircle(newCircle));
+            setRadiusCircle(Math.round(distance(c.getCenterX(),c.getCenterY(),getScreenX(),getScreenY())));
+            setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()),gridViews.revAccessY(c.getCenterY()),getDecartX(),getDecartY())));
+            updateCircle(newCircle);
+            circleView(newCircle);
+            //Добавить в правую часть доски
+            setTxtShape("");
+            txtAreaOutput();
+        });
+        return newCircle;
+    }
+
+    public void updateCircle(Circle c){
+        for (CircleLine p: circleLines){
+            if(p!=null){
+                if(p.getId().equals(c.getId())){
+                    p.setRadius(getRadiusCircleW());
+                    p.setCircle(c);
+                }
+
+            }
+        }
+    }
+
+    double findCircleRadius(Circle c){
+     for (CircleLine p: circleLines ){
+         if(p!=null){
+             if(p.getCircle().getId().equals(c.getId())) {
+                 return p.getRadius();
+             }
+         }
+     }
+     return 0;
+    }
+    double findCircleRadiusW(Circle c){
+        for (CircleLine p: circleLines ){
+            if(p!=null){
+                if(p.getCircle().getId().equals(c.getId())) {
+                    return p.getCircle().getRadius();
+                }
+            }
+        }
+        return 0;
+    }
+
+    String findNameCircle(Circle c){
+        for (CircleLine p: circleLines){
+            if(p!=null){
+                if(p.getId().equals(c.getId())) {
+                    return p.getPoindID();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void bindPoindCircle(Circle poind, Circle circle){
+
+        poind.centerXProperty().addListener((obj, oldValue, newValue) -> {
+            setRadiusCircle(findCircleRadiusW(circle));
+            circle.setCenterX(poind.getCenterX());
+            circle.setCenterY(poind.getCenterY());
+            circle.setRadius(getRadiusCircle());
+        });
+        poind.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            setRadiusCircle(findCircleRadiusW(circle));
+            circle.setCenterX(poind.getCenterX());
+            circle.setCenterY(poind.getCenterY());
+            circle.setRadius(getRadiusCircle());
+        });
+
+    }
+    /**
+     * Метод circleView().
+     * Предназначен для передачи на вывод окружности классу View.
+     */
+    public void circleView(Circle c){
+        circle=c;
+        notifyObservers("CircleGo");
+
+    }
+
+    /**
+     * Метод createCircleAdd(Circle name).
+     * Предназначен для добавления окружности на доску.
+     * @param name - объект центр окружности
+     * @return - объект окружность
+     */
+    Circle createCircleAdd(Circle name){
+       Circle circle=createCircle();
+       circleLines.add(new CircleLine(circle, circle.getId(), circle.getRadius(), name.getId()));
+       paneBoards.getChildren().add(circle);//добавить окружность на доску
+       circle.toBack();
+       bindPoindCircle(findCircle(findNameCircle(circle)),  circle);
+       return circle;
+    }
+
+
+    /**
      * Метод createLine(int seg).
      * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрис, высот.
      *
@@ -960,7 +1092,6 @@ class Model implements Observable {
         setVerLineStartX(gridViews.revAccessX(x));
         setVerLineStartY(gridViews.revAccessY(y));
         if(seg==2) {
-            System.out.println(x1);
             setRayEndX(x1);
             setRayEndY(y1);
             setVerLineEndX(gridViews.revAccessX(x1));
@@ -1965,5 +2096,11 @@ class Model implements Observable {
 
         System.out.println("Коллекция треугольников");
         treangleNames.forEach(System.out::println);
+
+        System.out.println("Коллекция окружностей");
+        circleLines.forEach(System.out::println);
+
+        System.out.println("Коллекция объектов");
+        paneBoards.getChildren().forEach(System.out::println);
     }
 }
