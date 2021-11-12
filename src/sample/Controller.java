@@ -1074,6 +1074,14 @@ public class Controller extends View {
     public void menuPriznak_1() {
         model.webHTML(webViewLeft, "priznak_1.html");//Вывод в браузер файла html
     }
+    public void menuPriznak_2() {
+        model.webHTML(webViewLeft, "priznak_2.html");//Вывод в браузер файла html
+    }
+
+    public void menuPriznak_3() {
+        model.webHTML(webViewLeft, "priznak_3.html");//Вывод в браузер файла html
+    }
+
     /**
      * Метод menuAbout().
      * Нажат пункт меню "Помощь-> О программе"
