@@ -45,6 +45,12 @@ import static ContstantString.StringStatus.*;
  */
 
 public class Controller extends View {
+    public Menu menuTreangleP;
+    public MenuItem menuTreangle;
+    public MenuItem menuMedina;
+    public MenuItem menuEqualTr;
+    public MenuItem menuSecondTr;
+    public Font x3;
     //Связать переменные с шаблоном FXML
     /**
      * paneShape - контейнер для геометрических фигур
@@ -130,6 +136,7 @@ public class Controller extends View {
 
     private boolean poindAdd1 = false;//true - создание первой точки для отрезка
     private boolean poindAdd2 = false;//true - создание второй точки для отрезка
+    private boolean poindCircle=false;//true - когда создана окружность и идет выбор размера
     private boolean poindAddVertical = false;//true - выбрана точка для перпендикуляра
     private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
 
@@ -274,10 +281,10 @@ public class Controller extends View {
 
         //Добавить окружность
         if (circleAdd && circle !=null && poindAdd1){
-            poindAdd2=true;
+            poindCircle=true;//для завершения создания окружности
             //Расчитать радиус
             double r=model.distance(poindLine1.getCenterX(),poindLine1.getCenterY(),model.getScreenX(),model.getScreenY());
-            double rw=model.distance(gridViews.revAccessX(poindLine1.getCenterX()),gridViews.revAccessY(poindLine1.getCenterY()),model.getDecartX(),model.getDecartY());;
+            double rw=model.distance(gridViews.revAccessX(poindLine1.getCenterX()),gridViews.revAccessY(poindLine1.getCenterY()),model.getDecartX(),model.getDecartY());
             model.setRadiusCircle(Math.round(r));
             model.setRadiusCircleW(Math.round(rw));
             model.circleView(circle);//вывести на доску
@@ -619,11 +626,11 @@ public class Controller extends View {
             circle = model.createCircleAdd(poindLine1);
         //закончить построение окружности
         }
-          if(circleAdd && poindAdd2){
+          if(circleAdd && poindCircle ){
               model.updateCircle(circle);
               circleAdd=false;
               poindAdd1=false;
-              poindAdd2=false;
+              poindCircle=false;
               disableButton(false);//разблокировать кнопки
               //Вывод информации об объектах в правую часть доски
               model.setTxtShape("");
@@ -892,6 +899,15 @@ public class Controller extends View {
     }
 
     /**
+     * Метод menuCircle().
+     * Предназначен для выводя определений окружности.
+     * Вызывается из пункта меню Фигуры->Окружность.
+     */
+    public void menuCircle( ) {
+            model.webHTML(webViewLeft, "circle.html");//Вывод в браузер файла html
+        }
+
+    /**
      * Метод menuAcsiomy1Click().
      * Предназначен для вывода аксиом принадлежности из пункта
      * меню Аксиомы и следствие->Аксиомы принадлежности
@@ -1047,6 +1063,17 @@ public class Controller extends View {
         TwofxmlLoader();
     }
 
+    /**
+     * Метод menuPriznak().
+     * Нажат пункт меню "Теоремы и свойств-> Три признака параллельности прямых"
+     */
+    public void menuPriznak() {
+            model.webHTML(webViewLeft, "priznak.html");//Вывод в браузер файла html
+        }
+
+    public void menuPriznak_1() {
+        model.webHTML(webViewLeft, "priznak_1.html");//Вывод в браузер файла html
+    }
     /**
      * Метод menuAbout().
      * Нажат пункт меню "Помощь-> О программе"
@@ -1428,7 +1455,6 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
-
 
 
 

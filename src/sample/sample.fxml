@@ -28,7 +28,7 @@
                 text="Высота треугольника"/>
 
     </Menu>
-      <MenuItem mnemonicParsing="false" text="Окружность" />
+      <MenuItem mnemonicParsing="false" text="Окружность" onAction="#menuCircle"/>
     </Menu>
     <Menu mnemonicParsing="false" text="Теоремы и свойства">
       <Menu mnemonicParsing="false" text="Признаки равенства">
@@ -44,8 +44,14 @@
       <MenuItem mnemonicParsing="false" onAction="#menuIsosceles" text="Свойство равнобедренного треугольника"/>
       <MenuItem mnemonicParsing="false" onAction="#menuPrIsosceles" text="Признак равнобедренного треугольника"/>
       <MenuItem mnemonicParsing="false" onAction="#menuPerpend" text="Перпендикуляр к прямой"/>
-      <MenuItem mnemonicParsing="false" text="Признаки параллельности двух прямых"/>
-      <MenuItem mnemonicParsing="false" text="Теоремы об углах, образованных двумя параллельными прямыми и секущей"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuPriznak" text="Три признака параллельности двух прямых"/>
+
+      <Menu mnemonicParsing="false" text="Теоремы об углах, образованных двумя параллельными прямыми и секущей">
+        <MenuItem mnemonicParsing="false" onAction="#menuPriznak_1" text="Теорема № 1"/>
+        <MenuItem mnemonicParsing="false" text="Теорема № 2" />
+        <MenuItem mnemonicParsing="false" text="Теорема № 3" />
+      </Menu>
+
       <MenuItem mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми"/>
       <MenuItem mnemonicParsing="false" text="Теорема о сумме углов треугольника"/>
       <MenuItem mnemonicParsing="false" text="Теорема о соотношениях между сторонами углами треугольника"/>
@@ -66,7 +72,7 @@
       <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен"
                      selected="true" onAction="#menuShowPoindName"/>
       <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен"
-                     selected="false" onAction="#menuShowLineName"/>
+                     onAction="#menuShowLineName"/>
       <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
                      onAction="#menuGrid"/>
       <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось"
@@ -92,7 +98,7 @@
     <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
     <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" />
   </HBox>
-  <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0"
+  <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true"
              VBox.vgrow="ALWAYS">
     <AnchorPane>
       <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0"
@@ -118,13 +124,13 @@
     <padding>
       <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
     </padding>
-    <Label fx:id="leftStatus" maxHeight="1.8" maxWidth="-1.0" textFill="blue" HBox.hgrow="ALWAYS">
+    <Label fx:id="leftStatus" maxHeight="1.8" textFill="blue" HBox.hgrow="ALWAYS">
       <font>
         <Font size="12.0" fx:id="x3" />
       </font>
 
     </Label>
-    <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-    <Label fx:id="rightStatus" font="$x3" maxWidth="-1.0" textFill="blue" HBox.hgrow="NEVER" />
+    <Pane HBox.hgrow="ALWAYS" />
+    <Label fx:id="rightStatus" font="$x3" textFill="blue" HBox.hgrow="NEVER" />
   </HBox>
 </VBox>
