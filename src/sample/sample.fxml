@@ -52,7 +52,10 @@
         <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3" />
       </Menu>
 
-      <MenuItem mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми"/>
+      <Menu mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми">
+      <MenuItem mnemonicParsing="false" onAction="#menuPrizAnle_1" text="Теорема № 1"/>
+      <MenuItem mnemonicParsing="false" onAction="#menuPrizAngle_2" text="Теорема № 2" />
+      </Menu>
       <MenuItem mnemonicParsing="false" text="Теорема о сумме углов треугольника"/>
       <MenuItem mnemonicParsing="false" text="Теорема о соотношениях между сторонами углами треугольника"/>
       <MenuItem mnemonicParsing="false" text="Неравенство треугольника"/>
