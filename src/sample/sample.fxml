@@ -58,7 +58,7 @@
       </Menu>
       <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника"/>
       <MenuItem mnemonicParsing="false" onAction="#trengleTeorema2" text="Теорема о соотношениях между сторонами углами треугольника"/>
-      <MenuItem mnemonicParsing="false" text="Неравенство треугольника"/>
+      <MenuItem mnemonicParsing="false" onAction="#treangleTeorema3" text="Неравенство треугольника"/>
       <MenuItem mnemonicParsing="false" text="Свойства прямоугольных треугольников"/>
       <MenuItem mnemonicParsing="false" text="Признаки равенства прямоугольных треугольников"/>
       <MenuItem mnemonicParsing="false" text="Расстояние между параллельными прямыми"/>

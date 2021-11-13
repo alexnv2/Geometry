@@ -1100,6 +1100,9 @@ public class Controller extends View {
         model.webHTML(webViewLeft, "treangleTeorema2.html");
     }
 
+    public void treangleTeorema3() {
+        model.webHTML(webViewLeft, "treangleTeorema3.html");
+    }
 
     /**
      * Метод menuAbout().
