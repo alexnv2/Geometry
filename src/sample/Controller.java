@@ -1090,6 +1090,17 @@ public class Controller extends View {
     public void menuPrizAngle_2() {
         model.webHTML(webViewLeft, "perAngle_2.html");//Вывод в браузер файла html
     }
+
+
+    public void treangleAngle() {
+        model.webHTML(webViewLeft, "treangleAngle.html");//Вывод в браузер файла html
+    }
+
+    public void trengleTeorema2() {
+        model.webHTML(webViewLeft, "treangleTeorema2.html");
+    }
+
+
     /**
      * Метод menuAbout().
      * Нажат пункт меню "Помощь-> О программе"
@@ -1471,6 +1482,7 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
+
 
 
 }
