@@ -136,12 +136,11 @@ public class Controller extends View {
 
     private boolean poindAdd1 = false;//true - создание первой точки для отрезка
     private boolean poindAdd2 = false;//true - создание второй точки для отрезка
-    private boolean poindCircle=false;//true - когда создана окружность и идет выбор размера
+    private boolean poindCircle = false;//true - когда создана окружность и идет выбор размера
     private boolean poindAddVertical = false;//true - выбрана точка для перпендикуляра
     private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
 
     private String infoStatus;//Вершины угла и вершины треугольника при создании.
-
 
 
     /**
@@ -280,11 +279,11 @@ public class Controller extends View {
         model.lineAddPoind(newLine, poindAdd2);
 
         //Добавить окружность
-        if (circleAdd && circle !=null && poindAdd1){
-            poindCircle=true;//для завершения создания окружности
+        if (circleAdd && circle != null && poindAdd1) {
+            poindCircle = true;//для завершения создания окружности
             //Расчитать радиус
-            double r=model.distance(poindLine1.getCenterX(),poindLine1.getCenterY(),model.getScreenX(),model.getScreenY());
-            double rw=model.distance(gridViews.revAccessX(poindLine1.getCenterX()),gridViews.revAccessY(poindLine1.getCenterY()),model.getDecartX(),model.getDecartY());
+            double r = model.distance(poindLine1.getCenterX(), poindLine1.getCenterY(), model.getScreenX(), model.getScreenY());
+            double rw = model.distance(gridViews.revAccessX(poindLine1.getCenterX()), gridViews.revAccessY(poindLine1.getCenterY()), model.getDecartX(), model.getDecartY());
             model.setRadiusCircle(Math.round(r));
             model.setRadiusCircleW(Math.round(rw));
             model.circleView(circle);//вывести на доску
@@ -613,7 +612,7 @@ public class Controller extends View {
             //закрыть режим создания перпендикуляра
         }
         //Построить окружность
-        if (circleAdd && !poindAdd1 ) {
+        if (circleAdd && !poindAdd1) {
             //добавить центр окружности на доску
             if (!model.isPoindOldAdd() && !poindAdd1) {//false - новая точка true - взять имеющую
                 poindLine1 = model.createPoindAdd(true);//создать новую вершину
@@ -624,19 +623,18 @@ public class Controller extends View {
             poindAdd1 = true;
             //создать новую окружность
             circle = model.createCircleAdd(poindLine1);
-        //закончить построение окружности
+            //закончить построение окружности
         }
-          if(circleAdd && poindCircle ){
-              model.updateCircle(circle);
-              circleAdd=false;
-              poindAdd1=false;
-              poindCircle=false;
-              disableButton(false);//разблокировать кнопки
-              //Вывод информации об объектах в правую часть доски
-              model.setTxtShape("");
-              model.txtAreaOutput();
-          }
-
+        if (circleAdd && poindCircle) {
+            model.updateCircle(circle);
+            circleAdd = false;
+            poindAdd1 = false;
+            poindCircle = false;
+            disableButton(false);//разблокировать кнопки
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
+        }
 
 
         event.consume();
@@ -903,9 +901,9 @@ public class Controller extends View {
      * Предназначен для выводя определений окружности.
      * Вызывается из пункта меню Фигуры->Окружность.
      */
-    public void menuCircle( ) {
-            model.webHTML(webViewLeft, "circle.html");//Вывод в браузер файла html
-        }
+    public void menuCircle() {
+        model.webHTML(webViewLeft, "circle.html");//Вывод в браузер файла html
+    }
 
     /**
      * Метод menuAcsiomy1Click().
@@ -1068,42 +1066,99 @@ public class Controller extends View {
      * Нажат пункт меню "Теоремы и свойств-> Три признака параллельности прямых"
      */
     public void menuPriznak() {
-            model.webHTML(webViewLeft, "priznak.html");//Вывод в браузер файла html
-        }
+        model.webHTML(webViewLeft, "priznak.html");//Вывод в браузер файла html
+    }
 
+    /**
+     * Метод menuPriznak_1().
+     * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 1"
+     */
     public void menuPriznak_1() {
         model.webHTML(webViewLeft, "priznak_1.html");//Вывод в браузер файла html
     }
+
+    /**
+     * Метод menuPriznak_2().
+     * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 2"
+     */
     public void menuPriznak_2() {
         model.webHTML(webViewLeft, "priznak_2.html");//Вывод в браузер файла html
     }
 
+    /**
+     * Метод menuPriznak_3().
+     * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 3"
+     */
     public void menuPriznak_3() {
         model.webHTML(webViewLeft, "priznak_3.html");//Вывод в браузер файла html
     }
 
 
+    /**
+     * Метод menuPrizAnle_1().
+     * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема1".
+     */
     public void menuPrizAnle_1() {
         model.webHTML(webViewLeft, "perAngle_1.html");//Вывод в браузер файла html
     }
 
+    /**
+     * Метод menuPrizAngle_2().
+     * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема2".
+     */
     public void menuPrizAngle_2() {
         model.webHTML(webViewLeft, "perAngle_2.html");//Вывод в браузер файла html
     }
 
 
+    /**
+     * Метод treangleAngle().
+     * Нажат пункт меню "Теоремы и свойства -> Теорема о сумме углов треугольника"
+     */
     public void treangleAngle() {
         model.webHTML(webViewLeft, "treangleAngle.html");//Вывод в браузер файла html
     }
 
+    /**
+     * Метод trengleTeorema2().
+     * Нажат пункт меню "Теоремы и свойства -> Теорема о соотношениях между сторонами углами треугольника"
+     */
     public void trengleTeorema2() {
         model.webHTML(webViewLeft, "treangleTeorema2.html");
     }
 
+    /**
+     * Метод treangleTeorema3().
+     * Нажат пункт меню "Теоремы и свойства -> Неравенство треугольника
+     */
     public void treangleTeorema3() {
         model.webHTML(webViewLeft, "treangleTeorema3.html");
     }
 
+    /**
+     * Метод treangleProperty().
+     * Нажат пункт меню "Теоремы и свойства -> Свойства прямоугольных треугольников".
+     */
+    public void treangleProperty() {
+        model.webHTML(webViewLeft, "treangleProperty.html");
+    }
+
+
+    /**
+     * Метод treangleQuayle().
+     * Нажат пункт меню "Теоремы и свойства -> Признаки равенства прямоугольных треугольников".
+     */
+    public void treangleQuayle() {
+        model.webHTML(webViewLeft, "treangleQuayle.html");
+    }
+
+    /**
+     * Метод distantPar().
+     * Нажат пункт меню "Теоремы и свойства -> Расстояние между параллельными прямыми"
+     */
+    public void distantPar() {
+        model.webHTML(webViewLeft, "distantPar.html");
+    }
     /**
      * Метод menuAbout().
      * Нажат пункт меню "Помощь-> О программе"
@@ -1320,6 +1375,7 @@ public class Controller extends View {
         model.notifyObservers("ToolTip");
 
     }
+
     /**
      * Метод btnTreangle().
      * Метод на события нажатия кнопки "Добавить треугольник".
@@ -1418,25 +1474,25 @@ public class Controller extends View {
      * Метод btnDelete()
      * Нажата копка "Удалить геометрическую фигуру." Метод удаляет все геометрические объекты.
      */
-    public void   btnDelete() {
-            Alert alert = new Alert(Alert.AlertType.NONE, "Вы уверены, что надо удалить все геометрические фигуры?",  ButtonType.OK, ButtonType.CANCEL);
-            alert.setTitle("Удаление геометрический фигур");
-            alert.setHeaderText("Очистить доску от всех геометрических фигур.");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                //удаляем из коллекций
-                paneShape.getChildren().clear();
-                model.getPoindCircles().clear();
-                model.getPoindLines().clear();
-                model.getVertexArcs().clear();
-                model.getNamePoindLines().clear();
-                model.getTreangleNames().clear();
-                model.getCircleLines().clear();
-                model.initIndex();//инициализация индексов
-                model.setTxtShape("");
-                model.txtAreaOutput();
-            }
+    public void btnDelete() {
+        Alert alert = new Alert(Alert.AlertType.NONE, "Вы уверены, что надо удалить все геометрические фигуры?", ButtonType.OK, ButtonType.CANCEL);
+        alert.setTitle("Удаление геометрический фигур");
+        alert.setHeaderText("Очистить доску от всех геометрических фигур.");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            //удаляем из коллекций
+            paneShape.getChildren().clear();
+            model.getPoindCircles().clear();
+            model.getPoindLines().clear();
+            model.getVertexArcs().clear();
+            model.getNamePoindLines().clear();
+            model.getTreangleNames().clear();
+            model.getCircleLines().clear();
+            model.initIndex();//инициализация индексов
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
+    }
 
     /**
      * Метод onMouseEnteredDelete()
