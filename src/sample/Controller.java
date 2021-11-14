@@ -91,6 +91,8 @@ public class Controller extends View {
     private Button btnHeight;
     @FXML
     private Button btnCircle;
+    @FXML
+    private Button btnParallelLines;
 
     //Web браузер для вывода данных
     @FXML
@@ -1120,19 +1122,19 @@ public class Controller extends View {
     }
 
     /**
-     * Метод trengleTeorema2().
+     * Метод treangleTheorem_2().
      * Нажат пункт меню "Теоремы и свойства -> Теорема о соотношениях между сторонами углами треугольника"
      */
-    public void trengleTeorema2() {
-        model.webHTML(webViewLeft, "treangleTeorema2.html");
+    public void treangleTheorem_2() {
+        model.webHTML(webViewLeft, "treangleTheorem_2.html");
     }
 
     /**
-     * Метод treangleTeorema3().
+     * Метод treangleTheorem_3().
      * Нажат пункт меню "Теоремы и свойства -> Неравенство треугольника
      */
-    public void treangleTeorema3() {
-        model.webHTML(webViewLeft, "treangleTeorema3.html");
+    public void treangleTheorem_3() {
+        model.webHTML(webViewLeft, "treangleTheorem_3.html");
     }
 
     /**
@@ -1159,6 +1161,7 @@ public class Controller extends View {
     public void distantPar() {
         model.webHTML(webViewLeft, "distantPar.html");
     }
+
     /**
      * Метод menuAbout().
      * Нажат пункт меню "Помощь-> О программе"
@@ -1353,6 +1356,14 @@ public class Controller extends View {
     }
 
     /**
+     * Метод btnParallelLimes().
+     * Метод для события нажатия кнопки "Построить параллельные прямые"
+     * Устанавливает режим построения параллельных прямых
+     */
+    public void btnParallelLimes() {
+    }
+
+    /**
      * Метод onMouseEnteredVertical()
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить перпендикуляр к прямой"
      */
@@ -1373,8 +1384,19 @@ public class Controller extends View {
         //Передать в View для вывода
         model.setBtnToolTip(btnCircle);
         model.notifyObservers("ToolTip");
-
     }
+
+    /**
+     * Метод onMouseEnteredParallelLines().
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить параллельные прямые"
+     */
+    public void onMouseEnteredParallelLines() {
+        model.setTextToolTip("Построить параллельные прямые");
+        //Передать в View для вывода
+        model.setBtnToolTip(btnParallelLines);
+        model.notifyObservers("ToolTip");
+    }
+
 
     /**
      * Метод btnTreangle().
@@ -1541,7 +1563,6 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
-
 
 
 }

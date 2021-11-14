@@ -100,19 +100,19 @@ class Model implements Observable {
     private boolean angleAdd;//true -создание угла
     private boolean removeObject;//true - режим удаления
     //Свойства углов
-    private double arcRadius=30;//радиус дуги
+    private double arcRadius = 30;//радиус дуги
     private double angleStart;//начало дуги гр.
     private double angleLength;//длина дуги гр.
     private Color ColorArc = Color.DARKSLATEBLUE;//цвет дуги угла
     private Color ColorFillArc = Color.LIGHTBLUE;//цвет заполнения дуги угла
     //Свойства точек
     private double radiusPoind = 5;//радиус точки
-    private Color circleColorFill=Color.LIGHTBLUE;//цвет фона
-    private Color circleColorStroke=Color.DARKSLATEBLUE;//цвет рамки
+    private Color circleColorFill = Color.LIGHTBLUE;//цвет фона
+    private Color circleColorStroke = Color.DARKSLATEBLUE;//цвет рамки
     //Свойства линий
     private Color ColorLine = Color.DARKSLATEBLUE;//цвет линий по умолчанию
-    private double lineStokeWidth=2;//толщина линий
-    private double selectStrokeWidth=3;//толщина линии при наведении на неё мыши
+    private double lineStokeWidth = 2;//толщина линий
+    private double selectStrokeWidth = 3;//толщина линии при наведении на неё мыши
     private int inDash = 0;//индекс определяет внешний вид прямой (0-4 вида), по умолчанию 0
     //Логические переменные из меню настроек
     private boolean showPoindName = true;//по умолчанию, всегда показывать имена точек
@@ -136,7 +136,7 @@ class Model implements Observable {
     private ArrayList<Double> arrDash = new ArrayList<>();//массив для создания вида строк
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
-    private LinkedList<CircleLine> circleLines=new LinkedList<>();//коллекция окружностей
+    private LinkedList<CircleLine> circleLines = new LinkedList<>();//коллекция окружностей
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -179,11 +179,12 @@ class Model implements Observable {
             observer.notification(message);
         }
     }
+
     /**
      * Метод initIndex()
      * Инициализация переменных после очистки доски.
      */
-    public void initIndex(){
+    public void initIndex() {
         setIndexPoind("A");
         setIndexPoindInt(0);
         setIndexLine("a");
@@ -191,6 +192,7 @@ class Model implements Observable {
         setIndexAngle('\u03b1');
         setIndexAngleInt(0);
     }
+
     /**
      * Метод indexPoindAdd().
      * Предназначен для увелечения индекса в названии точки.
@@ -267,7 +269,7 @@ class Model implements Observable {
         String pathFile = new File("").getAbsolutePath();//получить полный путь к файлу
         leftHTML = "file:" + pathFile + "\\src\\Web\\" + file;//установить ссылку
         //Передать в View для вывода
-        webView=o;
+        webView = o;
         notifyObservers("WebGo");
     }
 
@@ -311,7 +313,7 @@ class Model implements Observable {
             case 12 -> setStringWebView(WEB_HTML + TR_TEOREMA34 + WEB_END);
         }
         //Передать в View для вывода
-        webView=o;
+        webView = o;
         notifyObservers("WebView");
     }
 
@@ -386,9 +388,9 @@ class Model implements Observable {
             }
         }
         //Информация об окружностях
-        for (CircleLine p: circleLines)
-            if(p!=null){
-                txtShape=MessageFormat.format("{0}{1}{2} \n",txtShape, STA_29,p.getRadius());
+        for (CircleLine p : circleLines)
+            if (p != null) {
+                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius());
             }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
@@ -435,12 +437,9 @@ class Model implements Observable {
             }
         });
         //Наведение мышки на объект
-        nameText.setOnMouseEntered(e -> {
-            nameText.setCursor(Cursor.HAND);
-        });
+        nameText.setOnMouseEntered(e -> nameText.setCursor(Cursor.HAND));
         //Уход мышки с объекта
         nameText.setOnMouseExited(e -> nameText.setCursor(Cursor.DEFAULT));
-
         return nameText;
     }
 
@@ -448,7 +447,6 @@ class Model implements Observable {
      * Метод nameUpdateXY(String id).
      * Предназначен для обновления мировых координат и расстояния до точки при
      * перемещении объекта Text. Вызывается из метода createNameShapes(String name).
-     *
      * @param id - строка имя объекта Text.
      */
     private void nameUpdateXY(String id) {
@@ -496,7 +494,7 @@ class Model implements Observable {
         textY = circle.getCenterY() + 20;//место вывода Y при создании
         textCircle.setVisible(showPoindName);//показывать не показывать, зависит от меню "Настройка"
         //Передать для вывода в View
-        textGo=textCircle;
+        textGo = textCircle;
         notifyObservers("TextGo");
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textCircle);
@@ -539,7 +537,7 @@ class Model implements Observable {
         textY = circle.getCenterY() - y;//место вывода Y при создании
         textAngle.setVisible(showAngleName);//показывать не показывать, зависит от меню "Настройка"
         //Передать для вывода в View
-        textGo=textAngle;
+        textGo = textAngle;
         notifyObservers("TextGo");
         return arcXY;
     }
@@ -624,7 +622,7 @@ class Model implements Observable {
         nameLine.setText(line.getId());//Имя для вывода на доску
         nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
         //Передать для вывода в View
-        textGo=nameLine;
+        textGo = nameLine;
         notifyObservers("TextGo");
     }
 
@@ -856,32 +854,33 @@ class Model implements Observable {
     /**
      * Метод createCircle().
      * Предназначен для создания новой окружности и подключения событий мышки.
+     *
      * @return circle - возвращает созданную окружность
      */
-    Circle createCircle(){
-        Circle newCircle=new Circle(screenX, screenY, 0,Color.TRANSPARENT);
+    Circle createCircle() {
+        Circle newCircle = new Circle(screenX, screenY, 0, Color.TRANSPARENT);
         newCircle.setStroke(Color.CHOCOLATE);
         newCircle.setStrokeWidth(2.0);
         newCircle.setId(indexLineAdd());//добавить имя окружности
-         //привязать события мышки
+        //привязать события мышки
         //При наведении
-        newCircle.setOnMouseEntered(e->{
+        newCircle.setOnMouseEntered(e -> {
             newCircle.setCursor(Cursor.HAND);
             //Установить статус "Окружность"
-            setStringLeftStatus(STA_29 +findCircleRadius(newCircle));
+            setStringLeftStatus(STA_29 + findCircleRadius(newCircle));
             notifyObservers("LeftStatusGo");
         });
         //При уходе
-        newCircle.setOnMouseExited(e->{
+        newCircle.setOnMouseExited(e -> {
             newCircle.setCursor(Cursor.DEFAULT);
             setStringLeftStatus("");
             notifyObservers("LeftStatusGo");
         });
         //При перемещении с нажатой кнопкой
-        newCircle.setOnMouseDragged(e->{
-            Circle c=findCircle(findNameCircle(newCircle));
-            setRadiusCircle(Math.round(distance(c.getCenterX(),c.getCenterY(),getScreenX(),getScreenY())));
-            setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()),gridViews.revAccessY(c.getCenterY()),getDecartX(),getDecartY())));
+        newCircle.setOnMouseDragged(e -> {
+            Circle c = findCircle(findNameCircle(newCircle));
+            setRadiusCircle(Math.round(distance(c.getCenterX(), c.getCenterY(), getScreenX(), getScreenY())));
+            setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
             updateCircle(newCircle);
             circleView(newCircle);
             //Добавить в правую часть доски
@@ -891,10 +890,10 @@ class Model implements Observable {
         return newCircle;
     }
 
-    public void updateCircle(Circle c){
-        for (CircleLine p: circleLines){
-            if(p!=null){
-                if(p.getId().equals(c.getId())){
+    public void updateCircle(Circle c) {
+        for (CircleLine p : circleLines) {
+            if (p != null) {
+                if (p.getId().equals(c.getId())) {
                     p.setRadius(getRadiusCircleW());
                     p.setCircle(c);
                 }
@@ -903,20 +902,21 @@ class Model implements Observable {
         }
     }
 
-    double findCircleRadius(Circle c){
-     for (CircleLine p: circleLines ){
-         if(p!=null){
-             if(p.getCircle().getId().equals(c.getId())) {
-                 return p.getRadius();
-             }
-         }
-     }
-     return 0;
+    double findCircleRadius(Circle c) {
+        for (CircleLine p : circleLines) {
+            if (p != null) {
+                if (p.getCircle().getId().equals(c.getId())) {
+                    return p.getRadius();
+                }
+            }
+        }
+        return 0;
     }
-    double findCircleRadiusW(Circle c){
-        for (CircleLine p: circleLines ){
-            if(p!=null){
-                if(p.getCircle().getId().equals(c.getId())) {
+
+    double findCircleRadiusW(Circle c) {
+        for (CircleLine p : circleLines) {
+            if (p != null) {
+                if (p.getCircle().getId().equals(c.getId())) {
                     return p.getCircle().getRadius();
                 }
             }
@@ -924,10 +924,10 @@ class Model implements Observable {
         return 0;
     }
 
-    String findNameCircle(Circle c){
-        for (CircleLine p: circleLines){
-            if(p!=null){
-                if(p.getId().equals(c.getId())) {
+    String findNameCircle(Circle c) {
+        for (CircleLine p : circleLines) {
+            if (p != null) {
+                if (p.getId().equals(c.getId())) {
                     return p.getPoindID();
                 }
             }
@@ -935,7 +935,7 @@ class Model implements Observable {
         return null;
     }
 
-    public void bindPoindCircle(Circle poind, Circle circle){
+    public void bindPoindCircle(Circle poind, Circle circle) {
 
         poind.centerXProperty().addListener((obj, oldValue, newValue) -> {
             setRadiusCircle(findCircleRadiusW(circle));
@@ -951,12 +951,13 @@ class Model implements Observable {
         });
 
     }
+
     /**
      * Метод circleView().
      * Предназначен для передачи на вывод окружности классу View.
      */
-    public void circleView(Circle c){
-        circle=c;
+    public void circleView(Circle c) {
+        circle = c;
         notifyObservers("CircleGo");
 
     }
@@ -964,16 +965,17 @@ class Model implements Observable {
     /**
      * Метод createCircleAdd(Circle name).
      * Предназначен для добавления окружности на доску.
+     *
      * @param name - объект центр окружности
      * @return - объект окружность
      */
-    Circle createCircleAdd(Circle name){
-       Circle circle=createCircle();
-       circleLines.add(new CircleLine(circle, circle.getId(), circle.getRadius(), name.getId()));
-       paneBoards.getChildren().add(circle);//добавить окружность на доску
-       circle.toBack();
-       bindPoindCircle(findCircle(findNameCircle(circle)),  circle);
-       return circle;
+    Circle createCircleAdd(Circle name) {
+        Circle circle = createCircle();
+        circleLines.add(new CircleLine(circle, circle.getId(), circle.getRadius(), name.getId()));
+        paneBoards.getChildren().add(circle);//добавить окружность на доску
+        circle.toBack();
+        bindPoindCircle(findCircle(findNameCircle(circle)), circle);
+        return circle;
     }
 
 
@@ -1001,7 +1003,7 @@ class Model implements Observable {
         if (seg == 0 || seg == 3) {//Отрезок или треугольник, определяем координаты
             segmentStartX = screenX;//сохраняем координаты мышки, для первой точки
             segmentStartY = screenY;
-         } else {
+        } else {
             rayEndX = screenX;
             rayEndY = screenY;
         }
@@ -1078,9 +1080,9 @@ class Model implements Observable {
         });
     }
 
-    public void rayAddLine(Line newLine, int seg){
+    public void rayAddLine(Line newLine, int seg) {
         //Расчитать координаты окончания луча
-        double x, y, x1 , y1;
+        double x, y, x1, y1;
         x = getRayEndX() + (getScreenX() - getRayEndX()) * 3;
         y = getRayEndY() + (getScreenY() - getRayEndY()) * 3;
         x1 = getRayEndX() + (getScreenX() - getRayEndX()) * -3;
@@ -1091,12 +1093,12 @@ class Model implements Observable {
         //Пересчет координат в мировые
         setVerLineStartX(gridViews.revAccessX(x));
         setVerLineStartY(gridViews.revAccessY(y));
-        if(seg==2) {
+        if (seg == 2) {
             setRayEndX(x1);
             setRayEndY(y1);
             setVerLineEndX(gridViews.revAccessX(x1));
             setVerLineEndY(gridViews.revAccessY(y1));
-        }else {
+        } else {
             setVerLineEndX(gridViews.revAccessX(getRayEndX()));
             setVerLineEndY(gridViews.revAccessY(getRayEndY()));
         }
@@ -1137,7 +1139,7 @@ class Model implements Observable {
                     screenX = pCl.getCenterX();
                     screenY = pCl.getCenterY();
                     //Передать в View для вывода
-                    line=nl;
+                    line = nl;
                     notifyObservers("SideGo");
 
                 } else {
@@ -1387,7 +1389,7 @@ class Model implements Observable {
         arcNew.setType(ArcType.ROUND);//тип арки
         arcNew.setOpacity(0.5);//прозрачность
         //Передать в View для вывода
-        arcGo=arcNew;
+        arcGo = arcNew;
         notifyObservers("ColorArc");//задаем цвет арки дуги и цвет фона
         arcVertexGo(o1, o2, o3, arcNew);//вывести на доску
         String nameAngle = indexAngledAdd();//увеличить индекс
@@ -1416,7 +1418,7 @@ class Model implements Observable {
      * @param o1 -первая точка А
      * @param o2 - вторая точка В (центр угла)
      * @param o3 - третья точка С
-     *
+     *           <p>
      *           Устанавливает, для класса View, следующие переменные:
      *           angleLength - длину дуги в градусах
      *           arcRadius - радиус дуги
@@ -1446,9 +1448,10 @@ class Model implements Observable {
     /**
      * Метод arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc).
      * Предназначен для вывода на экран арки угла.
-     * @param o1 - первая вершина А
-     * @param o2 - вторая вершина В
-     * @param o3 - третья вершина С
+     *
+     * @param o1  - первая вершина А
+     * @param o2  - вторая вершина В
+     * @param o3  - третья вершина С
      * @param arc - угол АВС
      */
     public void arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc) {
@@ -1460,12 +1463,12 @@ class Model implements Observable {
         screenX = o2.getCenterX();
         screenY = o2.getCenterY();
         //Передать в View для вывода
-        arcGo=arc;
+        arcGo = arc;
         notifyObservers("ArcGo");
         //Восстановить текущие координаты мышки
         screenX = stX;
         screenY = stY;
-     }
+    }
 
     /**
      * Метод findArcUpdate(String s)
@@ -1815,12 +1818,12 @@ class Model implements Observable {
         screenX = mc.getX();
         screenY = mc.getY();
         //Передать в View для вывода
-        vertex=newPoindTreangle;
+        vertex = newPoindTreangle;
         notifyObservers("VertexGo");
         findCirclesUpdateXY(newPoindTreangle.getId(), gridViews.revAccessX(screenX), gridViews.revAccessY(screenY));
         segmentStartX = c.getCenterX();
         segmentStartY = c.getCenterY();
-        line=newLineTreangle;
+        line = newLineTreangle;
         notifyObservers("SideGo");
         findLinesUpdateXY(newLineTreangle.getId());
         paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску

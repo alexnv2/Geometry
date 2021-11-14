@@ -55,8 +55,8 @@
       </Menu>
       <SeparatorMenuItem mnemonicParsing="false"/>
       <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника"/>
-      <MenuItem mnemonicParsing="false" onAction="#trengleTeorema2" text="Теорема о соотношениях между сторонами углами треугольника"/>
-      <MenuItem mnemonicParsing="false" onAction="#treangleTeorema3" text="Неравенство треугольника"/>
+      <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_2" text="Теорема о соотношениях между сторонами углами треугольника"/>
+      <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_3" text="Неравенство треугольника"/>
       <MenuItem mnemonicParsing="false" onAction="#treangleProperty" text="Свойства прямоугольных треугольников"/>
       <MenuItem mnemonicParsing="false" onAction="#treangleQuayle" text="Признаки равенства прямоугольных треугольников"/>
       <MenuItem mnemonicParsing="false" onAction="#distantPar" text="Расстояние между параллельными прямыми"/>
@@ -92,6 +92,7 @@
     <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick" onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical" onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0" />
+    <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLimes" onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
     <Button fx:id="btnMediana" mnemonicParsing="false" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana" prefHeight="20.0" prefWidth="40.0"/>
     <Button fx:id="btnHeight" mnemonicParsing="false"  onAction="#btnHeight" onMouseEntered="#onMouseEnteredHeight" prefHeight="20.0" prefWidth="40.0"/>
