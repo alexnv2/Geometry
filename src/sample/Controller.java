@@ -1021,21 +1021,29 @@ public class Controller extends View {
     }
 
     /**
-     * Метод menuIsosceles().
-     * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника".
+     * Метод menuIsosceles_1().
+     * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника->Теорема 1".
      */
-    public void menuIsosceles() {
-        model.webViewLeftString(webViewLeft, 1);
+    public void menuIsosceles_1() {
+       // model.webViewLeftString(webViewLeft, 1);
+        model.webHTML(webViewLeft, "isosceles_1.html");
+    }
+    /**
+     * Метод menuIsosceles_2().
+     * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника->Теорема 2".
+     */
+    public void menuIsosceles_2() {
+        model.webHTML(webViewLeft, "isosceles_2.html");
     }
 
     /**
      * Метод menuPrIsosceles().
      * Нажат пункт меню "Теоремы и свойства-> Признак равнобедренного треугольника".
-     */
+
     public void menuPrIsosceles() {
         model.webViewLeftString(webViewLeft, 12);
     }
-
+     */
     /**
      * Метод menuEquil()
      * Нажат пункт меню "Теоремы и свойства-> Первый признак равенства треугольников"
@@ -1563,6 +1571,7 @@ public class Controller extends View {
     public void btnTest() {
         model.ColTest();
     }
+
 
 
 }

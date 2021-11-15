@@ -208,6 +208,11 @@ class View implements Observer {
         t.setY(model.getTextY());
     }
 
+    /**
+     * Метод CircleGo(Circle c).
+     * Предназначен для вывода на экран окружности.
+     * @param c  объект окружность
+     */
     private void CircleGo(Circle c){
         c.setRadius(model.getRadiusCircle());
     }
