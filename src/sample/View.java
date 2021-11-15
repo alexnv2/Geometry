@@ -55,7 +55,6 @@ class View implements Observer {
             case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
             case "SideGo" -> this.sideGo(model.getLine());//отрисовка сторон отрезков
             case "RayGo" -> this.rayGo(model.getLine());//для луча и прямой
-            case "WebView" -> this.webViewGo(model.getWebView());//Заполнение слева и внизу
             case "LeftStatusGo" -> this.statusGo(model.getStatus());//вывод статуса
             case "WebGo" -> this.webFileHTMLGo(model.getWebView());//вывод файла HTML
             case "TextShapeGo" -> this.textShapeGo(model.getTextArea());//для вывода в правое окно
@@ -136,17 +135,7 @@ class View implements Observer {
         ray.setEndY(model.getRayStartY());
     }
 
-    /**
-     * Метод webViewGo(WebView webView)
-     * Предназначен для вывода справочной информации в левую часть доски в виде констант.
-     *
-     * @param webView - объект WebView
-     */
-    private void webViewGo(WebView webView) {
-        webView.setContextMenuEnabled(false);
-        WebEngine w = webView.getEngine();
-        w.loadContent(model.getStringWebView());
-    }
+
 
     /**
      * Метод webFileHTMLGo(WebView web)

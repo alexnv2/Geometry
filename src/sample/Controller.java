@@ -756,130 +756,7 @@ public class Controller extends View {
      */
     public void menuPoindClick() {
         model.webHTML(webViewLeft, "line.html");//Вывод в web файла
-        //Создать точки
-        for (int i = 0; i < 2; i++) {
-            final double max = 500.;
-            double x;
-            double y;
-            x = Math.random() * max;
-            y = Math.random() * max;
-            model.setScreenX(Math.round(x));
-            model.setScreenY(Math.round(y));
-            model.setDecartX(gridViews.revAccessX(Math.round(x)));
-            model.setDecartY(gridViews.revAccessY(Math.round(y)));
-            Circle newPoind = model.createPoindAdd(true);//создать точку
-            paneShape.getChildren().add(newPoind);//добавить на доску
-        }
-        model.setScreenX(142);
-        model.setScreenY(390);
-        model.setDecartX(gridViews.revAccessX(142));
-        model.setDecartY(gridViews.revAccessY(390));
-        Circle newPoind = model.createPoindAdd(true);//создать точку
-        paneShape.getChildren().add(newPoind);//добавить на доску
-
-
-        model.setScreenX(297);
-        model.setScreenY(302);
-        model.setDecartX(gridViews.revAccessX(297));
-        model.setDecartY(gridViews.revAccessY(302));
-        Circle newPoind1 = model.createPoindAdd(true);//создать точку
-        paneShape.getChildren().add(newPoind1);//добавить на доску
-        Line newLine = model.createLineAdd(1);
-        model.setRayEndX(142);
-        model.setRayEndY(390);
-        model.rayAddLine(newLine, 1);
-
-        paneShape.getChildren().add(newLine);//добавить на доску
-        newLine.toBack();
-        //Связать точки с лучом
-        model.rayBindCircles(newPoind, newPoind1, newLine);
-        //Заменить имя
-        model.findNameId(newPoind.getId(), newPoind1.getId(), newLine.getId());
-        //Добавить имя на доску
-        model.nameLineAdd(newLine);
-        //Вывод информации об объектах в правую часть доски
-        model.setTxtShape("");
-        model.txtAreaOutput();
-
-        //прямая
-        model.setScreenX(192);
-        model.setScreenY(234);
-        model.setDecartX(gridViews.revAccessX(192));
-        model.setDecartY(gridViews.revAccessY(234));
-        Circle newPoind2 = model.createPoindAdd(true);//создать точку
-        paneShape.getChildren().add(newPoind2);//добавить на доску
-
-
-        model.setScreenX(385);
-        model.setScreenY(144);
-        model.setDecartX(gridViews.revAccessX(385));
-        model.setDecartY(gridViews.revAccessY(144));
-        Circle newPoind3 = model.createPoindAdd(true);//создать точку
-        paneShape.getChildren().add(newPoind3);//добавить на доску
-        Line newLine1 = model.createLineAdd(2);
-        model.setRayEndX(192);
-        model.setRayEndY(234);
-        model.rayAddLine(newLine1, 2);
-
-        paneShape.getChildren().add(newLine1);//добавить на доску
-        newLine1.toBack();
-        //Связать точки с лучом
-        model.circlesBindLine(newPoind2, newPoind3, newLine1);
-        //Заменить имя
-        model.findNameId(newPoind2.getId(), newPoind3.getId(), newLine1.getId());
-        //Добавить имя на доску
-        model.nameLineAdd(newLine1);
-        //Вывод информации об объектах в правую часть доски
-        model.setTxtShape("");
-        model.txtAreaOutput();
-
     }
-
-    /**
-     * Метод menuTriangle()
-     * Предназначен для вывода определения треугольника.
-     * Вызывается из пункта меню Фигуры->Треугольник ->Определения треугольника.
-     */
-    public void menuTriangle() {
-        model.webViewLeftString(webViewLeft, 0);
-    }
-
-    /**
-     * Метод menuTr()
-     * Предназначен для вывода видов треугольников.
-     * Вызывается из пункта меню Фигуры->Треугольник ->Виды треугольников.
-     */
-    public void menuTr() {
-        model.webViewLeftString(webViewLeft, 9);
-    }
-
-    /**
-     * Метод menuBisector()
-     * Предназначен для вывода определения биссектрисы.
-     * Вызывается из пункта меню Фигуры->Треугольник ->Биссектриса треугольника.
-     */
-    public void menuBisector() {
-        model.webViewLeftString(webViewLeft, 2);
-    }
-
-    /**
-     * Метод menuMediana()
-     * Предназначен для вывода определения биссектрисы.
-     * Вызывается из пункта меню Фигуры->Треугольник ->Медиана треугольника.
-     */
-    public void menuMediana() {
-        model.webViewLeftString(webViewLeft, 3);
-    }
-
-    /**
-     * Метод menuHeight()
-     * Предназначен для вывода определения биссектрисы.
-     * Вызывается из пункта меню Фигуры->Треугольник ->Высота треугольника.
-     */
-    public void menuHeight() {
-        model.webViewLeftString(webViewLeft, 4);
-    }
-
     /**
      * Метод menuRayClick().
      * Предназначен для вывода определений луча и угла
@@ -890,6 +767,15 @@ public class Controller extends View {
     }
 
     /**
+     * Метод menuBisectorAngle().
+     *  Предназначен для вывода теоремы о свойствах биссектрисы угла.
+     *  Вызывается из пункта меню Фигуры->Луч и угол->Свойство биссектрисы угла
+     */
+    public void menuBisectorAngle() {
+        model.webHTML(webViewLeft, "bisectorAngle.html");
+    }
+
+    /**
      * Метод menuAngleClick().
      * Предназначен для вывода определений смежных и вертикальных углов
      * Вызывается из пункта меню Фигуры->Смежные и вертикальные углы
@@ -897,6 +783,54 @@ public class Controller extends View {
     public void menuAngleClick() {
         model.webHTML(webViewLeft, "angle.html");//Вывод в браузер файла html
     }
+    /**
+     * Метод menuTriangle()
+     * Предназначен для вывода определения треугольника.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Определения треугольника.
+     */
+    public void menuTriangle() {
+        model.webHTML(webViewLeft, "triangle.html");
+    }
+
+    /**
+     * Метод menuTr()
+     * Предназначен для вывода видов треугольников.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Виды треугольников.
+     */
+    public void menuTr() {
+       // model.webViewLeftString(webViewLeft, 9);
+        model.webHTML(webViewLeft, "treangleView.html");
+    }
+
+    /**
+     * Метод menuBisector()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Биссектриса треугольника.
+     */
+    public void menuBisector() {
+
+    }
+
+    /**
+     * Метод menuMediana()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Медиана треугольника.
+     */
+    public void menuMediana() {
+
+
+    }
+
+    /**
+     * Метод menuHeight()
+     * Предназначен для вывода определения биссектрисы.
+     * Вызывается из пункта меню Фигуры->Треугольник ->Высота треугольника.
+     */
+    public void menuHeight() {
+
+    }
+
+
 
     /**
      * Метод menuCircle().
@@ -1036,14 +970,6 @@ public class Controller extends View {
         model.webHTML(webViewLeft, "isosceles_2.html");
     }
 
-    /**
-     * Метод menuPrIsosceles().
-     * Нажат пункт меню "Теоремы и свойства-> Признак равнобедренного треугольника".
-
-    public void menuPrIsosceles() {
-        model.webViewLeftString(webViewLeft, 12);
-    }
-     */
     /**
      * Метод menuEquil()
      * Нажат пункт меню "Теоремы и свойства-> Первый признак равенства треугольников"

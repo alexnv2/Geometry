@@ -11,7 +11,9 @@
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="Фигуры">
             <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол"/>
+            <Menu mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол">
+                <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла"/>
+            </Menu>
             <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <Menu fx:id="menuTreangleP" mnemonicParsing="false" text="Треугольник">

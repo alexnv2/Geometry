@@ -11,8 +11,5 @@ package sample;
 
 interface Observable {
     void registerObserver(Observer o);//регистрация классов отображения (View)
-
     void notifyObservers(String message);//Передача сообщений для класса отображения
-
-
 }

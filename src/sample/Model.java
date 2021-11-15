@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 import static ContstantString.StringStatus.*;
-import static ContstantString.StringWeb.*;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
@@ -129,6 +128,7 @@ class Model implements Observable {
     private double radiusCircleW;//радиус окружности в мировых координатах
 
 
+
     //Коллекции
     private LinkedList<PoindCircle> poindCircles = new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines = new LinkedList<>();//коллекция для линий по классу
@@ -140,8 +140,6 @@ class Model implements Observable {
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
-
-
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
@@ -274,48 +272,7 @@ class Model implements Observable {
     }
 
 
-    /**
-     * Метод webViewLeftString(WebView o, int c)
-     * Предназначен для вывода справочной информации в левую часть доски.
-     *
-     * @param o - объект web-браузер
-     * @param c - номер справки
-     */
-    //Текст для отображения в левой части
-    public void webViewLeftString(WebView o, int c) {
-        String pathImages = new File(".").getAbsolutePath();
-        String pathImg1 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_bisector.png" + " width=274 height=242>";
-        String pathImg2 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_median.png" + " width=343 height=194>";
-        String pathImg3 = "<img src=file:\\" + pathImages + "\\src\\Images\\dlina_higth.png" + " width=344 height=292>";
-        String pathImg4 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_1.png" + " width=91 height=53>";
-        String pathImg5 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_2.png" + " width=131 height=61>";
-        String pathImg6 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_4.png" + " width=91 height=53>";
-        String pathImg7 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_5.png" + " width=91 height=53>";
-        String pathImg8 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_8.png" + " width=91 height=53>";
-        String pathImg9 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_9.png" + " width=83 height=54>";
-        String pathImg10 = "<img src=file:\\" + pathImages + "\\src\\Images\\Area_10.png" + " width=91 height=55";
-        String pathImg11 = "<img src=file:\\" + pathImages + "\\src\\Images\\AreaGeron.png" + " width=275 height=122";
 
-        switch (c) {
-            case 0 -> setStringWebView(WEB_HTML + TR_OPR + TR_ANGLE + TR_NERAVENSVO + TR_SUNANGLE + TR_AREA_1 +
-                    pathImg4 + TR_AREA_2 + pathImg5 + TR_AREA_3 + pathImg11 + WEB_END);
-            case 1 -> setStringWebView(WEB_HTML + TR_TEOREMA33 + WEB_END);
-            case 2 -> setStringWebView(WEB_HTML + TR_BISSECTOR + TR_BISSEC_FOR + pathImg1 + WEB_END);
-            case 3 -> setStringWebView((WEB_HTML + TR_MEDIANA + TR_DLINA_MEDIAN + pathImg2 + WEB_END));
-            case 4 -> setStringWebView(WEB_HTML + TR_HIGTH + TR_ORTOSENTR + TR_DLINA_HIGHT + pathImg3 + WEB_END);
-            case 5 -> setStringWebView(WEB_HTML + TR_AREA_8 + pathImg8 + TR_AREA_9 + pathImg9 + WEB_END);
-            case 6 -> setStringWebView(WEB_HTML + TR_AREA_10 + pathImg10 + WEB_END);
-            case 7 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_IN + TR_AREA_4 + pathImg6 + WEB_END);
-            case 8 -> setStringWebView(WEB_HTML + TR_CIRCLE + TR_CIRCLE_OUT + TR_AREA_5 + pathImg7 + WEB_END);
-            case 9 -> setStringWebView(WEB_HTML + TR_OBTUSE + TR_OXYGEN + TR_REGULAR + WEB_END);
-            case 10 -> setStringWebView(WEB_HTML + TR_OXYGEN + WEB_END);
-            case 11 -> setStringWebView(WEB_HTML + OP_GEOMETRY_1 + WEB_END);
-            case 12 -> setStringWebView(WEB_HTML + TR_TEOREMA34 + WEB_END);
-        }
-        //Передать в View для вывода
-        webView = o;
-        notifyObservers("WebView");
-    }
 
     /**
      * Метод nameSplitRemove(String s).

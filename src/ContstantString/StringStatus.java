@@ -5,6 +5,7 @@ package ContstantString;
  * Предназначен для вывода информации в статусной строке.
  */
 public final class StringStatus {
+    public static int WIND_SHOW=0;
     public static final String STA_1="Укажите на доске место для точки";
     public static final String STA_2="Укажите на доске начало и конец отрезка.";
     public static final String STA_3="Укажите на доске точку начала луча";
