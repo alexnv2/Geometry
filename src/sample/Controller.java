@@ -808,7 +808,7 @@ public class Controller extends View {
      * Вызывается из пункта меню Фигуры->Треугольник ->Биссектриса треугольника.
      */
     public void menuBisector() {
-
+        model.webHTML(webViewLeft, "bisectorTreangle.html");
     }
 
     /**
@@ -817,8 +817,7 @@ public class Controller extends View {
      * Вызывается из пункта меню Фигуры->Треугольник ->Медиана треугольника.
      */
     public void menuMediana() {
-
-
+        model.webHTML(webViewLeft, "medianaTreangle.html");
     }
 
     /**
@@ -827,7 +826,7 @@ public class Controller extends View {
      * Вызывается из пункта меню Фигуры->Треугольник ->Высота треугольника.
      */
     public void menuHeight() {
-
+        model.webHTML(webViewLeft, "heightTreangle.html");
     }
 
 

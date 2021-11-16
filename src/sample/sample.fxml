@@ -17,16 +17,12 @@
             <Menu fx:id="menuTreangleP" mnemonicParsing="false" text="Треугольник">
                 <MenuItem fx:id="menuTreangle" mnemonicParsing="false" onAction="#menuTriangle"
                           text="Определение треугольника"/>
-                <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr"
-                          text="Классификация треугольников"/>
-
+                <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr" text="Классификация треугольников"/>
                 <MenuItem fx:id="menuBisector" mnemonicParsing="false" onAction="#menuBisector"
                           text="Биссектриса треугольника"/>
                 <MenuItem fx:id="menuMedina" mnemonicParsing="false" onAction="#menuMediana"
                           text="Медиана треугольника "/>
-                <MenuItem fx:id="menuHeight" mnemonicParsing="false" onAction="#menuHeight"
-                          text="Высота треугольника"/>
-
+                <MenuItem fx:id="menuHeight" mnemonicParsing="false" onAction="#menuHeight" text="Высота треугольника"/>
             </Menu>
             <MenuItem mnemonicParsing="false" text="Окружность" onAction="#menuCircle"/>
         </Menu>
