@@ -140,6 +140,7 @@ class Model implements Observable {
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
+   //Переменные для передачи в другой контроллер
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
@@ -1241,6 +1242,22 @@ class Model implements Observable {
     }
 
     /**
+     * Метод findCircleMove(String id).
+     * Предназначен для поиска точек и замены статуса с перемещаемой на не перемещаемую точку.
+     * Вызывается из режима создать параллельную прямую
+     * @param id - имя точки
+     */
+    public void findCircleMove(String id){
+        for(PoindCircle p: poindCircles){
+            if(p!=null){
+                if(p.getId().equals(id)){
+                    p.setBMove(false);
+                }
+            }
+        }
+    }
+
+    /**
      * Метод findLinesUpdateXY(String id).
      * Предназначен для замены мировых координат при построении отрезков, лучей и прямых
      *
@@ -1532,12 +1549,13 @@ class Model implements Observable {
     public void verticalBindCircles(Circle c1, Circle c2, Circle c3, Circle c4, Line l) {
         l.startXProperty().bindBidirectional(c1.centerXProperty());
         l.startYProperty().bindBidirectional(c1.centerYProperty());
+        l.startYProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
+        l.startXProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
         c2.centerXProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
         c2.centerYProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
         c3.centerXProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
         c3.centerYProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
-        l.startYProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
-        l.startXProperty().addListener((obj, oldValue, newValue) -> verticalUpdateCircle(c1, c2, c3, c4, l));
+
     }
 
     /**
@@ -1578,6 +1596,30 @@ class Model implements Observable {
         txt.yProperty().bind(c.centerYProperty().add(dy));
     }
 
+    /**
+     * Метод parallelBindLine(Circle c, Circle d, int dx, int dy).
+     * Предназначен для связывания параллельных прямых.
+     * @param c - объект первая точка на прямой
+     * @param d - объект вторая точка на прямой
+     * @param dx - смещение по х
+     * @param dy - смещение по y
+     */
+    public void  parallelBindLine(Circle c, Circle d, double dx, double dy){
+      //  d.centerXProperty().bind(c.centerXProperty().add(dx));
+      //  d.centerYProperty().bind(c.centerYProperty().add(dy));
+        c.centerXProperty().addListener((obj, OldValue, newValue)->{
+            d.setCenterX(c.getCenterX()+dx);
+            d.setCenterY(c.getCenterY()+dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()),gridViews.revAccessY(d.centerYProperty().get()));
+
+        });
+        c.centerYProperty().addListener((obj, OldValue, newValue)->{
+            d.setCenterX(c.getCenterX()+dx);
+            d.setCenterY(c.getCenterY()+dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()),gridViews.revAccessY(d.centerYProperty().get()));
+
+        });
+            }
     /**
      * Метод textUnBindCircle(Text txt).
      * Предназначен для отключения связи имени точки с текстом.

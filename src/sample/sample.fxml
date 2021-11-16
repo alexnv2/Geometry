@@ -49,8 +49,8 @@
                 <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми">
-                <MenuItem mnemonicParsing="false" onAction="#menuPrizAnle_1" text="Теорема № 1"/>
-                <MenuItem mnemonicParsing="false" onAction="#menuPrizAngle_2" text="Теорема № 2"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_1" text="Теорема № 1"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_2" text="Теорема № 2"/>
             </Menu>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника"/>
@@ -101,7 +101,7 @@
                 prefHeight="20.0" prefWidth="40.0"/>
         <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical"
                 onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLimes"
+        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLines"
                 onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0"/>
         <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle"
                 onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0"/>

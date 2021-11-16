@@ -131,6 +131,7 @@ public class Controller extends View {
     private boolean heightAdd;//true - проведение высоты из вершины треугольника
     private boolean verticalAdd;//true - построение перпендикуляра к прямой
     private boolean circleAdd;//true - построение окружности
+    private boolean parallelAdd;//true - построение параллельной прямой
 
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
@@ -141,6 +142,8 @@ public class Controller extends View {
     private boolean poindCircle = false;//true - когда создана окружность и идет выбор размера
     private boolean poindAddVertical = false;//true - выбрана точка для перпендикуляра
     private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
+    private  boolean poindAddVParallel =false;//true - выбрана точка для параллельной прямой
+    private boolean  lineAddParallel=false;// true - выбрана линия для параллельной прямой
 
     private String infoStatus;//Вершины угла и вершины треугольника при создании.
 
@@ -200,6 +203,8 @@ public class Controller extends View {
         btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnParallelLines.setStyle("-fx-background-image: url(/Images/parallel.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnCircle.setStyle("-fx-background-image: url(/Images/circle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
     }
 
     /**
@@ -613,6 +618,74 @@ public class Controller extends View {
             model.setPoindOldAdd(false);
             //закрыть режим создания перпендикуляра
         }
+        //Построить параллельную прямую
+        if(parallelAdd && model.isPoindOldAdd()){
+            poindLine1 = model.getTimeVer();//получаем точку через которую надо провести параллельную прямую
+            model.findCircleMove(poindLine1.getId());//изменить статус на не перемещаемую и принадлежит прямой
+            poindAddVParallel = true;
+        }
+        if (parallelAdd && model.isLineOldAdd()) {
+            newLine = model.getTimeLine();//получаем прямую к которой надо построить параллельную прямую
+            lineAddParallel = true;
+        }
+        //Строим параллельную прямую
+        if (poindAddVParallel && lineAddParallel) {
+            model.setPoindOldAdd(false);//взять выбранную точку
+            String[] nameLine = model.findID(newLine).split("_");//получить имя отрезка по имени прямой
+            model.setScreenX(model.findCircle(nameLine[1]).getCenterX()+(poindLine1.getCenterX()-model.findCircle(nameLine[0]).getCenterX()));
+            model.setScreenY(model.findCircle(nameLine[1]).getCenterY()+(poindLine1.getCenterY()-model.findCircle(nameLine[0]).getCenterY()));
+            Circle newPoind=model.createPoindAdd(false);
+            //Обновить мировые координаты коллекции
+            model.findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
+            model.findCircleMove(newPoind.getId());//изменить статус на не перемещаемую и принадлежит прямой
+            paneShape.getChildren().add(newPoind);//добавить на доску
+            model.setVertex(newPoind);
+            model.notifyObservers("VertexGo");
+            Line parallelLine=model.createLineAdd(2);
+            double x1=poindLine1.getCenterX()+(newPoind.getCenterX()-poindLine1.getCenterX())*3;
+            double y1=poindLine1.getCenterY()+(newPoind.getCenterY()-poindLine1.getCenterY())*3;
+            double x=poindLine1.getCenterX()+(newPoind.getCenterX()-poindLine1.getCenterX())*-3;
+            double y=poindLine1.getCenterY()+(newPoind.getCenterY()-poindLine1.getCenterY())*-3;
+
+            //задать координаты прямой
+            model.setRayStartX(x1);
+            model.setRayStartY(y1);
+            model.setRayEndX(x);
+            model.setRayEndY(y);
+            //Передать в View для вывода
+            model.setLine(parallelLine);
+            model.notifyObservers("RayGo");
+            paneShape.getChildren().add(parallelLine);//добавить на доску
+            parallelLine.toBack();
+            //Добавить координаты пересчета в коллекцию
+            model.setVerLineStartX(gridViews.revAccessX(x1));
+            model.setVerLineStartY(gridViews.revAccessY(y1));
+            model.setVerLineEndX(gridViews.revAccessX(x));
+            model.setVerLineEndY(gridViews.revAccessY(y));
+            model.findLinesUpdateXY(parallelLine.getId());
+            //Привязка свойств мышки
+            model.mouseLine(parallelLine);
+            //Связать точки с прямой
+            model.circlesBindLine(poindLine1, newPoind, parallelLine);
+            //Заменить имя
+            model.findNameId(poindLine1.getId(), newPoind.getId(), parallelLine.getId());
+            //Добавить имя
+            model.nameLineAdd(parallelLine);
+            // связать параллельные прямые
+            model.parallelBindLine(model.findCircle(nameLine[1]), newPoind, newPoind.getCenterX()-model.findCircle(nameLine[1]).getCenterX(),newPoind.getCenterY()-model.findCircle(nameLine[1]).getCenterY());
+            model.parallelBindLine(model.findCircle(nameLine[0]), poindLine1, poindLine1.getCenterX()-model.findCircle(nameLine[0]).getCenterX(),poindLine1.getCenterY()-model.findCircle(nameLine[0]).getCenterY());
+            //завершить построение
+            poindAddVParallel=false;
+            lineAddParallel=false;
+            parallelAdd=false;
+            model.setLineOldAdd(false);
+            disableButton(false);//разблокировать кнопки
+            //Вывод информации об объектах в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
+
+        }
+
         //Построить окружность
         if (circleAdd && !poindAdd1) {
             //добавить центр окружности на доску
@@ -1030,18 +1103,18 @@ public class Controller extends View {
 
 
     /**
-     * Метод menuPrizAnle_1().
+     * Метод menuSecantAngle_1().
      * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема1".
      */
-    public void menuPrizAnle_1() {
+    public void menuSecantAngle_1() {
         model.webHTML(webViewLeft, "perAngle_1.html");//Вывод в браузер файла html
     }
 
     /**
-     * Метод menuPrizAngle_2().
+     * Метод menuSecantAngle_2()
      * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема2".
      */
-    public void menuPrizAngle_2() {
+    public void menuSecantAngle_2() {
         model.webHTML(webViewLeft, "perAngle_2.html");//Вывод в браузер файла html
     }
 
@@ -1293,7 +1366,12 @@ public class Controller extends View {
      * Метод для события нажатия кнопки "Построить параллельные прямые"
      * Устанавливает режим построения параллельных прямых
      */
-    public void btnParallelLimes() {
+    public void  btnParallelLines() {
+        model.setStringLeftStatus(STA_15);
+        model.notifyObservers("LeftStatusGo");
+        visibleCreate();//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        parallelAdd = true;//режим построения окружности
     }
 
     /**
