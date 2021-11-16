@@ -11,16 +11,14 @@
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="Фигуры">
             <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок"/>
-            <Menu mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол">
-                <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла"/>
-            </Menu>
+            <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол"/>
             <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <Menu fx:id="menuTreangleP" mnemonicParsing="false" text="Треугольник">
                 <MenuItem fx:id="menuTreangle" mnemonicParsing="false" onAction="#menuTriangle"
                           text="Определение треугольника"/>
                 <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr"
-                          text="Виды треугольников"/>
+                          text="Классификация треугольников"/>
 
                 <MenuItem fx:id="menuBisector" mnemonicParsing="false" onAction="#menuBisector"
                           text="Биссектриса треугольника"/>
@@ -33,6 +31,7 @@
             <MenuItem mnemonicParsing="false" text="Окружность" onAction="#menuCircle"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Теоремы и свойства">
+            <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла"/>
             <Menu mnemonicParsing="false" text="Признаки равенства треугольников">
                 <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#menuEquil"
                           text="Первый признак равенства треугольников"/>
