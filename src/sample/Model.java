@@ -98,7 +98,7 @@ class Model implements Observable {
     private boolean lineOldAdd = false;//true - Берем существующую линию для построения фигур
     private boolean poindAdd = false;//true- режим добавления точки
     private boolean poindLineAdd = false;//true - добавление точки на линию
-    private boolean createLine=false;//true - режим добавления отрезка, луча, прямой (необходима для перемещения линий)
+    private boolean createLine = false;//true - режим добавления отрезка, луча, прямой (необходима для перемещения линий)
 
     //режимы создания
     private boolean angleAdd;//true -создание угла
@@ -817,6 +817,7 @@ class Model implements Observable {
     /**
      * Метод createCircle().
      * Предназначен для создания новой окружности и подключения событий мышки.
+     *
      * @return circle - возвращает созданную окружность
      */
     Circle createCircle() {
@@ -982,9 +983,9 @@ class Model implements Observable {
      */
     public void mouseLine(Line newLine) {
         //Перемещение линий
-        newLine.setOnMouseDragged(e->{
+        newLine.setOnMouseDragged(e -> {
             //Определить, разрешено ли перемещение линии
-            if(findLineMove(newLine)) {
+            if (findLineMove(newLine)) {
                 String[] nameId = findID(newLine).split("_");
                 Circle A = findCircle(nameId[0]);
                 Circle B = findCircle(nameId[1]);
@@ -1000,7 +1001,7 @@ class Model implements Observable {
                 updatePoindLine(newLine);
                 setTxtShape("");
                 txtAreaOutput();
-            }else{
+            } else {
                 stringLeftStatus = STA_30;
                 notifyObservers("LeftStatusGo");
             }
@@ -1065,7 +1066,7 @@ class Model implements Observable {
             timeLine = newLine;//выбрана данная линия, для построения
             lineOldAdd = true;//линия выбрана
             //Определить, разрешено ли перемещение линии
-            if(findLineMove(newLine)) {
+            if (findLineMove(newLine)) {
                 //Вычислить смещение для перемещения всех линий
                 if (!createLine) {
                     String[] nameId = findID(newLine).split("_");
@@ -1081,11 +1082,12 @@ class Model implements Observable {
     /**
      * Метод updatePoindLine(Line line).
      * Предназначен для обновления мировых координат при перемещении линии
+     *
      * @param line - ссылка на линию
      */
-    private void updatePoindLine(Line line){
-        for(PoindLine p: poindLines){
-            if(p!=null) {
+    private void updatePoindLine(Line line) {
+        for (PoindLine p : poindLines) {
+            if (p != null) {
                 if (line.getId().equals(p.getLine().getId())) {
                     String[] namePoind = p.getId().split("_");
                     Circle a = findCircle(namePoind[0]);
@@ -1103,13 +1105,14 @@ class Model implements Observable {
     /**
      * Метод indLineMove(Line line).
      * Предназначен для поиска разрешения на перемещение линии.
+     *
      * @param line - ссылка на линию
      * @return - true - перемещение разрешено, false - перемещение запрещено
      */
-    private boolean findLineMove(Line line){
-        for(PoindLine p: poindLines){
-            if (p!=null){
-                if(p.getLine().getId().equals(line.getId())){
+    private boolean findLineMove(Line line) {
+        for (PoindLine p : poindLines) {
+            if (p != null) {
+                if (p.getLine().getId().equals(line.getId())) {
                     return p.isBMove();
                 }
             }
@@ -1120,8 +1123,9 @@ class Model implements Observable {
     /**
      * Метод  rayAddLine(Line newLine, int seg).
      * Предназначен для расчета окончания луча.
+     *
      * @param newLine - ссылка на линию
-     * @param seg - тип линии
+     * @param seg     - тип линии
      */
     public void rayAddLine(Line newLine, int seg) {
         //Расчитать координаты окончания луча
@@ -1669,69 +1673,70 @@ class Model implements Observable {
     /**
      * Метод parallelBindLine(Circle c, Circle d, int dx, int dy).
      * Предназначен для связывания прямой с параллельной прямой.
-     * @param b  - точка на прямой начало
-     * @param c  - точка на прямой, конец вс-прямая относительно которой построена параллельная прямая
+     *
+     * @param b - точка на прямой начало
+     * @param c - точка на прямой, конец вс-прямая относительно которой построена параллельная прямая
      * @param a - точка через которую проходит параллельная прямая
      * @param d - точка на параллельной прямой расчетная
      */
     public void parallelBindLine(Circle b, Circle c, Circle a, Circle d) {
         c.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
         c.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
         b.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
         b.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
         });
         a.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
         a.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=a.getCenterX()-b.getCenterX();
-            double Dy=a.getCenterY()-b.getCenterY();
+            double Dx = a.getCenterX() - b.getCenterX();
+            double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
         });
         d.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=d.getCenterX()-c.getCenterX();
-            double Dy=d.getCenterY()-c.getCenterY();
+            double Dx = d.getCenterX() - c.getCenterX();
+            double Dy = d.getCenterY() - c.getCenterY();
             a.setCenterX(b.getCenterX() + Dx);
             a.setCenterY(c.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
 
         });
         d.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx=d.getCenterX()-c.getCenterX();
-            double Dy=d.getCenterY()-c.getCenterY();
+            double Dx = d.getCenterX() - c.getCenterX();
+            double Dy = d.getCenterY() - c.getCenterY();
             a.setCenterX(b.getCenterX() + Dx);
             a.setCenterY(b.getCenterY() + Dy);
             findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
@@ -2202,12 +2207,13 @@ class Model implements Observable {
      * Метод closeLine(Line newLine).
      * Предназначен для запрета линий на перемещение от мышки.
      * К этим линиям относятся высота, медиана, биссектриса треугольника.
+     *
      * @param newLine - ссылка на линию
      */
     public void closeLine(Line newLine) {
-        for (PoindLine p: poindLines){
-            if(p.getLine().getId().equals(newLine.getId())){
-                if(p!=null){
+        for (PoindLine p : poindLines) {
+            if (p != null) {
+                if (p.getLine().getId().equals(newLine.getId())) {
                     p.setBMove(false);
                 }
             }
