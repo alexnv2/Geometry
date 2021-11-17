@@ -61,6 +61,10 @@ class Model implements Observable {
     private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
     private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
     private String txtShape = "";//хранит строку о геометрической фигуре на доске
+    private double dXStart; //смещение по х от нажатой мышки до начала линии для её перемещения
+    private double dYStart;
+    private double dXEnd;//смещение по х от нажатой мышки до конца линии для её перемещения
+    private double dYEnd;
     //координаты
     private double screenX;//координата экрана Х от мышки
     private double screenY;//координата экрана Y от мышки
@@ -94,6 +98,7 @@ class Model implements Observable {
     private boolean lineOldAdd = false;//true - Берем существующую линию для построения фигур
     private boolean poindAdd = false;//true- режим добавления точки
     private boolean poindLineAdd = false;//true - добавление точки на линию
+    private boolean createLine=false;//true - режим добавления отрезка, луча, прямой (необходима для перемещения линий)
 
     //режимы создания
     private boolean angleAdd;//true -создание угла
@@ -812,7 +817,6 @@ class Model implements Observable {
     /**
      * Метод createCircle().
      * Предназначен для создания новой окружности и подключения событий мышки.
-     *
      * @return circle - возвращает созданную окружность
      */
     Circle createCircle() {
@@ -977,6 +981,31 @@ class Model implements Observable {
      * Предназначен для привязки событий мышки к объекту Line.
      */
     public void mouseLine(Line newLine) {
+        //Перемещение линий
+        newLine.setOnMouseDragged(e->{
+            //Определить, разрешено ли перемещение линии
+            if(findLineMove(newLine)) {
+                String[] nameId = findID(newLine).split("_");
+                Circle A = findCircle(nameId[0]);
+                Circle B = findCircle(nameId[1]);
+                A.setCenterX(e.getX() + getDXStart());
+                A.setCenterY(e.getY() + getDYStart());
+                B.setCenterX(e.getX() + getDXEnd());
+                B.setCenterY(e.getY() + getDYEnd());
+                //добавить новые координаты в коллекцию PoindCircle
+                findCirclesUpdateXY(A.getId(), gridViews.revAccessX(A.getCenterX()), gridViews.revAccessY(A.getCenterY()));
+                findCirclesUpdateXY(B.getId(), gridViews.revAccessX(B.getCenterX()), gridViews.revAccessY(B.getCenterY()));
+                //добавить новые координаты в коллекцию PoindLine
+                findLineUpdateXY(newLine.getId());
+                updatePoindLine(newLine);
+                setTxtShape("");
+                txtAreaOutput();
+            }else{
+                stringLeftStatus = STA_30;
+                notifyObservers("LeftStatusGo");
+            }
+
+        });
         //Наведение на отрезок
         newLine.setOnMouseEntered(e -> {
             newLine.setCursor(Cursor.HAND);
@@ -1035,9 +1064,65 @@ class Model implements Observable {
         newLine.setOnMousePressed(e -> {
             timeLine = newLine;//выбрана данная линия, для построения
             lineOldAdd = true;//линия выбрана
+            //Определить, разрешено ли перемещение линии
+            if(findLineMove(newLine)) {
+                //Вычислить смещение для перемещения всех линий
+                if (!createLine) {
+                    String[] nameId = findID(newLine).split("_");
+                    setDXStart(findCircle(nameId[0]).getCenterX() - e.getX());
+                    setDYStart(findCircle(nameId[0]).getCenterY() - e.getY());
+                    setDXEnd(findCircle(nameId[1]).getCenterX() - e.getX());
+                    setDYEnd(findCircle(nameId[1]).getCenterY() - e.getY());
+                }
+            }
         });
     }
 
+    /**
+     * Метод updatePoindLine(Line line).
+     * Предназначен для обновления мировых координат при перемещении линии
+     * @param line - ссылка на линию
+     */
+    private void updatePoindLine(Line line){
+        for(PoindLine p: poindLines){
+            if(p!=null) {
+                if (line.getId().equals(p.getLine().getId())) {
+                    String[] namePoind = p.getId().split("_");
+                    Circle a = findCircle(namePoind[0]);
+                    Circle b = findCircle(namePoind[1]);
+                    findCirclesUpdateXY(a.getId(), gridViews.revAccessX(a.getCenterX()), gridViews.revAccessY(a.getCenterY()));
+                    findCirclesUpdateXY(b.getId(), gridViews.revAccessX(b.getCenterX()), gridViews.revAccessY(b.getCenterY()));
+                    findLineUpdateXY(a.getId());
+                    findLineUpdateXY(b.getId());
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Метод indLineMove(Line line).
+     * Предназначен для поиска разрешения на перемещение линии.
+     * @param line - ссылка на линию
+     * @return - true - перемещение разрешено, false - перемещение запрещено
+     */
+    private boolean findLineMove(Line line){
+        for(PoindLine p: poindLines){
+            if (p!=null){
+                if(p.getLine().getId().equals(line.getId())){
+                    return p.isBMove();
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Метод  rayAddLine(Line newLine, int seg).
+     * Предназначен для расчета окончания луча.
+     * @param newLine - ссылка на линию
+     * @param seg - тип линии
+     */
     public void rayAddLine(Line newLine, int seg) {
         //Расчитать координаты окончания луча
         double x, y, x1, y1;
@@ -2113,6 +2198,23 @@ class Model implements Observable {
         return new Point2D((-c1 * a1 - c2 * b1) / o, (a1 * c2 - b1 * c1) / o);
     }
 
+    /**
+     * Метод closeLine(Line newLine).
+     * Предназначен для запрета линий на перемещение от мышки.
+     * К этим линиям относятся высота, медиана, биссектриса треугольника.
+     * @param newLine - ссылка на линию
+     */
+    public void closeLine(Line newLine) {
+        for (PoindLine p: poindLines){
+            if(p.getLine().getId().equals(newLine.getId())){
+                if(p!=null){
+                    p.setBMove(false);
+                }
+            }
+        }
+
+    }
+
     //Тестовый метод для вывода информации по коллекциям
     public void ColTest() {
         //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
@@ -2139,4 +2241,6 @@ class Model implements Observable {
         System.out.println("Коллекция объектов");
         paneBoards.getChildren().forEach(System.out::println);
     }
+
+
 }

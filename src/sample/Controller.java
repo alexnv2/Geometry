@@ -393,6 +393,7 @@ public class Controller extends View {
         }
         //Добавление отрезка
         if (segmentAdd && !poindAdd1) {
+            model.setCreateLine(true);//заблокировать режим перемещения линий
             model.setPoindLineAdd(true);
             addLineRayStart(0);//Создание первой точки и линии
         }
@@ -444,6 +445,7 @@ public class Controller extends View {
         }
         //Построение треугольника
         if (treangleAdd && !poindAdd1) {
+            model.setCreateLine(true);//заблокировать режим перемещения линий
             addLineRayStart(3);//Создание первой точки и линии
             angleCol += 1;//увеличиваем счетчик вершин
         }
@@ -488,6 +490,7 @@ public class Controller extends View {
             disableButton(false);//разблокировать кнопки
             poindAdd1 = false;
             angleCol = 0;
+            model.setCreateLine(false);//заблокировать режим перемещения линий
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
@@ -495,6 +498,7 @@ public class Controller extends View {
 
         //Добавления луча
         if (rayAdd && !poindAdd1) {
+            model.setCreateLine(true);//заблокировать режим перемещения линий
             addLineRayStart(1);
         }
         //Окончание построения луча
@@ -515,6 +519,7 @@ public class Controller extends View {
         }
         //Добавление прямой
         if (lineAdd && !poindAdd1) {
+            model.setCreateLine(true);//заблокировать режим перемещения линий
             addLineRayStart(2);//Создание первой точки и линии
         }
         if (lineAdd && poindAdd1) {
@@ -539,7 +544,8 @@ public class Controller extends View {
         if (medianaAdd) {
             poindLine1 = model.getTimeVer();
             newLine = model.mbhLineAdd(poindLine1, 4);
-            model.mouseLine(newLine);
+            model.mouseLine(newLine);//привязка событий мыши
+            model.closeLine(newLine);//запрет на перемещение
             medianaAdd = false;
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
@@ -549,7 +555,8 @@ public class Controller extends View {
         if (bisectorAdd) {
             poindLine1 = model.getTimeVer();
             newLine = model.mbhLineAdd(poindLine1, 5);
-            model.mouseLine(newLine);
+            model.mouseLine(newLine);//привязка событий мыши
+            model.closeLine(newLine);//запрет на перемещение
             bisectorAdd = false;
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
@@ -559,7 +566,8 @@ public class Controller extends View {
         if (heightAdd) {
             poindLine1 = model.getTimeVer();
             newLine = model.mbhLineAdd(poindLine1, 6);
-            model.mouseLine(newLine);
+            model.mouseLine(newLine);//привязка событий мыши
+            model.closeLine(newLine);//запрет на перемещение
             heightAdd = false;
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
@@ -766,6 +774,7 @@ public class Controller extends View {
         poindAdd2 = false;//закрыть 2 точку
         model.setPoindLineAdd(false);
         model.setPoindOldAdd(false);//закрыть добавление из имеющихся точек
+        model.setCreateLine(false);
     }
 
     /**

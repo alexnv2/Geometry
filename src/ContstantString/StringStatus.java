@@ -32,6 +32,7 @@ public final class StringStatus {
     public static final String STA_27="Перпендикуляр ";
     public static final String STA_28="Укажите на доске центр окружности";
     public static final String STA_29="Окружность радиусом: ";
+    public static final String STA_30="Данную линию запрещено перемещать!";
 
 
 
