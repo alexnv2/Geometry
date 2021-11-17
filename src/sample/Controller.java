@@ -621,7 +621,7 @@ public class Controller extends View {
         //Построить параллельную прямую
         if(parallelAdd && model.isPoindOldAdd()){
             poindLine1 = model.getTimeVer();//получаем точку через которую надо провести параллельную прямую
-            model.findCircleMove(poindLine1.getId());//изменить статус на не перемещаемую и принадлежит прямой
+          //  model.findCircleMove(poindLine1.getId());//изменить статус на не перемещаемую и принадлежит прямой
             poindAddVParallel = true;
         }
         if (parallelAdd && model.isLineOldAdd()) {
@@ -634,10 +634,10 @@ public class Controller extends View {
             String[] nameLine = model.findID(newLine).split("_");//получить имя отрезка по имени прямой
             model.setScreenX(model.findCircle(nameLine[1]).getCenterX()+(poindLine1.getCenterX()-model.findCircle(nameLine[0]).getCenterX()));
             model.setScreenY(model.findCircle(nameLine[1]).getCenterY()+(poindLine1.getCenterY()-model.findCircle(nameLine[0]).getCenterY()));
-            Circle newPoind=model.createPoindAdd(false);
+            Circle newPoind=model.createPoindAdd(true);
             //Обновить мировые координаты коллекции
             model.findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
-            model.findCircleMove(newPoind.getId());//изменить статус на не перемещаемую и принадлежит прямой
+          //  model.findCircleMove(newPoind.getId());//изменить статус на не перемещаемую и принадлежит прямой
             paneShape.getChildren().add(newPoind);//добавить на доску
             model.setVertex(newPoind);
             model.notifyObservers("VertexGo");
@@ -665,15 +665,15 @@ public class Controller extends View {
             model.findLinesUpdateXY(parallelLine.getId());
             //Привязка свойств мышки
             model.mouseLine(parallelLine);
-            //Связать точки с прямой
-            model.circlesBindLine(poindLine1, newPoind, parallelLine);
             //Заменить имя
             model.findNameId(poindLine1.getId(), newPoind.getId(), parallelLine.getId());
             //Добавить имя
             model.nameLineAdd(parallelLine);
-            // связать параллельные прямые
-            model.parallelBindLine(model.findCircle(nameLine[1]), newPoind, newPoind.getCenterX()-model.findCircle(nameLine[1]).getCenterX(),newPoind.getCenterY()-model.findCircle(nameLine[1]).getCenterY());
-            model.parallelBindLine(model.findCircle(nameLine[0]), poindLine1, poindLine1.getCenterX()-model.findCircle(nameLine[0]).getCenterX(),poindLine1.getCenterY()-model.findCircle(nameLine[0]).getCenterY());
+            //Связать параллельные прямые
+           // System.out.println(nameLine[0]);
+            model.parallelBindLine(model.findCircle(nameLine[0]), model.findCircle(nameLine[1]), poindLine1,newPoind);
+            //Связать точки с прямой
+            model.circlesBindLine(poindLine1, newPoind, parallelLine);
             //завершить построение
             poindAddVParallel=false;
             lineAddParallel=false;

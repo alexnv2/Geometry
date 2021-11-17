@@ -128,7 +128,6 @@ class Model implements Observable {
     private double radiusCircleW;//радиус окружности в мировых координатах
 
 
-
     //Коллекции
     private LinkedList<PoindCircle> poindCircles = new LinkedList<>();//коллекция для точек по классу
     private LinkedList<PoindLine> poindLines = new LinkedList<>();//коллекция для линий по классу
@@ -140,7 +139,8 @@ class Model implements Observable {
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
-   //Переменные для передачи в другой контроллер
+
+    //Переменные для передачи в другой контроллер
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
@@ -273,8 +273,6 @@ class Model implements Observable {
     }
 
 
-
-
     /**
      * Метод nameSplitRemove(String s).
      * Предназначен для удаления символа разделителя в именах названий точек, прямых и т.д.
@@ -405,6 +403,7 @@ class Model implements Observable {
      * Метод nameUpdateXY(String id).
      * Предназначен для обновления мировых координат и расстояния до точки при
      * перемещении объекта Text. Вызывается из метода createNameShapes(String name).
+     *
      * @param id - строка имя объекта Text.
      */
     private void nameUpdateXY(String id) {
@@ -659,7 +658,8 @@ class Model implements Observable {
                 if (!Objects.requireNonNull(txt).xProperty().isBound()) {//проверить на связь, если нет связать
                     textBindCircle(newPoind, txt, (int) (txt.getX() - newPoind.getCenterX()), (int) (txt.getY() - newPoind.getCenterY()));//если нет, связать
                 }
-                //Найти точку в коллекции, определить принадлежит ли она линии
+                //если точка принадлежит параллельной прямой, пересчитать координаты второй точки о линии
+                //изменить местоположение точки
                 newPoind.setCenterX(e.getX());
                 newPoind.setCenterY(e.getY());
                 //добавить новые координаты в коллекцию PoindCircle
@@ -1241,21 +1241,6 @@ class Model implements Observable {
         }
     }
 
-    /**
-     * Метод findCircleMove(String id).
-     * Предназначен для поиска точек и замены статуса с перемещаемой на не перемещаемую точку.
-     * Вызывается из режима создать параллельную прямую
-     * @param id - имя точки
-     */
-    public void findCircleMove(String id){
-        for(PoindCircle p: poindCircles){
-            if(p!=null){
-                if(p.getId().equals(id)){
-                    p.setBMove(false);
-                }
-            }
-        }
-    }
 
     /**
      * Метод findLinesUpdateXY(String id).
@@ -1598,28 +1583,77 @@ class Model implements Observable {
 
     /**
      * Метод parallelBindLine(Circle c, Circle d, int dx, int dy).
-     * Предназначен для связывания параллельных прямых.
-     * @param c - объект первая точка на прямой
-     * @param d - объект вторая точка на прямой
-     * @param dx - смещение по х
-     * @param dy - смещение по y
+     * Предназначен для связывания прямой с параллельной прямой.
+     * @param b  - точка на прямой начало
+     * @param c  - точка на прямой, конец вс-прямая относительно которой построена параллельная прямая
+     * @param a - точка через которую проходит параллельная прямая
+     * @param d - точка на параллельной прямой расчетная
      */
-    public void  parallelBindLine(Circle c, Circle d, double dx, double dy){
-      //  d.centerXProperty().bind(c.centerXProperty().add(dx));
-      //  d.centerYProperty().bind(c.centerYProperty().add(dy));
-        c.centerXProperty().addListener((obj, OldValue, newValue)->{
-            d.setCenterX(c.getCenterX()+dx);
-            d.setCenterY(c.getCenterY()+dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()),gridViews.revAccessY(d.centerYProperty().get()));
+    public void parallelBindLine(Circle b, Circle c, Circle a, Circle d) {
+        c.centerXProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
-        c.centerYProperty().addListener((obj, OldValue, newValue)->{
-            d.setCenterX(c.getCenterX()+dx);
-            d.setCenterY(c.getCenterY()+dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()),gridViews.revAccessY(d.centerYProperty().get()));
+        c.centerYProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
 
         });
-            }
+        b.centerXProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
+
+        });
+        b.centerYProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
+        });
+        a.centerXProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
+
+        });
+        a.centerYProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=a.getCenterX()-b.getCenterX();
+            double Dy=a.getCenterY()-b.getCenterY();
+            d.setCenterX(c.getCenterX() + Dx);
+            d.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
+        });
+        d.centerXProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=d.getCenterX()-c.getCenterX();
+            double Dy=d.getCenterY()-c.getCenterY();
+            a.setCenterX(b.getCenterX() + Dx);
+            a.setCenterY(c.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
+
+        });
+        d.centerYProperty().addListener((obj, OldValue, newValue) -> {
+            double Dx=d.getCenterX()-c.getCenterX();
+            double Dy=d.getCenterY()-c.getCenterY();
+            a.setCenterX(b.getCenterX() + Dx);
+            a.setCenterY(b.getCenterY() + Dy);
+            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
+        });
+
+    }
+
     /**
      * Метод textUnBindCircle(Text txt).
      * Предназначен для отключения связи имени точки с текстом.
