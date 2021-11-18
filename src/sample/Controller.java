@@ -219,6 +219,7 @@ public class Controller extends View {
     private void visibleCreate() {
         poindAdd = false;//true - создать точку
         segmentAdd = false;//true - создать отрезок
+        middleSegmentAdd=false;//true - построить середину отрезка
         rayAdd = false;//true - создание луча
         lineAdd = false;//true - создание прямой
         circleAdd=false;//true - создание окружности
@@ -242,6 +243,7 @@ public class Controller extends View {
     private void disableButton(Boolean b) {
         btnPoind.setDisable(b);
         btnSegment.setDisable(b);
+        btnMiddleSegment.setDisable(b);
         btnRay.setDisable(b);
         btnLine.setDisable(b);
         btnCircle.setDisable(b);
