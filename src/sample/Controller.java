@@ -93,6 +93,8 @@ public class Controller extends View {
     private Button btnCircle;
     @FXML
     private Button btnParallelLines;
+    @FXML
+    private Button btnMiddleSegment;
 
     //Web браузер для вывода данных
     @FXML
@@ -132,6 +134,7 @@ public class Controller extends View {
     private boolean verticalAdd;//true - построение перпендикуляра к прямой
     private boolean circleAdd;//true - построение окружности
     private boolean parallelAdd;//true - построение параллельной прямой
+    private boolean middleSegmentAdd;//true- построение середины отрезка
 
     private Circle poindTreangle1;//первая точка треугольника
     private Line lineTriangle1;//первая сторона треугольника для построения
@@ -417,6 +420,34 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
+        }
+        // Построение середины отрезка
+        if (middleSegmentAdd){
+            newLine = model.getTimeLine();//получаем отрезок, для которого надо построить середину
+            //проверить, является ли данная линия отрезком, исключаем прямые и лучи
+            if(model.findTypeLine(newLine)==0){
+                String[] namePoind=model.findID(newLine).split("_");//получить имена точек отрезка
+                Circle c1=model.findCircle(namePoind[0]);
+                Circle c2=model.findCircle(namePoind[1]);
+                Point2D p1=new Point2D(c1.getCenterX(), c1.getCenterY());
+                Point2D p2=new Point2D(c2.getCenterX(), c2.getCenterY());
+                Point2D poindMiddle=model.midPoindAB(p1, p2);//получили координаты середины отрезка
+                Circle newCircle=model.createPoindAdd(false);
+                model.setScreenX(poindMiddle.getX());
+                model.setScreenY(poindMiddle.getY());
+                model.notifyObservers("VertexGo");//вывести на экран
+                paneShape.getChildren().add(newCircle);
+                //Связать полученную точку с линией
+                model.middleBindSegment(newCircle, newLine);
+
+            }else {
+                model.setStringLeftStatus(STA_32);
+                model.notifyObservers("LeftStatusGo");
+            }
+            //завершение построения
+            disableButton(false);//разблокировать кнопки
+            middleSegmentAdd=false;
             model.setCreateShape(false);//Сбросить режим создания фигуры
         }
 
@@ -1296,6 +1327,31 @@ public class Controller extends View {
     public void onMoseEnteredSegment() {
         model.setTextToolTip("Добавить отрезок");
         //Передать в View для вывода
+        model.setBtnToolTip(btnMiddleSegment);
+        model.notifyObservers("ToolTip");
+    }
+
+    /**
+     * Метод btnMiddleSegment().
+     * Метод для события нажатия кнопки "Середина отрезка"
+     * Предназначен для построения середины отрезка
+     */
+    public void btnMiddleSegment() {
+        model.setStringLeftStatus(STA_31);
+        model.notifyObservers("LeftStatusGo");
+        visibleCreate();//сбросить все режимы
+        disableButton(true);//блокировать кнопки
+        middleSegmentAdd = true;//режим построения отрезка
+        model.setCreateShape(true);//Установить режим создания фигуры
+    }
+
+    /**
+     * Метод onMouseEnteredMiddleSegment().
+     * Всплывающая подсказка при наведении мышки на кнопку "Найти середину отрезка"
+     */
+    public void onMouseEnteredMiddleSegment() {
+        model.setTextToolTip("Найти середину отрезка");
+        //Передать в View для вывода
         model.setBtnToolTip(btnSegment);
         model.notifyObservers("ToolTip");
     }
@@ -1426,7 +1482,7 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Добавить перпендикуляр к прямой"
      */
     public void onMouseEnteredVertical() {
-        model.setTextToolTip("Добавить перпендикуляр к прямой");
+        model.setTextToolTip("Построить перпендикуляр к прямой");
         //Передать в View для вывода
         model.setBtnToolTip(btnVertical);
         model.notifyObservers("ToolTip");
@@ -1438,7 +1494,7 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Построить окружность"
      */
     public void onMouseEnteredCircle() {
-        model.setTextToolTip("Построить окружность");
+        model.setTextToolTip("Добавить окружность");
         //Передать в View для вывода
         model.setBtnToolTip(btnCircle);
         model.notifyObservers("ToolTip");
@@ -1449,7 +1505,7 @@ public class Controller extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Построить параллельные прямые"
      */
     public void onMouseEnteredParallelLines() {
-        model.setTextToolTip("Построить параллельные прямые");
+        model.setTextToolTip("Построить параллельную прямую");
         //Передать в View для вывода
         model.setBtnToolTip(btnParallelLines);
         model.notifyObservers("ToolTip");

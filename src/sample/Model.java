@@ -159,7 +159,6 @@ class Model implements Observable {
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
-
     public int getWindShow() {
         return WIND_SHOW;
     }
@@ -981,7 +980,6 @@ class Model implements Observable {
         return circle;
     }
 
-
     /**
      * Метод createLine(int seg).
      * Предназначен для создания линий отрезков, лучей, прямых, сторон треугольника, медиан, биссектрис, высот.
@@ -1260,7 +1258,7 @@ class Model implements Observable {
      * @param p2 - координаты второй точки
      * @return - возвращает точку с координатами середины между указанными точками
      */
-    private Point2D midPoindAB(Point2D p1, Point2D p2) {
+    public Point2D midPoindAB(Point2D p1, Point2D p2) {
         return p1.midpoint(p2);
     }
 
@@ -1898,6 +1896,24 @@ class Model implements Observable {
     }
 
     /**
+     * Метод findTypeLine(Line line).
+     * Предназначен для поиска в коллекции и возвращения типа линии
+     * Вызывается для проверки при построении середины отрезка
+     * @param line - ссылка на линию
+     * @return - тип линии, нужно 0 - отрезок
+     */
+    public int findTypeLine(Line line){
+        for (PoindLine p: poindLines){
+            if(p!=null){
+                if(p.getLine().getId().equals(line.getId())){
+                    return p.getSegment();
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Метод circlesBindLine(Circle cStart, Circle cEnd, Line l)
      * Метод однонаправленного связывания двух точек на прямой с прямой и расчетом начала и конца прямой.
      * Для расчета начала и конца прямой вызываются методы:
@@ -2288,5 +2304,42 @@ class Model implements Observable {
 
         System.out.println("Коллекция объектов");
         paneBoards.getChildren().forEach(System.out::println);
+    }
+
+    /**
+     * Метод middleBindSegment(Circle newCircle, Line newLine).
+     * Предназначен для связывания середины отрезка с линией
+     * @param newCircle - ссылка на точку
+     * @param newLine - ссылка на линию
+     */
+    public void middleBindSegment(Circle newCircle, Line newLine) {
+        newLine.startXProperty().addListener((old, oldValue, newValue)-> {
+            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
+            newCircle.setCenterX(midPoindAB(p1,p2).getX());
+            newCircle.setCenterY(midPoindAB(p1,p2).getY());
+            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        });
+        newLine.startYProperty().addListener((old, oldValue, newValue)-> {
+            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
+            newCircle.setCenterX(midPoindAB(p1,p2).getX());
+            newCircle.setCenterY(midPoindAB(p1,p2).getY());
+            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        });
+        newLine.endXProperty().addListener((old, oldValue, newValue)-> {
+            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
+            newCircle.setCenterX(midPoindAB(p1,p2).getX());
+            newCircle.setCenterY(midPoindAB(p1,p2).getY());
+            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        });
+        newLine.endYProperty().addListener((old, oldValue, newValue)-> {
+            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
+            newCircle.setCenterX(midPoindAB(p1,p2).getX());
+            newCircle.setCenterY(midPoindAB(p1,p2).getY());
+            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        });
     }
 }

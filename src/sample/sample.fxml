@@ -91,6 +91,8 @@
                 prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER"/>
         <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick"
                 onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0"/>
+        <Button fx:id="btnMiddleSegment" mnemonicParsing="false" onAction="#btnMiddleSegment"
+                onMouseEntered="#onMouseEnteredMiddleSegment" prefHeight="20.0" prefWidth="40.0"/>
         <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay"
                 prefHeight="20.0" prefWidth="40.0"/>
         <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine"
