@@ -127,6 +127,16 @@ class Model implements Observable {
     private boolean showAngleName = false;//по умолчанию, не показывать имя углов
 
     private boolean poindMove = false;
+
+    /**
+     * Логическая переменная createShape.
+     * Задает глобальный режим построения всех фигур, блокирует
+     * возможность случайного перемещения фигуры при построении.
+     * Задается контролером при построении, после построения устанавливает false.
+     * Используется при подключении к фигуре свойств мышки.
+     * Блокирует режим перемещения фигуры.
+     */
+    private boolean createShape= false;
     private double t;//для параметрической прямой, когда точка принадлежит прямой
 
     private double radiusCircle;//радиус окружности, для View
@@ -657,28 +667,30 @@ class Model implements Observable {
         //Обработка событий
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
-            if (findPoindCircleMove(newPoind.getId())) {
-                //Найти по точке имя в коллекции
-                Text txt = findNameText(newPoind);
-                if (!Objects.requireNonNull(txt).xProperty().isBound()) {//проверить на связь, если нет связать
-                    textBindCircle(newPoind, txt, (int) (txt.getX() - newPoind.getCenterX()), (int) (txt.getY() - newPoind.getCenterY()));//если нет, связать
+            if(!createShape) {
+                if (findPoindCircleMove(newPoind.getId())) {
+                    //Найти по точке имя в коллекции
+                    Text txt = findNameText(newPoind);
+                    if (!Objects.requireNonNull(txt).xProperty().isBound()) {//проверить на связь, если нет связать
+                        textBindCircle(newPoind, txt, (int) (txt.getX() - newPoind.getCenterX()), (int) (txt.getY() - newPoind.getCenterY()));//если нет, связать
+                    }
+                    //если точка принадлежит параллельной прямой, пересчитать координаты второй точки о линии
+                    //изменить местоположение точки
+                    newPoind.setCenterX(e.getX());
+                    newPoind.setCenterY(e.getY());
+                    //добавить новые координаты в коллекцию PoindCircle
+                    findCirclesUpdateXY(newPoind.getId(), decartX, decartY);
+                    //добавить новые координаты в коллекцию PoindLine
+                    findLineUpdateXY(newPoind.getId());
+                    //Добавить новые данные коллекцию VertexArc
+                    findArcUpdate(newPoind.getId());
+                    //Обновить координаты точки в правой части
+                    setTxtShape("");
+                    txtAreaOutput();
+                } else {
+                    setStringLeftStatus(STA_8);
+                    notifyObservers("LeftStatusGo");
                 }
-                //если точка принадлежит параллельной прямой, пересчитать координаты второй точки о линии
-                //изменить местоположение точки
-                newPoind.setCenterX(e.getX());
-                newPoind.setCenterY(e.getY());
-                //добавить новые координаты в коллекцию PoindCircle
-                findCirclesUpdateXY(newPoind.getId(), decartX, decartY);
-                //добавить новые координаты в коллекцию PoindLine
-                findLineUpdateXY(newPoind.getId());
-                //Добавить новые данные коллекцию VertexArc
-                findArcUpdate(newPoind.getId());
-                //Обновить координаты точки в правой части
-                setTxtShape("");
-                txtAreaOutput();
-            } else {
-                setStringLeftStatus(STA_8);
-                notifyObservers("LeftStatusGo");
             }
         });
         //Нажатие клавиши
@@ -984,28 +996,30 @@ class Model implements Observable {
     public void mouseLine(Line newLine) {
         //Перемещение линий
         newLine.setOnMouseDragged(e -> {
-            //Определить, разрешено ли перемещение линии
-            if (findLineMove(newLine)) {
-                String[] nameId = findID(newLine).split("_");
-                Circle A = findCircle(nameId[0]);
-                Circle B = findCircle(nameId[1]);
-                A.setCenterX(e.getX() + getDXStart());
-                A.setCenterY(e.getY() + getDYStart());
-                B.setCenterX(e.getX() + getDXEnd());
-                B.setCenterY(e.getY() + getDYEnd());
-                //добавить новые координаты в коллекцию PoindCircle
-                findCirclesUpdateXY(A.getId(), gridViews.revAccessX(A.getCenterX()), gridViews.revAccessY(A.getCenterY()));
-                findCirclesUpdateXY(B.getId(), gridViews.revAccessX(B.getCenterX()), gridViews.revAccessY(B.getCenterY()));
-                //добавить новые координаты в коллекцию PoindLine
-                findLineUpdateXY(newLine.getId());
-                updatePoindLine(newLine);
-                setTxtShape("");
-                txtAreaOutput();
-            } else {
-                stringLeftStatus = STA_30;
-                notifyObservers("LeftStatusGo");
+            //Блокировать, если режим построения
+            if (!createShape) {
+                //Определить, разрешено ли перемещение линии
+                if (findLineMove(newLine)) {
+                    String[] nameId = findID(newLine).split("_");
+                    Circle A = findCircle(nameId[0]);
+                    Circle B = findCircle(nameId[1]);
+                    A.setCenterX(e.getX() + getDXStart());
+                    A.setCenterY(e.getY() + getDYStart());
+                    B.setCenterX(e.getX() + getDXEnd());
+                    B.setCenterY(e.getY() + getDYEnd());
+                    //добавить новые координаты в коллекцию PoindCircle
+                    findCirclesUpdateXY(A.getId(), gridViews.revAccessX(A.getCenterX()), gridViews.revAccessY(A.getCenterY()));
+                    findCirclesUpdateXY(B.getId(), gridViews.revAccessX(B.getCenterX()), gridViews.revAccessY(B.getCenterY()));
+                    //добавить новые координаты в коллекцию PoindLine
+                    findLineUpdateXY(newLine.getId());
+                    updatePoindLine(newLine);
+                    setTxtShape("");
+                    txtAreaOutput();
+                } else {
+                    stringLeftStatus = STA_30;
+                    notifyObservers("LeftStatusGo");
+                }
             }
-
         });
         //Наведение на отрезок
         newLine.setOnMouseEntered(e -> {

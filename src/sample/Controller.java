@@ -142,9 +142,9 @@ public class Controller extends View {
     private boolean poindCircle = false;//true - когда создана окружность и идет выбор размера
     private boolean poindAddVertical = false;//true - выбрана точка для перпендикуляра
     private boolean lineAddVertical = false;//true - выбрана прямая для перпендикуляра
-    private  boolean poindAddVParallel =false;//true - выбрана точка для параллельной прямой
-    private boolean  lineAddParallel=false;// true - выбрана линия для параллельной прямой
-
+    private boolean poindAddVParallel =false;//true - выбрана точка для параллельной прямой
+    private boolean lineAddParallel=false;// true - выбрана линия для параллельной прямой
+    private boolean treangleVisibly =false;//true - кнопки построить биссектрису, медиану, высоту видимы, т.к. есть уже треугольник
     private String infoStatus;//Вершины угла и вершины треугольника при создании.
 
 
@@ -218,13 +218,15 @@ public class Controller extends View {
         segmentAdd = false;//true - создать отрезок
         rayAdd = false;//true - создание луча
         lineAdd = false;//true - создание прямой
+        circleAdd=false;//true - создание окружности
+        model.setAngleAdd(false);//true - построение угла
+        verticalAdd = false;//true - построение перпендикуляра к прямой
+        parallelAdd = false;//true - построение параллельной прямой
         treangleAdd = false;//true - создание треугольника
+        model.setRemoveObject(false);//true - режим удаления фигур
         medianaAdd = false;//true - проведение медианы из вершины треугольника
         bisectorAdd = false;//true - проведение биссектрисы из вершины треугольника
         heightAdd = false;//true - проведение высоты из вершины треугольника
-        verticalAdd = false;//true - построение перпендикуляра к прямой
-        model.setAngleAdd(false);//true - построение угла
-        model.setRemoveObject(false);//true - режим удаления фигур
     }
 
     /**
@@ -235,17 +237,21 @@ public class Controller extends View {
      * @param b - true кнопки блокированы, false - разблокированы
      */
     private void disableButton(Boolean b) {
+        btnPoind.setDisable(b);
+        btnSegment.setDisable(b);
+        btnRay.setDisable(b);
+        btnLine.setDisable(b);
+        btnCircle.setDisable(b);
         btnAngle.setDisable(b);
         btnVertical.setDisable(b);
-        btnBisector.setDisable(b);
-        btnMediana.setDisable(b);
-        btnHeight.setDisable(b);
+        btnParallelLines.setDisable(b);
         btnTreangle.setDisable(b);
-        btnRay.setDisable(b);
-        btnSegment.setDisable(b);
-        btnLine.setDisable(b);
-        btnPoind.setDisable(b);
         btnDelete.setDisable(b);
+        if (treangleVisibly){
+            btnBisector.setDisable(b);
+            btnMediana.setDisable(b);
+            btnHeight.setDisable(b);
+        }
     }
 
     /**
@@ -389,6 +395,7 @@ public class Controller extends View {
             poindAdd = false;//Режим добавления точки окончен
             model.setPoindLineAdd(false);
             disableButton(false);//разблокировать кнопки
+            model.setCreateShape(false);//Сбросить режим создания фигуры
 
         }
         //Добавление отрезка
@@ -410,6 +417,7 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
 
         //Добавление угла первая точка
@@ -441,6 +449,7 @@ public class Controller extends View {
                 //Вывод информации об объектах в правую часть доски
                 model.setTxtShape("");
                 model.txtAreaOutput();
+                model.setCreateShape(false);//Сбросить режим создания фигуры
             }
         }
         //Построение треугольника
@@ -487,13 +496,15 @@ public class Controller extends View {
             //Заменить имя
             model.findNameId(poindTreangle1.getId(), poindLine2.getId(), newLine.getId());
             treangleAdd = false;//окончание режима добавления
-            disableButton(false);//разблокировать кнопки
             poindAdd1 = false;
             angleCol = 0;
             model.setCreateLine(false);//заблокировать режим перемещения линий
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            treangleVisibly =true;//разблокировать кнопки высота, медиана, биссектриса
+            disableButton(false);//разблокировать кнопки
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
 
         //Добавления луча
@@ -516,6 +527,7 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
         //Добавление прямой
         if (lineAdd && !poindAdd1) {
@@ -538,6 +550,7 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
 
         //Добавление медианы
@@ -550,6 +563,7 @@ public class Controller extends View {
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
         //Добавление биссектрисы
         if (bisectorAdd) {
@@ -561,6 +575,7 @@ public class Controller extends View {
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
         //Добавление высоты
         if (heightAdd) {
@@ -572,6 +587,7 @@ public class Controller extends View {
             disableButton(false);//разблокировать кнопки
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
         //Построение перпендикуляра к прямой, отрезку, лучу.
         if (verticalAdd && model.isPoindOldAdd()) {
@@ -597,6 +613,7 @@ public class Controller extends View {
             model.setSegmentStartY(poindLine1.getCenterY());
             model.setScreenX(D1.getX());
             model.setScreenY(D1.getY());
+            model.closeLine(newLine);//запрет на перемещение
             //Передать в View для вывода
             model.setLine(newLine);
             model.notifyObservers("SideGo");
@@ -624,6 +641,7 @@ public class Controller extends View {
             poindAdd2 = false;
             disableButton(false);//разблокировать кнопки
             model.setPoindOldAdd(false);
+            model.setCreateShape(false);//Сбросить режим создания фигуры
             //закрыть режим создания перпендикуляра
         }
         //Построить параллельную прямую
@@ -691,7 +709,7 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
-
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
 
         //Построить окружность
@@ -717,9 +735,8 @@ public class Controller extends View {
             //Вывод информации об объектах в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
+            model.setCreateShape(false);//Сбросить режим создания фигуры
         }
-
-
         event.consume();
     }//End onMousePressed()
 
@@ -1230,6 +1247,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         poindAdd = true;//Установить режим добавления
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1255,6 +1273,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         segmentAdd = true;//режим построения отрезка
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1280,6 +1299,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         rayAdd = true;//режим построения луча
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1305,6 +1325,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         lineAdd = true;//режим построения прямой
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1331,6 +1352,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         model.setAngleAdd(true);//режим построения угла
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1355,6 +1377,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         verticalAdd = true;//режим построения угла
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1368,6 +1391,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         circleAdd = true;//режим построения окружности
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1381,6 +1405,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         parallelAdd = true;//режим построения окружности
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1430,6 +1455,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         treangleAdd = true;
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1453,6 +1479,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         medianaAdd = true;
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1476,6 +1503,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         bisectorAdd = true;
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1499,6 +1527,7 @@ public class Controller extends View {
         visibleCreate();//сбросить все режимы
         disableButton(true);//блокировать кнопки
         heightAdd = true;
+        model.setCreateShape(true);//Установить режим создания фигуры
     }
 
     /**
@@ -1533,6 +1562,11 @@ public class Controller extends View {
             model.initIndex();//инициализация индексов
             model.setTxtShape("");
             model.txtAreaOutput();
+            treangleVisibly =false;//режим блокировки кнопок медиана, биссектриса, высота
+            disableButton(false);//сбросить режим блокировки
+            btnHeight.setDisable(true);//заблокировать
+            btnMediana.setDisable(true);//заблокировать
+            btnBisector.setDisable(true);//заблокировать
         }
     }
 
@@ -1556,7 +1590,7 @@ public class Controller extends View {
     public void onKeyPressed(KeyEvent key) {
         if (key.getCode() == KeyCode.ESCAPE) {
             disableButton(false);//разблокировать кнопки
-            //  visibleCreate(false);//сбросить все режимы
+           // visibleCreate();//сбросить все режимы
         }
     }
 
