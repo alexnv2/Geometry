@@ -724,7 +724,6 @@ public class Controller extends View {
             poindAdd1 = true;
             //создать новую окружность
             circle = model.createCircleAdd(poindLine1);
-            //закончить построение окружности
         }
         if (circleAdd && poindCircle) {
             model.updateCircle(circle);
@@ -736,6 +735,7 @@ public class Controller extends View {
             model.setTxtShape("");
             model.txtAreaOutput();
             model.setCreateShape(false);//Сбросить режим создания фигуры
+            //закончить построение окружности
         }
         event.consume();
     }//End onMousePressed()
@@ -846,7 +846,20 @@ public class Controller extends View {
                 a.setLength(va.getLengthAngle());
             }
         }
+        //Обновление окружности
+
+        for( CircleLine cp: model.getCircleLines()){
+            if(cp!=null){
+                Circle c = cp.getCircle();
+                c.setCenterX(gridViews.accessX(cp.getX()));
+                c.setCenterY(gridViews.accessY(cp.getY()));
+                double d=model.distance(gridViews.accessX(cp.getX()), gridViews.accessY(cp.getY()),gridViews.accessX(cp.getX()+cp.getRadius()),gridViews.accessY(cp.getY()));
+                c.setRadius(d);
+            }
+        }
+
     }
+
 
     /**
      * Метод menuPoindClick().

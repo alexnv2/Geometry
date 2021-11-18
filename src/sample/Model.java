@@ -853,14 +853,16 @@ class Model implements Observable {
         });
         //При перемещении с нажатой кнопкой
         newCircle.setOnMouseDragged(e -> {
-            Circle c = findCircle(findNameCircle(newCircle));
-            setRadiusCircle(Math.round(distance(c.getCenterX(), c.getCenterY(), getScreenX(), getScreenY())));
-            setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
-            updateCircle(newCircle);
-            circleView(newCircle);
-            //Добавить в правую часть доски
-            setTxtShape("");
-            txtAreaOutput();
+            if(!createShape) {
+                Circle c = findCircle(findNameCircle(newCircle));
+                setRadiusCircle(Math.round(distance(c.getCenterX(), c.getCenterY(), getScreenX(), getScreenY())));
+                setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
+                updateCircle(newCircle);
+                circleView(newCircle);
+                //Добавить в правую часть доски
+                setTxtShape("");
+                txtAreaOutput();
+            }
         });
         return newCircle;
     }
@@ -871,12 +873,20 @@ class Model implements Observable {
                 if (p.getId().equals(c.getId())) {
                     p.setRadius(getRadiusCircleW());
                     p.setCircle(c);
+                    p.setX(gridViews.revAccessX(c.getCenterX()));
+                    p.setY(gridViews.revAccessY(c.getCenterY()));
                 }
 
             }
         }
     }
 
+    /**
+     * Метод findCircleRadius(Circle c).
+     * Возвращает радиус окружности из коллекции
+     * @param c - ссылка на окружность
+     * @return - радиус окружности
+     */
     double findCircleRadius(Circle c) {
         for (CircleLine p : circleLines) {
             if (p != null) {
@@ -888,6 +898,12 @@ class Model implements Observable {
         return 0;
     }
 
+    /**
+     * Метод findCircleRadiusW(Circle c).
+     * Возвращает радиус окружности в мировых координатах
+     * @param c - ссылка на окружность
+     * @return - радиус окружности в мировых координатах
+     */
     double findCircleRadiusW(Circle c) {
         for (CircleLine p : circleLines) {
             if (p != null) {
@@ -899,6 +915,12 @@ class Model implements Observable {
         return 0;
     }
 
+    /**
+     * Метод indNameCircle(Circle c).
+     * Возвращает имя окружности
+     * @param c - ссылка на окружность
+     * @return - имя окружности
+     */
     String findNameCircle(Circle c) {
         for (CircleLine p : circleLines) {
             if (p != null) {
@@ -910,21 +932,27 @@ class Model implements Observable {
         return null;
     }
 
+    /**
+     * Метод bindPoindCircle(Circle poind, Circle circle).
+     * Предназначен для связывания центра окружности с окружностью для перемещения
+     * @param poind - ссылка на центр окружности
+     * @param circle - ссылка на окружность
+     */
     public void bindPoindCircle(Circle poind, Circle circle) {
-
         poind.centerXProperty().addListener((obj, oldValue, newValue) -> {
             setRadiusCircle(findCircleRadiusW(circle));
             circle.setCenterX(poind.getCenterX());
             circle.setCenterY(poind.getCenterY());
             circle.setRadius(getRadiusCircle());
+            updateCircle(circle);//обновить коллекцию
         });
         poind.centerYProperty().addListener((obj, oldValue, newValue) -> {
             setRadiusCircle(findCircleRadiusW(circle));
             circle.setCenterX(poind.getCenterX());
             circle.setCenterY(poind.getCenterY());
             circle.setRadius(getRadiusCircle());
+            updateCircle(circle);//обновить коллекцию
         });
-
     }
 
     /**
@@ -946,7 +974,7 @@ class Model implements Observable {
      */
     Circle createCircleAdd(Circle name) {
         Circle circle = createCircle();
-        circleLines.add(new CircleLine(circle, circle.getId(), circle.getRadius(), name.getId()));
+        circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),circle.getId(), circle.getRadius(), name.getId()));
         paneBoards.getChildren().add(circle);//добавить окружность на доску
         circle.toBack();
         bindPoindCircle(findCircle(findNameCircle(circle)), circle);
@@ -2261,6 +2289,4 @@ class Model implements Observable {
         System.out.println("Коллекция объектов");
         paneBoards.getChildren().forEach(System.out::println);
     }
-
-
 }
