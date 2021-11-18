@@ -117,8 +117,6 @@ public class Controller extends View {
     @FXML
     private CheckMenuItem menuGrid;
     @FXML
-    private CheckMenuItem menuCartesian;
-    @FXML
     private CheckMenuItem menuAngleName;
 
     //Режимы создания
@@ -1077,13 +1075,6 @@ public class Controller extends View {
         }
     }
 
-    /**
-     * Метод menuCartesian().
-     * Пункт меню "Настройки-Показывать координатные оси".
-     */
-    public void menuCartesian() {
-        model.setShowCartesian(menuCartesian.isSelected());
-    }
 
     /**
      * Метод menuGrid().

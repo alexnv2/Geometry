@@ -75,12 +75,10 @@
                            selected="true" onAction="#menuShowPoindName"/>
             <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен"
                            onAction="#menuShowLineName"/>
-            <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
-                           onAction="#menuGrid"/>
-            <CheckMenuItem fx:id="menuCartesian" mnemonicParsing="false" text="Показывать координатную ось"
-                           onAction="#menuCartesian"/>
             <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" text="Показывать имена углов"
                            onAction="#menuAngleName"/>
+            <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку и координатную ось" selected="true"
+                           onAction="#menuGrid"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
             <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе"/>
@@ -115,7 +113,7 @@
                 onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" disable="true"/>
         <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete"
                 prefHeight="20.0" prefWidth="40.0"/>
-        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест"/>
+        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="false"/>
     </HBox>
     <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true"
                VBox.vgrow="ALWAYS">
