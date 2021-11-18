@@ -208,6 +208,8 @@ public class Controller extends View {
         btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnParallelLines.setStyle("-fx-background-image: url(/Images/parallel.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
         btnCircle.setStyle("-fx-background-image: url(/Images/circle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+        btnMiddleSegment.setStyle("-fx-background-image: url(/Images/middle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
+
     }
 
     /**
