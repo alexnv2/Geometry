@@ -6,12 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
@@ -376,7 +375,8 @@ class Model implements Observable {
     Text createNameShapes(String name) {
         Text nameText = new Text();//создать новый объект
         nameText.setId(name);//присвоить имя
-        nameText.setFont(new Font("Alexander", 12));
+        nameText.setFont(Font.font("Alexander", FontWeight.BOLD,  FontPosture.REGULAR, 14));
+        nameText.setFill(Color.BLUE);//цвет букв
 
         //Привязка к событию мышки
         nameText.setOnMouseDragged(e -> {//перемещение
