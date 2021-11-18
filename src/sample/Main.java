@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 /**
  * Класс Main наследует класс Application.
  * Базовый класс для запуска программы.
@@ -22,7 +24,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("sample.fxml")));
         primaryStage.setTitle("Геометрия");//Название окна
         primaryStage.setScene(new Scene(root, 950, 600));//размер сцены
         primaryStage.show();//вывести на экран

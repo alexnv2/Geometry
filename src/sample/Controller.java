@@ -272,7 +272,7 @@ public class Controller extends View {
         model.setScreenY(mouseEvent.getY());
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
-        rightStatus.setText("x " + mouseEvent.getX() + " y " + mouseEvent.getY() + " Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
+        rightStatus.setText("Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
         //Добавление треугольника
         if (treangleAdd && newLine != null && poindAdd2) {
             //Передать в View для вывода
@@ -850,44 +850,46 @@ public class Controller extends View {
      */
     private void updateShape() {
         //обновление точек
-        for (PoindCircle p : model.getPoindCircles())
-            if (p != null) {
-                Circle c = p.getCircle();
-                c.setCenterX(gridViews.accessX(p.getX()));
-                c.setCenterY(gridViews.accessY(p.getY()));
+        if(!model.isCreateShape()) {
+            for (PoindCircle p : model.getPoindCircles())
+                if (p != null) {
+                    Circle c = p.getCircle();
+                    c.setCenterX(gridViews.accessX(p.getX()));
+                    c.setCenterY(gridViews.accessY(p.getY()));
+                }
+            //Обновление всех линий
+            for (PoindLine pl : model.getPoindLines()) {
+                if (pl != null) {
+                    //Обновляем отрезки
+                    Line l = pl.getLine();
+                    l.setStartX(gridViews.accessX(pl.getStX()));
+                    l.setStartY(gridViews.accessY(pl.getStY()));
+                    l.setEndX(gridViews.accessX(pl.getEnX()));
+                    l.setEndY(gridViews.accessY(pl.getEnY()));
+                }
             }
-        //Обновление всех линий
-        for (PoindLine pl : model.getPoindLines()) {
-            if (pl != null) {
-                //Обновляем отрезки
-                Line l = pl.getLine();
-                l.setStartX(gridViews.accessX(pl.getStX()));
-                l.setStartY(gridViews.accessY(pl.getStY()));
-                l.setEndX(gridViews.accessX(pl.getEnX()));
-                l.setEndY(gridViews.accessY(pl.getEnY()));
+            //Обновление дуг углов
+            for (VertexArc va : model.getVertexArcs()) {
+                if (va != null) {
+                    Arc a = va.getArc();
+                    a.setCenterX(gridViews.accessX(va.getCenterX()));
+                    a.setCenterY(gridViews.accessY(va.getCenterY()));
+                    a.setRadiusX(va.getRadiusX());
+                    a.setRadiusY(va.getRadiusY());
+                    a.setStartAngle(va.getStartAngle());
+                    a.setLength(va.getLengthAngle());
+                }
             }
-        }
-        //Обновление дуг углов
-        for (VertexArc va : model.getVertexArcs()) {
-            if (va != null) {
-                Arc a = va.getArc();
-                a.setCenterX(gridViews.accessX(va.getCenterX()));
-                a.setCenterY(gridViews.accessY(va.getCenterY()));
-                a.setRadiusX(va.getRadiusX());
-                a.setRadiusY(va.getRadiusY());
-                a.setStartAngle(va.getStartAngle());
-                a.setLength(va.getLengthAngle());
-            }
-        }
-        //Обновление окружности
+            //Обновление окружности
 
-        for( CircleLine cp: model.getCircleLines()){
-            if(cp!=null){
-                Circle c = cp.getCircle();
-                c.setCenterX(gridViews.accessX(cp.getX()));
-                c.setCenterY(gridViews.accessY(cp.getY()));
-                double d=model.distance(gridViews.accessX(cp.getX()), gridViews.accessY(cp.getY()),gridViews.accessX(cp.getX()+cp.getRadius()),gridViews.accessY(cp.getY()));
-                c.setRadius(d);
+            for (CircleLine cp : model.getCircleLines()) {
+                if (cp != null) {
+                    Circle c = cp.getCircle();
+                    c.setCenterX(gridViews.accessX(cp.getX()));
+                    c.setCenterY(gridViews.accessY(cp.getY()));
+                    double d = model.distance(gridViews.accessX(cp.getX()), gridViews.accessY(cp.getY()), gridViews.accessX(cp.getX() + cp.getRadius()), gridViews.accessY(cp.getY()));
+                    c.setRadius(d);
+                }
             }
         }
 

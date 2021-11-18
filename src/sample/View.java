@@ -63,7 +63,7 @@ class View implements Observer {
             case "ColorArc" -> this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
-            case "CircleGo" ->this.CircleGo(model.getCircle());//вывод окружности
+            case "CircleGo" -> this.CircleGo(model.getCircle());//вывод окружности
         }
     }
 
@@ -136,7 +136,6 @@ class View implements Observer {
     }
 
 
-
     /**
      * Метод webFileHTMLGo(WebView web)
      * Предназначен для вывода в левую часть доски файлов справочной информации в формате html.
@@ -200,9 +199,10 @@ class View implements Observer {
     /**
      * Метод CircleGo(Circle c).
      * Предназначен для вывода на экран окружности.
-     * @param c  объект окружность
+     *
+     * @param c объект окружность
      */
-    private void CircleGo(Circle c){
+    private void CircleGo(Circle c) {
         c.setRadius(model.getRadiusCircle());
     }
 }

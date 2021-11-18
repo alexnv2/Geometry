@@ -60,10 +60,7 @@ class Model implements Observable {
     private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
     private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
     private String txtShape = "";//хранит строку о геометрической фигуре на доске
-    private double dXStart; //смещение по х от нажатой мышки до начала линии для её перемещения
-    private double dYStart;
-    private double dXEnd;//смещение по х от нажатой мышки до конца линии для её перемещения
-    private double dYEnd;
+
     //координаты
     private double screenX;//координата экрана Х от мышки
     private double screenY;//координата экрана Y от мышки
@@ -81,6 +78,11 @@ class Model implements Observable {
     private double verLineEndY;//координата Y мировая для Line EndY
     private double textX;//координата Х для имен точек
     private double textY;//координата Y для имен точек
+    private double dXStart; //смещение по х от нажатой мышки до начала линии для её перемещения
+    private double dYStart;
+    private double dXEnd;//смещение по х от нажатой мышки до конца линии для её перемещения
+    private double dYEnd;
+
     //Для временного хранения точек и линий.
     private Circle timeVer;//для временного хранения выбранных вершин
     private Line timeLine;// для временного хранения выбранной линии
@@ -158,6 +160,7 @@ class Model implements Observable {
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
+
     public int getWindShow() {
         return WIND_SHOW;
     }
@@ -375,7 +378,7 @@ class Model implements Observable {
     Text createNameShapes(String name) {
         Text nameText = new Text();//создать новый объект
         nameText.setId(name);//присвоить имя
-        nameText.setFont(Font.font("Alexander", FontWeight.BOLD,  FontPosture.REGULAR, 14));
+        nameText.setFont(Font.font("Alexander", FontWeight.BOLD, FontPosture.REGULAR, 14));
         nameText.setFill(Color.BLUE);//цвет букв
 
         //Привязка к событию мышки
@@ -852,7 +855,7 @@ class Model implements Observable {
         });
         //При перемещении с нажатой кнопкой
         newCircle.setOnMouseDragged(e -> {
-            if(!createShape) {
+            if (!createShape) {
                 Circle c = findCircle(findNameCircle(newCircle));
                 setRadiusCircle(Math.round(distance(c.getCenterX(), c.getCenterY(), getScreenX(), getScreenY())));
                 setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
@@ -883,6 +886,7 @@ class Model implements Observable {
     /**
      * Метод findCircleRadius(Circle c).
      * Возвращает радиус окружности из коллекции
+     *
      * @param c - ссылка на окружность
      * @return - радиус окружности
      */
@@ -900,6 +904,7 @@ class Model implements Observable {
     /**
      * Метод findCircleRadiusW(Circle c).
      * Возвращает радиус окружности в мировых координатах
+     *
      * @param c - ссылка на окружность
      * @return - радиус окружности в мировых координатах
      */
@@ -917,6 +922,7 @@ class Model implements Observable {
     /**
      * Метод indNameCircle(Circle c).
      * Возвращает имя окружности
+     *
      * @param c - ссылка на окружность
      * @return - имя окружности
      */
@@ -934,7 +940,8 @@ class Model implements Observable {
     /**
      * Метод bindPoindCircle(Circle poind, Circle circle).
      * Предназначен для связывания центра окружности с окружностью для перемещения
-     * @param poind - ссылка на центр окружности
+     *
+     * @param poind  - ссылка на центр окружности
      * @param circle - ссылка на окружность
      */
     public void bindPoindCircle(Circle poind, Circle circle) {
@@ -973,7 +980,7 @@ class Model implements Observable {
      */
     Circle createCircleAdd(Circle name) {
         Circle circle = createCircle();
-        circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()),gridViews.revAccessY(circle.getCenterY()),circle.getId(), circle.getRadius(), name.getId()));
+        circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), circle.getId(), circle.getRadius(), name.getId()));
         paneBoards.getChildren().add(circle);//добавить окружность на доску
         circle.toBack();
         bindPoindCircle(findCircle(findNameCircle(circle)), circle);
@@ -1009,7 +1016,6 @@ class Model implements Observable {
             rayEndY = screenY;
         }
         line.setId(indexLineAdd());//Идентификатор узла
-
         //Привязка событий мышки
         mouseLine(line);
         return line;
@@ -1018,6 +1024,8 @@ class Model implements Observable {
     /**
      * Метод mouseLine().
      * Предназначен для привязки событий мышки к объекту Line.
+     *
+     * @param newLine - ссылка на линию к которой привязаны события мышки
      */
     public void mouseLine(Line newLine) {
         //Перемещение линий
@@ -1898,14 +1906,15 @@ class Model implements Observable {
     /**
      * Метод findTypeLine(Line line).
      * Предназначен для поиска в коллекции и возвращения типа линии
-     * Вызывается для проверки при построении середины отрезка
+     * Необходим для проверки при построении середины отрезка
+     *
      * @param line - ссылка на линию
      * @return - тип линии, нужно 0 - отрезок
      */
-    public int findTypeLine(Line line){
-        for (PoindLine p: poindLines){
-            if(p!=null){
-                if(p.getLine().getId().equals(line.getId())){
+    public int findTypeLine(Line line) {
+        for (PoindLine p : poindLines) {
+            if (p != null) {
+                if (p.getLine().getId().equals(line.getId())) {
                     return p.getSegment();
                 }
             }
@@ -2309,37 +2318,38 @@ class Model implements Observable {
     /**
      * Метод middleBindSegment(Circle newCircle, Line newLine).
      * Предназначен для связывания середины отрезка с линией
+     *
      * @param newCircle - ссылка на точку
-     * @param newLine - ссылка на линию
+     * @param newLine   - ссылка на линию
      */
     public void middleBindSegment(Circle newCircle, Line newLine) {
-        newLine.startXProperty().addListener((old, oldValue, newValue)-> {
-            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+        newLine.startXProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1,p2).getX());
-            newCircle.setCenterY(midPoindAB(p1,p2).getY());
-            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+            newCircle.setCenterX(midPoindAB(p1, p2).getX());
+            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
-        newLine.startYProperty().addListener((old, oldValue, newValue)-> {
-            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+        newLine.startYProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1,p2).getX());
-            newCircle.setCenterY(midPoindAB(p1,p2).getY());
-            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+            newCircle.setCenterX(midPoindAB(p1, p2).getX());
+            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
-        newLine.endXProperty().addListener((old, oldValue, newValue)-> {
-            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+        newLine.endXProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1,p2).getX());
-            newCircle.setCenterY(midPoindAB(p1,p2).getY());
-            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+            newCircle.setCenterX(midPoindAB(p1, p2).getX());
+            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
-        newLine.endYProperty().addListener((old, oldValue, newValue)-> {
-            Point2D p1=new Point2D(newLine.startXProperty().get(),newLine.startYProperty().get());
+        newLine.endYProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1,p2).getX());
-            newCircle.setCenterY(midPoindAB(p1,p2).getY());
-            findCirclesUpdateXY(newCircle.getId(),gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+            newCircle.setCenterX(midPoindAB(p1, p2).getX());
+            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
     }
 }

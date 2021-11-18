@@ -1,6 +1,5 @@
 package sample;
 
-
 import javafx.scene.shape.Circle;
 import lombok.Data;
 
@@ -17,12 +16,12 @@ public class CircleLine {
     private double radius;//радиус окружности в мировых координатах
     private String poindID;//имя точки центра окружности
 
-    CircleLine(Circle c, double x0, double y0, String o, double r1, String p){
-        this.circle=c;
-        this.x=x0;
-        this.y=y0;
-        this.id=o;
-        this.radius=r1;
-        this.poindID=p;
+    CircleLine(Circle c, double x0, double y0, String o, double r1, String p) {
+        this.circle = c;
+        this.x = x0;
+        this.y = y0;
+        this.id = o;
+        this.radius = r1;
+        this.poindID = p;
     }
 }

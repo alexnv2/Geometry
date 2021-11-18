@@ -1,4 +1,5 @@
 package sample;
+
 import javafx.animation.*;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -14,6 +15,7 @@ import javafx.util.Duration;
  * Класс Equality наследует класс View.
  * Класс контролер для equality.fxml. Предназначен для вывода вспомогательного окна с доказательствами трех признаков
  * равенства треугольников.
+ *
  * @author A. Nosov
  * @version 1.0
  * @see sample.View
@@ -41,7 +43,7 @@ public class Equality extends View {
     public Text poindB1;
     public Text poindB;
     @FXML
-    private Arc arcB_1,arcB_2;
+    private Arc arcB_1, arcB_2;
     @FXML
     private Line hatch_1, hatch_2;
 
@@ -50,44 +52,44 @@ public class Equality extends View {
      * Предназначен для инициализации переменных.
      */
     @FXML
-    private void initialize(){
+    private void initialize() {
         System.out.println(model.getWindShow());
-    //1 признак равенства
-        if(model.getWindShow()==0) {
-           arcB_1.setVisible(false);
-           arcB_2.setVisible(false);
-           arcB1_1.setVisible(false);
-           arcB1_2.setVisible(false);
-           arcA1.setVisible(true);
-           arcA.setVisible(true);
-           hatch_1.setVisible(true);
-           hatch_2.setVisible(true);
-           hatch2_1.setVisible(true);
-           hatch2_2.setVisible(true);
-           hatchB.setVisible(false);
-           hatchB1.setVisible(false);
-           poindC.setVisible(true);
-           namePr.setText("Первый признак равенства треугольников.");
-           model.setTextX(220);
-           model.setTextY(30);
-           //Передать для вывода в View
-           model.setTextGo(namePr);
-           model.notifyObservers("TextGo");
-           proof.setText("Теорема (признак равенства треугольников по двум сторонам и углу между ними.)");
-           model.setTextGo(proof);
-           model.notifyObservers("TextGo");
-           theorem.setText("Если две стороны и угол между ними одного треугольника соответственно равны двум сторонам и углу между ними другого треугольника, то такие треугольники равны.");
-           model.setTextGo(theorem);
-           model.notifyObservers("TextGo");
-           proposition_1.setText("Рассмотрим треугольники АВС и А₁В₁С₁, у которых АВ=А₁В₁, АС=А₁С₁, углы А и А₁ равны. Докажем что  △АВС=△А₁В₁С₁");
-           model.setTextGo(proposition_1);
-           model.notifyObservers("TextGo");
-           proposition_2.setText("Так как ∠А=∠А₁, то треугольник АВС можно наложить на треугольник А₁В₁С₁ так, что вершина А совместится с вершиной А₁, а стороны АВ и АС наложатся соответственно на лучи А₁В₁ и А₁С₁. Поскольку АВ=А₁В₁, АС=А₁С₁, то сторона АВ совместится со стороной А₁В₁, а сторона АС - со стороной А₁С₁ в частности совместятся точки В и В₁, С и С₁. Следовательно совместятся стороны ВС и В₁С₁. Итак треугольники АВС и А₁В₁С₁ полностью совместятся, значит, они равны. Теорема Доказана.");
-           model.setTextGo(proposition_2);
-           model.notifyObservers("TextGo");
-       }
+        //1 признак равенства
+        if (model.getWindShow() == 0) {
+            arcB_1.setVisible(false);
+            arcB_2.setVisible(false);
+            arcB1_1.setVisible(false);
+            arcB1_2.setVisible(false);
+            arcA1.setVisible(true);
+            arcA.setVisible(true);
+            hatch_1.setVisible(true);
+            hatch_2.setVisible(true);
+            hatch2_1.setVisible(true);
+            hatch2_2.setVisible(true);
+            hatchB.setVisible(false);
+            hatchB1.setVisible(false);
+            poindC.setVisible(true);
+            namePr.setText("Первый признак равенства треугольников.");
+            model.setTextX(220);
+            model.setTextY(30);
+            //Передать для вывода в View
+            model.setTextGo(namePr);
+            model.notifyObservers("TextGo");
+            proof.setText("Теорема (признак равенства треугольников по двум сторонам и углу между ними.)");
+            model.setTextGo(proof);
+            model.notifyObservers("TextGo");
+            theorem.setText("Если две стороны и угол между ними одного треугольника соответственно равны двум сторонам и углу между ними другого треугольника, то такие треугольники равны.");
+            model.setTextGo(theorem);
+            model.notifyObservers("TextGo");
+            proposition_1.setText("Рассмотрим треугольники АВС и А₁В₁С₁, у которых АВ=А₁В₁, АС=А₁С₁, углы А и А₁ равны. Докажем что  △АВС=△А₁В₁С₁");
+            model.setTextGo(proposition_1);
+            model.notifyObservers("TextGo");
+            proposition_2.setText("Так как ∠А=∠А₁, то треугольник АВС можно наложить на треугольник А₁В₁С₁ так, что вершина А совместится с вершиной А₁, а стороны АВ и АС наложатся соответственно на лучи А₁В₁ и А₁С₁. Поскольку АВ=А₁В₁, АС=А₁С₁, то сторона АВ совместится со стороной А₁В₁, а сторона АС - со стороной А₁С₁ в частности совместятся точки В и В₁, С и С₁. Следовательно совместятся стороны ВС и В₁С₁. Итак треугольники АВС и А₁В₁С₁ полностью совместятся, значит, они равны. Теорема Доказана.");
+            model.setTextGo(proposition_2);
+            model.notifyObservers("TextGo");
+        }
         //2 признак равенства
-        if(model.getWindShow()==1) {
+        if (model.getWindShow() == 1) {
             arcB_1.setVisible(true);
             arcB_2.setVisible(true);
             arcB1_1.setVisible(true);
@@ -120,7 +122,7 @@ public class Equality extends View {
             model.notifyObservers("TextGo");
         }
         //3 признак равенства
-        if(model.getWindShow()==2) {
+        if (model.getWindShow() == 2) {
             arcB_1.setVisible(false);
             arcB_2.setVisible(false);
             arcB1_1.setVisible(false);
@@ -157,10 +159,10 @@ public class Equality extends View {
      */
     public void onClickCombine() {
         //Перемещениe для 3 признака равенства треугольников
-        if(model.getWindShow()==2) {
+        if (model.getWindShow() == 2) {
             //Перенос
             groupTr3.setVisible(false);
-            TranslateTransition tr=new TranslateTransition(Duration.seconds(5.0), groupTriangles);
+            TranslateTransition tr = new TranslateTransition(Duration.seconds(5.0), groupTriangles);
             tr.setFromX(0);
             tr.setFromY(0);
             tr.setToX(242);
@@ -186,7 +188,7 @@ public class Equality extends View {
 
             //Параллельное выполнение
             ParallelTransition pt = new ParallelTransition(groupTriangles);
-            pt.getChildren().addAll(tr, rtX,rt2);
+            pt.getChildren().addAll(tr, rtX, rt2);
             pt.play();
             pt.setOnFinished(event -> {
                 groupTr3.setVisible(true);
@@ -194,9 +196,9 @@ public class Equality extends View {
                 poindB.setRotate(180);
                 //poindB1.setRotate(80);
             });
-        }else {
+        } else {
             //Перемещениe для 1 и 2 признаков равенства треугольников
-            TranslateTransition tr=new TranslateTransition(Duration.seconds(5.0), groupTriangles);
+            TranslateTransition tr = new TranslateTransition(Duration.seconds(5.0), groupTriangles);
             tr.setFromX(0);
             tr.setFromY(0);
             tr.setToX(284);

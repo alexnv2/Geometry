@@ -146,7 +146,7 @@
         </padding>
         <Label fx:id="leftStatus" maxHeight="1.8" textFill="blue" HBox.hgrow="ALWAYS">
             <font>
-                <Font size="12.0" fx:id="x3"/>
+                <Font size="15.0" fx:id="x3"/>
             </font>
 
         </Label>
