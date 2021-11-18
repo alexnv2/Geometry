@@ -136,7 +136,7 @@ class Model implements Observable {
      * Используется при подключении к фигуре свойств мышки.
      * Блокирует режим перемещения фигуры.
      */
-    private boolean createShape= false;
+    private boolean createShape = false;
     private double t;//для параметрической прямой, когда точка принадлежит прямой
 
     private double radiusCircle;//радиус окружности, для View
@@ -667,7 +667,7 @@ class Model implements Observable {
         //Обработка событий
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
-            if(!createShape) {
+            if (!createShape) {
                 if (findPoindCircleMove(newPoind.getId())) {
                     //Найти по точке имя в коллекции
                     Text txt = findNameText(newPoind);
